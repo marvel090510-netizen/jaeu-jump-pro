@@ -42139,15 +42139,6 @@ extends CanvasLayer
     };
     try { requestAnimationFrame(loop); } catch (e) { setInterval(function () { fallGuard(performance.now()); }, 60); }
   }
-  /* 판이 시작되면 뽑기 창은 스스로 닫힌다 (인게임 위에 남지 않게) */
-  setInterval(function () {
-    try {
-      if (!inPlay()) return;
-      var m = $('v533G');
-      if (m && !m.classList.contains('hide')) m.classList.add('hide');
-    } catch (e) {}
-  }, 600);
-
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', boot);
   else setTimeout(boot, 200);
 
@@ -82549,6 +82540,15 @@ if (typeof module !== 'undefined' && module.exports) {
       '<button type="button" id="v533Go" class="btn pri" style="min-height:44px;padding:0 14px;border-radius:12px;font-size:13.5px;font-weight:900;border:2px solid #5a3204;background:linear-gradient(180deg,#ffe79a,#f7b91f 60%,#dc9a0d);color:#6b4708;box-shadow:0 3px 0 #6b4405">🎰 테마 뽑기 열기</button>' +
       '</div>';
   }
+
+  /* 판이 시작되면 뽑기 창은 스스로 닫힌다 (인게임 화면 위에 남지 않게) */
+  setInterval(function () {
+    try {
+      if (!inPlay()) return;
+      var m = $('v533G');
+      if (m && !m.classList.contains('hide')) m.classList.add('hide');
+    } catch (e) {}
+  }, 600);
 
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', boot);
   else boot();
