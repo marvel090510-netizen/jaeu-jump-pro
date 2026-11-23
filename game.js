@@ -83081,7 +83081,7 @@ if (typeof module !== 'undefined' && module.exports) {
       if (!S.ready) return;
       S.ready = false;
       S.time = 0;
-      S.nextIn = 0.75;
+      S.nextIn = 1.1;
       S.itemIn = 5.0;
       addFloat('START!', '#fde68a', 180, 300, 20);
       tone(660, 0.08, 0.1, 'square', 990);
@@ -83109,11 +83109,11 @@ if (typeof module !== 'undefined' && module.exports) {
       for (var n = 0; n < count; n++) {
         var x = 0, tries = 0;
         do {
-          /* 시작 3초는 플레이어를 직접 노리지 않는다 — 판을 읽을 여유 */
-          if (n === 0 && S.time > 3 && R() < 0.62) x = clamp(p.x + (R() - 0.5) * 70, 16, W - 16);
+          /* 시작 4초는 플레이어를 직접 노리지 않고, 가까운 자리에도 떨어뜨리지 않는다 — 판을 읽을 여유 */
+          if (n === 0 && S.time > 4 && R() < 0.62) x = clamp(p.x + (R() - 0.5) * 70, 16, W - 16);
           else x = 18 + R() * (W - 36);
           tries++;
-        } while (tries < 8 && used.some(function (u) { return Math.abs(u - x) < 52; }));
+        } while (tries < 10 && (used.some(function (u) { return Math.abs(u - x) < 52; }) || (S.time < 4 && Math.abs(x - p.x) < 80)));
         used.push(x);
         var r = (w >= 4 && R() < 0.22) ? 15 : 10;
         spawnMeteor(x, r, S.time + WARN, spd);
