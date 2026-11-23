@@ -69234,7 +69234,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.33';
+  var BUILD = 'v5.34';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -72113,7 +72113,7 @@ if (typeof module !== 'undefined' && module.exports) {
       h += '<div class="skgrid">' + skins.map(function (s) {
         return '<button type="button" class="skcard' + (s.id === cur ? ' on' : '') + '" data-v57sk="' + esc(s.id) + '">' +
           '<canvas width="32" height="36" data-v57skcv="' + esc(s.id) + '"></canvas><b>' + (s.emoji || '') + ' ' + esc(s.name) + '</b>' +
-          (s.theme ? '<i class="v533b ' + esc(s.theme) + '">' + (s.theme === 'myth' ? '🏯 신수' : '🌌 네온') + '</i>' : '') + '</button>';
+          (s.theme ? '<i class="v533b ' + esc(s.theme) + '">' + ({ neon: '🌌 네온', myth: '🏯 신수', pirate: '🏴‍☠️ 해적', sweet: '🧁 디저트', knight: '⚔️ 기사' }[s.theme] || '🎰 테마') + '</i>' : '') + '</button>';
       }).join('') + '</div>';
       h += '<div class="note">스킨을 누르면 바로 적용됩니다 · 인게임·멀티·타이틀에 즉시 반영</div>';
       /* v5.27: 스킨 꾸미기(색상·펫·모자·안경·등·꼬리·말풍선)를 같은 화면에 합친다. */
@@ -78906,6 +78906,16 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'p33dokkaebi', name: '꼬마 도깨비', tier: 'rare', theme: 'myth' },
     { id: 'p33haetae', name: '아기 해태', tier: 'hero', theme: 'myth' },
     { id: 'p33bonghwang', name: '아기 봉황', tier: 'legend', theme: 'myth' },
+    /* ---- v5.34 테마 뽑기 전용 9종 ---- */
+    { id: 'p34parrot', name: '앵무새 꼬꼬', tier: 'rare', theme: 'pirate' },
+    { id: 'p34octo', name: '아기 문어', tier: 'hero', theme: 'pirate' },
+    { id: 'p34mimic', name: '보물 미믹', tier: 'legend', theme: 'pirate' },
+    { id: 'p34pudding', name: '슈가 푸딩', tier: 'rare', theme: 'sweet' },
+    { id: 'p34macacat', name: '마카롱 냥', tier: 'hero', theme: 'sweet' },
+    { id: 'p34gummy', name: '곰돌이 젤리', tier: 'legend', theme: 'sweet' },
+    { id: 'p34griffin', name: '아기 그리폰', tier: 'rare', theme: 'knight' },
+    { id: 'p34wyvern', name: '미니어처 드래곤', tier: 'hero', theme: 'knight' },
+    { id: 'p34shield', name: '날아다니는 방패', tier: 'legend', theme: 'knight' },
     /* ---- 보상 전용 4 ---- */
     { id: 'p_egg', name: '첫걸음 알', tier: 'rare', award: true, why: '첫 완등 1회', need: function () { return (prof().clears || 0) >= 1; }, prog: function () { return ((prof().clears || 0) >= 1 ? 1 : 0) + ' / 1회'; } },
     { id: 'p_sprout', name: '새싹 정령', tier: 'hero', award: true, why: '누적 등반 500m', need: function () { return (stats().climbM || 0) >= 500; }, prog: function () { return Math.floor(stats().climbM || 0) + ' / 500m'; } },
@@ -78936,7 +78946,14 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 't33glitch', name: '글리치 코드', col: '#22d3ee', tier: 'common', theme: 'neon', why: '🎰 테마 뽑기 · 🌌 사이버 네온', need: function () { return !!(ST.grant && ST.grant['t33glitch']); }, prog: function () { return '테마 뽑기로 획득'; } },
     { id: 't33laser', name: '레이저 라인', col: '#fb7185', tier: 'legend', theme: 'neon', why: '🎰 테마 뽑기 · 🌌 사이버 네온', need: function () { return !!(ST.grant && ST.grant['t33laser']); }, prog: function () { return '테마 뽑기로 획득'; } },
     { id: 't33ink', name: '먹붓 자국', col: '#dbe1ff', tier: 'common', theme: 'myth', why: '🎰 테마 뽑기 · 🏯 신수 설화', need: function () { return !!(ST.grant && ST.grant['t33ink']); }, prog: function () { return '테마 뽑기로 획득'; } },
-    { id: 't33moonhwa', name: '월화 꽃잎', col: '#fbcfe8', tier: 'rare', theme: 'myth', why: '🎰 테마 뽑기 · 🏯 신수 설화', need: function () { return !!(ST.grant && ST.grant['t33moonhwa']); }, prog: function () { return '테마 뽑기로 획득'; } }
+    { id: 't33moonhwa', name: '월화 꽃잎', col: '#fbcfe8', tier: 'rare', theme: 'myth', why: '🎰 테마 뽑기 · 🏯 신수 설화', need: function () { return !!(ST.grant && ST.grant['t33moonhwa']); }, prog: function () { return '테마 뽑기로 획득'; } },
+    /* v5.34 테마 뽑기 전용 6종 */
+    { id: 't34foam', name: '물거품 궤적', col: '#7dd3fc', tier: 'common', theme: 'pirate', why: '🎰 테마 뽑기 · 🏴‍☠️ 심해 해적단', need: function () { return !!(ST.grant && ST.grant['t34foam']); }, prog: function () { return '테마 뽑기로 획득'; } },
+    { id: 't34coin', name: '황금 동전 비', col: '#fbbf24', tier: 'legend', theme: 'pirate', why: '🎰 테마 뽑기 · 🏴‍☠️ 심해 해적단', need: function () { return !!(ST.grant && ST.grant['t34coin']); }, prog: function () { return '테마 뽑기로 획득'; } },
+    { id: 't34sugar', name: '슈가 파우더', col: '#fef3c7', tier: 'common', theme: 'sweet', why: '🎰 테마 뽑기 · 🧁 달콤 디저트 왕국', need: function () { return !!(ST.grant && ST.grant['t34sugar']); }, prog: function () { return '테마 뽑기로 획득'; } },
+    { id: 't34syrup', name: '레인보우 시럽', col: '#f9a8d4', tier: 'legend', theme: 'sweet', why: '🎰 테마 뽑기 · 🧁 달콤 디저트 왕국', need: function () { return !!(ST.grant && ST.grant['t34syrup']); }, prog: function () { return '테마 뽑기로 획득'; } },
+    { id: 't34sword', name: '황금 검기', col: '#fde047', tier: 'common', theme: 'knight', why: '🎰 테마 뽑기 · ⚔️ 왕국 기사단', need: function () { return !!(ST.grant && ST.grant['t34sword']); }, prog: function () { return '테마 뽑기로 획득'; } },
+    { id: 't34holyfire', name: '불꽃 성화', col: '#fbbf24', tier: 'legend', theme: 'knight', why: '🎰 테마 뽑기 · ⚔️ 왕국 기사단', need: function () { return !!(ST.grant && ST.grant['t34holyfire']); }, prog: function () { return '테마 뽑기로 획득'; } }
   ];
   var T_BY_ID = {};
   TRAILS.forEach(function (t) { T_BY_ID[t.id] = t; });
@@ -79355,6 +79372,121 @@ if (typeof module !== 'undefined' && module.exports) {
         R(c, b1r, 7, -10, 4, 3);
         break;
       }
+      /* ---- v5.34 🏴‍☠️ 심해 해적단 ---- */
+      case 'p34parrot': {
+        var pr = '#ef4444', pr2 = '#b91c1c', pw = '#38bdf8', pk2 = '#fb923c';
+        var pf = Math.round(Math.sin(t * 7) * 1);
+        R(c, '#22c55e', -11, -9 + pf, 4, 7); R(c, '#fbbf24', -9, -6 + pf, 3, 6); R(c, pw, -7, -4 + pf, 2, 5);
+        R(c, pr2, -6, -10, 11, 8); R(c, pr, -5, -11, 10, 6);
+        R(c, pw, -7, -11, 3, 5); R(c, '#0ea5e9', -7, -8, 2, 3);
+        R(c, pr, -4, -18, 9, 8); R(c, pr2, -4, -11, 9, 1);
+        R(c, '#ffffff', -2, -16, 4, 4); R(c, '#1a2b45', -1, -16, 2, 3);
+        R(c, pk2, 3, -15, 5, 3); R(c, '#f59e0b', 4, -14, 3, 1);
+        R(c, '#22c55e', -3, -13, 2, 1);
+        R(c, '#f59e0b', -4, -1, 3, 2); R(c, '#f59e0b', 2, -1, 3, 2);
+        break;
+      }
+      case 'p34octo': {
+        var o3 = '#c084fc', o4 = '#7c3aed', o5 = '#f0abfc';
+        var of = Math.round(Math.sin(t * 4) * 1);
+        R(c, o4, -9, -8, 3, 6); R(c, o4, -3, -7, 3, 6); R(c, o4, 3, -7, 3, 6); R(c, o4, 6, -8, 3, 6);
+        R(c, o3, -8, -14, 16, 7); R(c, o3, -6, -17, 12, 4); R(c, o3, -4, -18, 8, 2);
+        R(c, o5, -5, -16, 3, 2);
+        R(c, '#ffffff', -5, -12, 3, 3); R(c, '#ffffff', 2, -12, 3, 3);
+        R(c, '#1e1b4b', -4, -12, 2, 2); R(c, '#1e1b4b', 3, -12, 2, 2);
+        R(c, '#f472b6', -1 + of, -8, 3, 1);
+        R(c, 'rgba(240,171,252,.6)', -7, -15, 2, 1);
+        break;
+      }
+      case 'p34mimic': {
+        var mw = '#b45309', mw2 = '#7c2d12', mg = '#fbbf24', mt = '#f472b6';
+        var mf = Math.round(Math.sin(t * 3) * 1);
+        R(c, mw2, -10, -6, 20, 6); R(c, mw, -10, -11 + mf, 20, 6);
+        R(c, mg, -10, -7, 20, 1); R(c, mg, -2, -11 + mf, 3, 5);
+        R(c, '#fef3c7', -7, -10 + mf, 2, 2); R(c, '#fef3c7', 5, -10 + mf, 2, 2);
+        R(c, '#1f2937', -7, -9 + mf, 2, 1); R(c, '#1f2937', 5, -9 + mf, 2, 1);
+        R(c, '#ffffff', -6, -5, 1, 2); R(c, '#ffffff', -3, -5, 1, 2); R(c, '#ffffff', 1, -5, 1, 2); R(c, '#ffffff', 4, -5, 1, 2);
+        R(c, mt, -4, -4, 8, 2);
+        R(c, mg, -12, -8, 2, 4); R(c, mg, 10, -8, 2, 4);
+        break;
+      }
+      /* ---- v5.34 🧁 달콤 디저트 왕국 ---- */
+      case 'p34pudding': {
+        var pd = '#fde68a', pd2 = '#b45309', pc = '#fff7ed', pch = '#dc2626';
+        var pj = Math.round(Math.sin(t * 5) * 0.6);
+        R(c, pd, -9, -9 + pj, 18, 9); R(c, pd2, -8, -6 + pj, 16, 2);
+        R(c, pd, -6, -13 + pj, 12, 4);
+        R(c, pc, -4, -16 + pj, 8, 3); R(c, pc, -1, -18 + pj, 3, 2);
+        R(c, pch, -1, -20 + pj, 3, 3); R(c, '#22c55e', 1, -21 + pj, 1, 2);
+        eye(c, -5, -9 + pj, blink); eye(c, 2, -9 + pj, blink);
+        R(c, '#b45309', -1, -5 + pj, 3, 1);
+        R(c, 'rgba(255,255,255,.45)', -7, -12 + pj, 2, 2);
+        break;
+      }
+      case 'p34macacat': {
+        var mc = '#fbcfe8', mc2 = '#f472b6', mf2 = '#fff7ed';
+        R(c, mc2, -9, -8, 18, 4); R(c, mc, -9, -6, 18, 4);
+        R(c, mc2, -8, -13, 16, 7);
+        R(c, mc2, -8, -16, 4, 4); R(c, mc2, 4, -16, 4, 4);
+        R(c, mf2, -7, -15, 3, 3); R(c, mf2, 4, -15, 3, 3);
+        eye(c, -5, -11, blink); eye(c, 2, -11, blink);
+        R(c, mf2, -1, -8, 3, 2);
+        R(c, '#a16207', -7, -3, 4, 3); R(c, '#a16207', 3, -3, 4, 3);
+        R(c, mc2, 9, -9 + Math.round(Math.sin(t * 6)), 3, 3);
+        break;
+      }
+      case 'p34gummy': {
+        var gm = 'rgba(74,222,128,.85)', gm2 = 'rgba(22,163,74,.9)', gl = 'rgba(220,252,231,.75)';
+        R(c, gm, -10, -7, 20, 7); R(c, gm, -8, -13, 16, 7);
+        R(c, gm, -8, -15, 4, 3); R(c, gm, 4, -15, 4, 3);
+        R(c, gl, -6, -12, 3, 2);
+        R(c, '#052e16', -4, -11, 3, 3); R(c, '#052e16', 2, -11, 3, 3);
+        R(c, '#065f46', -2, -7, 4, 2);
+        R(c, gm, -8, -3, 5, 3); R(c, gm, 3, -3, 5, 3);
+        R(c, gm, -4, -10, 8, 1);
+        break;
+      }
+      /* ---- v5.34 ⚔️ 왕국 기사단 ---- */
+      case 'p34griffin': {
+        var gf = '#fbbf24', gf2 = '#d97706', gw = '#fef3c7';
+        var gwb = Math.round(Math.sin(t * 7) * 2);
+        R(c, 'rgba(254,243,199,.8)', -14, -14 - gwb, 7, 8);
+        R(c, 'rgba(254,243,199,.8)', 7, -14 - gwb, 7, 8);
+        R(c, gf2, -8, -7, 16, 5); R(c, gf, -8, -12, 16, 6);
+        R(c, gf, -6, -16, 12, 5);
+        R(c, gf2, -6, -18, 3, 3); R(c, gf2, 3, -18, 3, 3);
+        R(c, gw, -4, -6, 8, 3);
+        eye(c, -4, -13, blink); eye(c, 2, -13, blink);
+        R(c, '#f59e0b', -1, -10, 4, 2); R(c, '#7c2d12', 0, -9, 2, 1);
+        R(c, gf2, 8, -9, 3, 5);
+        break;
+      }
+      case 'p34wyvern': {
+        var wg = '#22c55e', wg2 = '#15803d', wh = '#fde047';
+        var wwa = Math.round(Math.sin(t * 9) * 2);
+        R(c, 'rgba(134,239,172,.85)', -13, -14 - wwa, 6, 8);
+        R(c, 'rgba(134,239,172,.85)', 7, -14 + wwa, 6, 8);
+        R(c, wg2, -8, -8, 16, 7); R(c, wg, -7, -13, 14, 6);
+        R(c, wg, -5, -16, 10, 4);
+        R(c, wh, -5, -18, 2, 3); R(c, wh, 3, -18, 2, 3);
+        eye(c, -4, -12, blink); eye(c, 2, -12, blink);
+        R(c, wg2, -2, -8, 5, 2);
+        R(c, wg, 2, -6, 5, 2); R(c, wg, 7, -8, 4, 2);
+        R(c, wg2, -8, -2, 3, 2); R(c, wg2, 5, -2, 3, 2);
+        break;
+      }
+      case 'p34shield': {
+        var sd = '#94a3b8', sd2 = '#cbd5e1', sg = '#fbbf24', sb = '#1d4ed8';
+        var sf = Math.round(Math.sin(t * 6) * 1);
+        R(c, 'rgba(226,232,240,.7)', -15, -13 + sf, 6, 5);
+        R(c, 'rgba(226,232,240,.7)', 9, -13 - sf, 6, 5);
+        R(c, sd, -8, -16 + sf, 16, 4); R(c, sd, -9, -12 + sf, 18, 8);
+        R(c, sd, -6, -4 + sf, 12, 4); R(c, sd, -2, 0 + sf, 4, 3);
+        R(c, sd2, -6, -14 + sf, 12, 2);
+        R(c, sb, -3, -12 + sf, 6, 7); R(c, sg, -1, -11 + sf, 2, 5);
+        R(c, sg, -4, -13 + sf, 8, 1);
+        break;
+      }
       default: {
         R(c, '#94a3b8', -7, -8, 14, 8); R(c, '#cbd5e1', -5, -12, 10, 5);
         eye(c, -4, -9, blink); eye(c, 1, -9, blink);
@@ -79429,6 +79561,12 @@ if (typeof module !== 'undefined' && module.exports) {
     if (tid === 't_aurora') return ['#6ee7b7', '#a78bfa', '#67e8f9'][i % 3];
     if (tid === 't33glitch') return ['#22d3ee', '#a855f7', '#67e8f9'][i % 3];
     if (tid === 't33moonhwa') return ['#fbcfe8', '#fef3c7', '#f9a8d4'][i % 3];
+    if (tid === 't34foam') return ['#7dd3fc', '#e0f2fe', '#38bdf8'][i % 3];
+    if (tid === 't34coin') return ['#fbbf24', '#fde047'][i % 2];
+    if (tid === 't34sugar') return ['#fef3c7', '#fbcfe8'][i % 2];
+    if (tid === 't34syrup') return ['#f472b6', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa'][i % 5];
+    if (tid === 't34sword') return ['#fde047', '#fff7ed'][i % 2];
+    if (tid === 't34holyfire') return ['#fbbf24', '#f97316', '#fef3c7'][i % 3];
     return (T_BY_ID[tid] && T_BY_ID[tid].col) || '#dbe7f8';
   }
 
@@ -79499,6 +79637,40 @@ if (typeof module !== 'undefined' && module.exports) {
         ctx.fillRect((sx | 0) - 2, (sy | 0) - 2, 3, 3);
         ctx.fillRect((sx | 0) + 1, (sy | 0) + 2, 2, 2);
         if ((p.k + i) % 2 === 0) { ctx.globalAlpha = a * 0.35; ctx.fillRect((sx | 0) - 4, (sy | 0), 9, 1); }
+      } else if (tid === 't34foam') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 2, (sy | 0) - 2, 3, 3);
+        ctx.fillRect((sx | 0) + 1, (sy | 0) + 1, 2, 2);
+        if ((p.k + i) % 2 === 0) { ctx.globalAlpha = a * 0.4; ctx.fillRect((sx | 0) - 4, (sy | 0) - 3, 9, 8); }
+      } else if (tid === 't34coin') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 2, (sy | 0) - 3, 4, 6);
+        ctx.fillStyle = '#fffbeb';
+        ctx.fillRect((sx | 0) - 1, (sy | 0) - 2, 2, 4);
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 4, (sy | 0) - 1, 1, 2);
+      } else if (tid === 't34sugar') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 1, (sy | 0) - 1, 2, 2);
+        ctx.fillRect((sx | 0) + 2, (sy | 0) + 2, 1, 1);
+        if ((p.k + i) % 3 === 0) { ctx.globalAlpha = a * 0.5; ctx.fillRect((sx | 0) - 3, (sy | 0) - 2, 7, 5); }
+      } else if (tid === 't34syrup') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 2, (sy | 0) - 2, 4, 5);
+        ctx.fillStyle = '#fffbeb';
+        ctx.fillRect((sx | 0) - 1, (sy | 0) - 3, 2, 2);
+      } else if (tid === 't34sword') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 6, (sy | 0), 12, 2);
+        ctx.fillStyle = '#fffbeb';
+        ctx.fillRect((sx | 0) - 3, (sy | 0), 6, 1);
+      } else if (tid === 't34holyfire') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 3, (sy | 0) - 4, 6, 7);
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect((sx | 0) - 1, (sy | 0) - 2, 3, 4);
+        ctx.fillStyle = '#fffbeb';
+        ctx.fillRect((sx | 0), (sy | 0) - 1, 1, 2);
       } else {
         ctx.fillStyle = col;
         ctx.fillRect((sx | 0) - 3, (sy | 0) - 3, 6, 6);
@@ -81846,6 +82018,12 @@ if (typeof module !== 'undefined' && module.exports) {
 
 
 /* ==========================================================================
+   v5.34 : 🎰 테마 뽑기 5종 — 🏴‍☠️ 심해 해적단 · 🧁 달콤 디저트 왕국 · ⚔️ 왕국 기사단 추가 (테마당 15종 · 총 75종)
+   --------------------------------------------------------------------------
+   · 테마 3 🏴‍☠️ 심해 해적단 / 테마 4 🧁 달콤 디저트 왕국 / 테마 5 ⚔️ 왕국 기사단
+   · 테마 배너 5개: 2열 그리드에서 마지막 한 칸은 전폭(2칸)으로 넘침 없이 수납
+   · 테마별 천장(10/30회)·확률·중복 환급은 모든 테마에 동일하게 적용, 세이브(jw533_theme_v1)는 그대로 이어진다
+   --------------------------------------------------------------------------
    v5.33 : 🎰 테마 뽑기 2종 — 🌌 사이버 네온 · 🏯 신수 설화 (테마당 15종 · 총 30종)
    --------------------------------------------------------------------------
    · 테마 1 🌌 사이버 네온 : 스킨 8 + 펫 3 + 꼬리 잔상 2 + 테두리 1 + 칭호 1 = 15
@@ -81878,7 +82056,10 @@ if (typeof module !== 'undefined' && module.exports) {
   };
   var THEMES = [
     { id: 'neon', emoji: '🌌', name: '사이버 네온', sub: 'CYBER NEON', col: '#22d3ee', grad: 'linear-gradient(135deg,#08111f,#132a4d 60%,#22d3ee)' },
-    { id: 'myth', emoji: '🏯', name: '신수 설화', sub: 'MYTHIC LEGEND', col: '#fbbf24', grad: 'linear-gradient(135deg,#22120a,#5b2a10 60%,#fbbf24)' }
+    { id: 'myth', emoji: '🏯', name: '신수 설화', sub: 'MYTHIC LEGEND', col: '#fbbf24', grad: 'linear-gradient(135deg,#22120a,#5b2a10 60%,#fbbf24)' },
+    { id: 'pirate', emoji: '🏴‍☠️', name: '심해 해적단', sub: 'ABYSSAL PIRATES', col: '#2dd4bf', grad: 'linear-gradient(135deg,#04141c,#0b3a4a 60%,#2dd4bf)' },
+    { id: 'sweet', emoji: '🧁', name: '달콤 디저트 왕국', sub: 'SWEET KINGDOM', col: '#f9a8d4', grad: 'linear-gradient(135deg,#3a0f2a,#7a2550 60%,#f9a8d4)' },
+    { id: 'knight', emoji: '⚔️', name: '왕국 기사단', sub: 'ROYAL KNIGHTS', col: '#fcd34d', grad: 'linear-gradient(135deg,#101a2e,#2b3a5e 60%,#fcd34d)' }
   ];
   function themeOf(id) { for (var i = 0; i < THEMES.length; i++) if (THEMES[i].id === id) return THEMES[i]; return THEMES[0]; }
 
@@ -81936,7 +82117,85 @@ if (typeof module !== 'undefined' && module.exports) {
       blocks: [[8, 0, 3, 4, '#fde047'], [21, 0, 3, 4, '#fde047'], [12, 9, 3, 3, '#fbbf24'], [18, 9, 3, 3, '#fbbf24'], [15, 11, 2, 2, '#0b2c2b'], [10, 13, 12, 1, '#0d4a42'], [14, 15, 4, 4, '#a7f3d0'], [9, 14, 14, 1, '#fde047'], [6, 12, 3, 1, '#7dd3fc'], [23, 12, 3, 1, '#7dd3fc'], [25, 16, 4, 6, '#1f6f63'], [9, 33, 6, 1, '#fde047'], [17, 33, 6, 1, '#fde047']] },
     { id: 'm33hwarang', name: '화랑', emoji: '🏯', theme: 'myth', tier: 'legend', desc: '금관 · 홍색 전포 · 세운 검',
       fills: [[0, 0, 32, 36, '#3b1d11', 0.96], [8, 1, 16, 8, '#1f1208', 0.96], [10, 7, 12, 8, '#f6d6b8', 0.96], [9, 14, 14, 10, '#8b1d1d', 0.96], [10, 25, 12, 5, '#4b1a1a', 0.96], [9, 30, 14, 5, '#2b1010', 0.96]],
-      blocks: [[8, 1, 16, 2, '#fbbf24'], [15, 0, 3, 3, '#fde047'], [12, 9, 3, 3, '#1f2937'], [18, 9, 3, 3, '#1f2937'], [14, 12, 4, 1, '#b91c1c'], [9, 14, 14, 1, '#fbbf24'], [9, 22, 14, 1, '#fbbf24'], [13, 16, 2, 9, '#fbbf24'], [21, 4, 2, 10, '#cbd5e1'], [20, 13, 4, 2, '#fbbf24'], [10, 16, 3, 3, '#fde68a'], [9, 33, 6, 1, '#fbbf24'], [17, 33, 6, 1, '#fbbf24']] }
+      blocks: [[8, 1, 16, 2, '#fbbf24'], [15, 0, 3, 3, '#fde047'], [12, 9, 3, 3, '#1f2937'], [18, 9, 3, 3, '#1f2937'], [14, 12, 4, 1, '#b91c1c'], [9, 14, 14, 1, '#fbbf24'], [9, 22, 14, 1, '#fbbf24'], [13, 16, 2, 9, '#fbbf24'], [21, 4, 2, 10, '#cbd5e1'], [20, 13, 4, 2, '#fbbf24'], [10, 16, 3, 3, '#fde68a'], [9, 33, 6, 1, '#fbbf24'], [17, 33, 6, 1, '#fbbf24']] },
+
+    /* ---------------- 🏴‍☠️ 심해 해적단 ---------------- */
+    { id: 'r34captain', name: '해적 선장', emoji: '🏴‍☠️', theme: 'pirate', tier: 'common', desc: '삼각모 · 붉은 두건 · 안대',
+      fills: [[0, 0, 32, 36, '#0d1c28', 0.95], [8, 2, 16, 9, '#1d3145', 0.96], [10, 7, 12, 8, '#e2bd97', 0.96], [9, 14, 14, 10, '#22384d', 0.96], [10, 25, 12, 5, '#182838', 0.96], [9, 30, 14, 5, '#101c28', 0.96]],
+      blocks: [[8, 0, 16, 3, '#0f1b26'], [4, 3, 24, 2, '#0a141d'], [15, 1, 2, 2, '#f1f5f9'], [10, 6, 12, 2, '#b91c1c'], [11, 8, 4, 3, '#0a141d'], [9, 9, 3, 1, '#0a141d'], [18, 9, 3, 3, '#1f2937'], [12, 12, 8, 2, '#8fa3c4'], [10, 15, 2, 9, '#a16207'], [20, 15, 2, 9, '#a16207'], [13, 16, 1, 1, '#fde047'], [18, 16, 1, 1, '#fde047'], [9, 23, 14, 2, '#0a141d'], [15, 23, 2, 2, '#fbbf24'], [26, 12, 2, 12, '#cbd5e1'], [24, 22, 5, 2, '#fbbf24'], [9, 33, 6, 1, '#0a141d'], [17, 33, 6, 1, '#0a141d']] },
+    { id: 'r34diver', name: '심해 다이버', emoji: '🏴‍☠️', theme: 'pirate', tier: 'common', desc: '구리 잠수함 · 산소 호스',
+      fills: [[0, 0, 32, 36, '#062431', 0.95], [7, 1, 18, 10, '#b45309', 0.96], [9, 6, 14, 9, '#0e3b47', 0.96], [9, 14, 14, 10, '#c2410c', 0.96], [10, 25, 12, 5, '#9a3412', 0.96], [9, 30, 14, 5, '#7c2d12', 0.96]],
+      blocks: [[6, 2, 20, 2, '#f59e0b'], [6, 5, 2, 2, '#fde047'], [24, 5, 2, 2, '#fde047'], [11, 8, 3, 3, 'rgba(125,211,252,.5)'], [12, 10, 3, 2, '#f8fafc'], [17, 10, 3, 2, '#f8fafc'], [15, 13, 2, 1, '#94a3b8'], [25, 12, 3, 8, '#334155'], [27, 18, 3, 4, '#334155'], [7, 14, 4, 9, '#94a3b8'], [8, 15, 2, 7, '#cbd5e1'], [9, 22, 14, 2, '#7c2d12'], [15, 22, 2, 2, '#fbbf24'], [9, 32, 6, 2, '#0f172a'], [17, 32, 6, 2, '#0f172a']] },
+    { id: 'r34kraken', name: '크라켄 기사', emoji: '🏴‍☠️', theme: 'pirate', tier: 'rare', desc: '촉수 갑주 · 심해 인장',
+      fills: [[0, 0, 32, 36, '#0a1f2e', 0.95], [8, 1, 16, 10, '#1e3a5f', 0.96], [10, 7, 12, 8, '#6ee7b7', 0.96], [8, 14, 16, 10, '#1b3350', 0.96], [10, 25, 12, 4, '#14263d', 0.96], [9, 29, 14, 6, '#0d1a2b', 0.96]],
+      blocks: [[7, 1, 18, 4, '#274b74'], [12, 5, 10, 2, '#1a3350'], [12, 9, 3, 3, '#7dd3fc'], [17, 9, 3, 3, '#7dd3fc'], [13, 10, 1, 1, '#0b1220'], [18, 10, 1, 1, '#0b1220'], [15, 12, 2, 2, '#f59e0b'], [10, 13, 4, 2, '#7c3aed'], [18, 13, 4, 2, '#7c3aed'], [8, 15, 4, 4, '#3b6ea5'], [20, 15, 4, 4, '#3b6ea5'], [12, 15, 8, 7, '#2b5480'], [15, 16, 2, 4, '#67e8f9'], [7, 29, 4, 7, '#7c3aed'], [13, 29, 3, 6, '#6d28d9'], [17, 29, 3, 6, '#6d28d9'], [21, 29, 4, 7, '#7c3aed']] },
+    { id: 'r34ghostnav', name: '유령 항해사', emoji: '🏴‍☠️', theme: 'pirate', tier: 'common', desc: '반투명 선원 · 나침반',
+      fills: [[0, 0, 32, 36, '#0b2233', 0.9], [8, 1, 16, 10, '#bfe9f5', 0.9], [10, 7, 12, 8, '#d8f4ff', 0.9], [9, 14, 14, 11, '#a5dcee', 0.88], [10, 25, 12, 5, '#8fcfe3', 0.86], [9, 30, 14, 5, '#78c0d6', 0.8]],
+      blocks: [[7, 0, 18, 3, '#1f3b52'], [4, 3, 24, 2, '#1f3b52'], [12, 9, 3, 3, '#0b2233'], [17, 9, 3, 3, '#0b2233'], [10, 13, 12, 2, '#38bdf8'], [10, 15, 2, 8, '#3b82f6'], [20, 15, 2, 8, '#3b82f6'], [14, 17, 4, 4, '#fbbf24'], [15, 18, 2, 1, '#0b2233'], [7, 28, 5, 4, 'rgba(191,233,245,.5)'], [20, 30, 5, 3, 'rgba(191,233,245,.45)']] },
+    { id: 'r34mermaid', name: '인어 음유시인', emoji: '🏴‍☠️', theme: 'pirate', tier: 'rare', desc: '산호 왕관 · 비늘 꼬리',
+      fills: [[0, 0, 32, 36, '#082a33', 0.95], [8, 1, 16, 10, '#0f4c5c', 0.96], [10, 7, 12, 8, '#ffd9b8', 0.96], [9, 14, 14, 6, '#2dd4bf', 0.96], [10, 20, 12, 10, '#14b8a6', 0.96], [8, 29, 16, 6, '#0d9488', 0.96]],
+      blocks: [[9, 0, 3, 3, '#fb7185'], [14, 0, 4, 3, '#f472b6'], [19, 0, 3, 3, '#fb7185'], [7, 2, 3, 12, '#7c3aed'], [22, 2, 3, 12, '#7c3aed'], [12, 9, 3, 3, '#0369a1'], [17, 9, 3, 3, '#0369a1'], [14, 12, 3, 1, '#f472b6'], [10, 15, 4, 4, '#fda4af'], [18, 15, 4, 4, '#fda4af'], [10, 21, 12, 1, '#99f6e4'], [10, 24, 12, 1, '#99f6e4'], [10, 27, 12, 1, '#99f6e4'], [8, 32, 16, 3, '#5eead4']] },
+    { id: 'r34piratecat', name: '해적 냥이', emoji: '🏴‍☠️', theme: 'pirate', tier: 'rare', desc: '두건 냥이 · 앵무새 깃',
+      fills: [[0, 0, 32, 36, '#12222f', 0.95], [8, 0, 16, 10, '#475569', 0.96], [10, 7, 12, 8, '#64748b', 0.96], [9, 14, 14, 10, '#3b4d63', 0.96], [10, 25, 12, 5, '#2b3a4d', 0.96], [9, 30, 14, 5, '#1f2c3c', 0.96]],
+      blocks: [[8, 0, 4, 4, '#475569'], [20, 0, 4, 4, '#475569'], [9, 1, 2, 2, '#f9a8d4'], [21, 1, 2, 2, '#f9a8d4'], [9, 5, 14, 2, '#dc2626'], [23, 5, 3, 3, '#dc2626'], [12, 9, 3, 3, '#fbbf24'], [17, 9, 3, 3, '#fbbf24'], [13, 9, 1, 3, '#0b1220'], [18, 9, 1, 3, '#0b1220'], [15, 12, 2, 1, '#f472b6'], [7, 11, 3, 1, '#cbd5e1'], [22, 11, 3, 1, '#cbd5e1'], [10, 15, 12, 7, '#7c2d12'], [10, 22, 12, 2, '#0b1220'], [25, 17, 2, 3, '#0a141d'], [26, 14, 2, 5, '#334155'], [26, 10, 2, 4, '#22c55e']] },
+    { id: 'r34goldshark', name: '황금 상어', emoji: '🏴‍☠️', theme: 'pirate', tier: 'hero', desc: '금비늘 상어 · 톱니 이빨',
+      fills: [[0, 0, 32, 36, '#123143', 0.95], [8, 0, 18, 13, '#f59e0b', 0.96], [10, 6, 14, 9, '#fbbf24', 0.96], [8, 14, 16, 10, '#d97706', 0.96], [10, 25, 12, 5, '#b45309', 0.96], [9, 30, 14, 5, '#92400e', 0.96]],
+      blocks: [[13, 0, 6, 3, '#fde047'], [11, 8, 3, 3, '#0b1220'], [18, 8, 3, 3, '#0b1220'], [12, 8, 1, 1, '#fffbeb'], [19, 8, 1, 1, '#fffbeb'], [11, 12, 10, 3, '#0b1220'], [12, 12, 1, 2, '#f8fafc'], [15, 12, 1, 2, '#f8fafc'], [18, 12, 1, 2, '#f8fafc'], [10, 16, 1, 4, '#92400e'], [12, 16, 1, 4, '#92400e'], [14, 16, 1, 4, '#92400e'], [12, 19, 8, 4, '#fde68a'], [6, 15, 4, 3, '#fbbf24'], [22, 15, 4, 3, '#fbbf24'], [25, 23, 4, 5, '#f59e0b']] },
+    { id: 'r34lighthouse', name: '등대지기', emoji: '🏴‍☠️', theme: 'pirate', tier: 'hero', desc: '등대 불빛 · 항로 표지',
+      fills: [[0, 0, 32, 36, '#0a1d2a', 0.95], [8, 2, 16, 9, '#22384d', 0.96], [10, 7, 12, 8, '#d9b08c', 0.96], [9, 14, 14, 10, '#1e4b66', 0.96], [10, 25, 12, 5, '#163a52', 0.96], [9, 30, 14, 5, '#0f2a3c', 0.96]],
+      blocks: [[20, 8, 12, 12, 'rgba(253,224,71,.25)'], [7, 1, 18, 4, '#0f2a3c'], [6, 4, 20, 2, '#0a1c28'], [15, 1, 2, 2, '#fde047'], [12, 9, 3, 3, '#1f2937'], [17, 9, 3, 3, '#1f2937'], [11, 12, 10, 3, '#e2e8f0'], [23, 10, 6, 6, '#fde047'], [24, 11, 4, 4, '#fff7cc'], [13, 16, 1, 1, '#fde047'], [18, 16, 1, 1, '#fde047'], [9, 20, 14, 2, '#f8fafc'], [9, 33, 6, 1, '#0a1c28'], [17, 33, 6, 1, '#0a1c28']] },
+
+    /* ---------------- 🧁 달콤 디저트 왕국 ---------------- */
+    { id: 's34macaron', name: '마카롱 공주', emoji: '🧁', theme: 'sweet', tier: 'common', desc: '분홍 마카롱 드레스',
+      fills: [[0, 0, 32, 36, '#2a1030', 0.95], [8, 1, 16, 10, '#7a2550', 0.96], [10, 7, 12, 8, '#ffe0d0', 0.96], [8, 14, 16, 11, '#f9a8d4', 0.96], [7, 22, 18, 8, '#fbcfe8', 0.96], [10, 31, 12, 4, '#f472b6', 0.96]],
+      blocks: [[13, 0, 6, 3, '#fde047'], [15, 0, 2, 2, '#f472b6'], [7, 2, 3, 10, '#c026d3'], [22, 2, 3, 10, '#c026d3'], [12, 9, 3, 3, '#7e22ce'], [17, 9, 3, 3, '#7e22ce'], [10, 12, 2, 1, '#fb7185'], [20, 12, 2, 1, '#fb7185'], [15, 12, 2, 1, '#e11d48'], [8, 15, 16, 2, '#fff7ed'], [9, 18, 14, 2, '#fef3c7'], [10, 20, 12, 2, '#fbcfe8'], [12, 17, 1, 1, '#ffffff'], [18, 17, 1, 1, '#ffffff']] },
+    { id: 's34waffle', name: '와플 기사', emoji: '🧁', theme: 'sweet', tier: 'rare', desc: '격자 갑주 · 메이플 방패',
+      fills: [[0, 0, 32, 36, '#3a2410', 0.95], [8, 1, 16, 10, '#b45309', 0.96], [10, 7, 12, 8, '#f2c99a', 0.96], [9, 14, 14, 10, '#d97706', 0.96], [10, 25, 12, 5, '#a16207', 0.96], [9, 30, 14, 5, '#854d0e', 0.96]],
+      blocks: [[7, 0, 18, 5, '#92400e'], [10, 6, 12, 2, '#3f2a10'], [12, 8, 3, 2, '#fde68a'], [17, 8, 3, 2, '#fde68a'], [11, 14, 1, 10, '#7c2d12'], [15, 14, 1, 10, '#7c2d12'], [19, 14, 1, 10, '#7c2d12'], [9, 17, 14, 1, '#7c2d12'], [9, 21, 14, 1, '#7c2d12'], [23, 14, 7, 9, '#f59e0b'], [25, 16, 3, 5, '#fde047'], [23, 21, 7, 2, '#7c2d12']] },
+    { id: 's34jelly', name: '젤리 슬라임', emoji: '🧁', theme: 'sweet', tier: 'common', desc: '흔들 젤리 · 체리 토핑',
+      fills: [[0, 0, 32, 36, '#1b2a3a', 0.9], [7, 1, 18, 12, '#f472b6', 0.9], [10, 6, 12, 8, '#fbcfe8', 0.92], [8, 13, 16, 13, '#ec4899', 0.9], [9, 25, 14, 5, '#db2777', 0.9], [10, 31, 12, 4, '#be185d', 0.9]],
+      blocks: [[14, 0, 4, 3, '#dc2626'], [16, 0, 1, 2, '#22c55e'], [11, 7, 3, 2, 'rgba(255,255,255,.6)'], [12, 9, 3, 3, '#4c0519'], [17, 9, 3, 3, '#4c0519'], [15, 12, 2, 2, '#831843'], [10, 18, 2, 2, 'rgba(255,255,255,.45)'], [18, 20, 2, 2, 'rgba(255,255,255,.35)']] },
+    { id: 's34creamchef', name: '크림 셰프', emoji: '🧁', theme: 'sweet', tier: 'common', desc: '휘핑 토크 · 밀대',
+      fills: [[0, 0, 32, 36, '#1c2233', 0.95], [8, 1, 16, 10, '#334155', 0.96], [10, 7, 12, 8, '#ffe0c4', 0.96], [9, 14, 14, 10, '#f8fafc', 0.96], [10, 25, 12, 5, '#e2e8f0', 0.96], [9, 30, 14, 5, '#94a3b8', 0.96]],
+      blocks: [[8, 0, 16, 5, '#f8fafc'], [9, 0, 14, 1, '#e2e8f0'], [9, 5, 14, 1, '#cbd5e1'], [12, 9, 3, 3, '#1f2937'], [17, 9, 3, 3, '#1f2937'], [10, 12, 2, 1, '#fdba74'], [20, 12, 2, 1, '#fdba74'], [15, 12, 2, 1, '#b45309'], [9, 14, 14, 1, '#f472b6'], [12, 16, 8, 8, '#fbcfe8'], [24, 10, 2, 10, '#cbd5e1'], [22, 8, 5, 3, '#94a3b8']] },
+    { id: 's34mint', name: '민초 마법사', emoji: '🧁', theme: 'sweet', tier: 'rare', desc: '민트 로브 · 초코 지팡이',
+      fills: [[0, 0, 32, 36, '#0f2f2a', 0.95], [8, 1, 16, 10, '#134e4a', 0.96], [10, 7, 12, 8, '#d9f7ea', 0.96], [8, 14, 16, 11, '#34d399', 0.96], [9, 25, 15, 8, '#10b981', 0.96], [10, 32, 12, 3, '#047857', 0.96]],
+      blocks: [[12, 0, 8, 5, '#065f46'], [14, 0, 4, 2, '#064e3b'], [7, 5, 18, 2, '#065f46'], [15, 4, 2, 2, '#3f2a17'], [12, 9, 3, 3, '#022c22'], [17, 9, 3, 3, '#022c22'], [11, 12, 10, 3, '#d1fae5'], [14, 17, 4, 4, '#fde047'], [15, 18, 2, 2, '#3f2a17'], [24, 8, 2, 18, '#7c3a12'], [22, 6, 6, 3, '#4ade80']] },
+    { id: 's34strawberry', name: '딸기 토끼', emoji: '🧁', theme: 'sweet', tier: 'rare', desc: '딸기 모자 · 긴 귀',
+      fills: [[0, 0, 32, 36, '#2a1020', 0.95], [8, 0, 16, 11, '#fb7185', 0.96], [10, 7, 12, 8, '#ffe4e6', 0.96], [9, 14, 14, 10, '#f9a8d4', 0.96], [10, 25, 12, 5, '#f472b6', 0.96], [9, 30, 14, 5, '#ec4899', 0.96]],
+      blocks: [[9, 0, 3, 6, '#fb7185'], [20, 0, 3, 6, '#fb7185'], [10, 1, 1, 4, '#fda4af'], [21, 1, 1, 4, '#fda4af'], [13, 6, 6, 2, '#22c55e'], [11, 3, 1, 1, '#fef3c7'], [18, 3, 1, 1, '#fef3c7'], [15, 5, 1, 1, '#fef3c7'], [12, 9, 3, 3, '#881337'], [17, 9, 3, 3, '#881337'], [15, 12, 2, 1, '#be123c'], [7, 11, 3, 1, '#fecdd3'], [22, 11, 3, 1, '#fecdd3'], [25, 18, 3, 3, '#ffffff'], [27, 16, 2, 3, '#ffffff']] },
+    { id: 's34donut', name: '도넛 닌자', emoji: '🧁', theme: 'sweet', tier: 'hero', desc: '피스타치오 도넛 · 수리검',
+      fills: [[0, 0, 32, 36, '#22131f', 0.95], [8, 0, 16, 11, '#c98b4b', 0.96], [10, 7, 12, 8, '#e6bd91', 0.96], [9, 14, 14, 10, '#6b4423', 0.96], [10, 25, 12, 5, '#4b2e1a', 0.96], [9, 30, 14, 5, '#2b190e', 0.96]],
+      blocks: [[9, 0, 14, 3, '#f9a8d4'], [10, 2, 2, 1, '#f472b6'], [14, 1, 2, 1, '#fde047'], [18, 2, 2, 1, '#38bdf8'], [12, 4, 2, 1, '#4ade80'], [16, 3, 2, 1, '#fb923c'], [12, 9, 3, 2, '#2b190e'], [17, 9, 3, 2, '#2b190e'], [9, 11, 14, 3, '#1f1208'], [9, 14, 14, 2, '#f9a8d4'], [24, 14, 5, 5, '#cbd5e1'], [25, 15, 3, 3, '#0b1220']] },
+    { id: 's34caramel', name: '카라멜 왕자', emoji: '🧁', theme: 'sweet', tier: 'hero', desc: '캐러멜 망토 · 황금 왕관',
+      fills: [[0, 0, 32, 36, '#2b1a08', 0.95], [8, 1, 16, 10, '#8b5e2a', 0.96], [10, 7, 12, 8, '#ffe0c0', 0.96], [8, 14, 16, 11, '#f59e0b', 0.96], [9, 25, 15, 7, '#b45309', 0.96], [10, 32, 12, 3, '#7c2d12', 0.96]],
+      blocks: [[12, 0, 8, 3, '#fde047'], [15, 0, 2, 4, '#fbbf24'], [17, 1, 1, 1, '#f472b6'], [7, 2, 3, 9, '#a16207'], [22, 2, 3, 9, '#a16207'], [12, 9, 3, 3, '#451a03'], [17, 9, 3, 3, '#451a03'], [14, 12, 4, 1, '#b45309'], [6, 14, 3, 14, '#b91c1c'], [23, 14, 3, 14, '#b91c1c'], [9, 14, 14, 2, '#fef3c7'], [13, 17, 1, 1, '#fff7ed'], [18, 17, 1, 1, '#fff7ed']] },
+
+    /* ---------------- ⚔️ 왕국 기사단 ---------------- */
+    { id: 'k34paladin', name: '성기사 재우', emoji: '⚔️', theme: 'knight', tier: 'common', desc: '백은 갑주 · 성표',
+      fills: [[0, 0, 32, 36, '#101a2e', 0.95], [8, 1, 16, 10, '#6b7b96', 0.96], [10, 7, 12, 8, '#e8d5b5', 0.96], [8, 14, 16, 10, '#cbd5e1', 0.96], [9, 25, 15, 6, '#94a3b8', 0.96], [9, 31, 14, 4, '#64748b', 0.96]],
+      blocks: [[14, 0, 4, 2, '#38bdf8'], [7, 1, 18, 4, '#94a3b8'], [9, 6, 14, 2, '#334155'], [12, 8, 3, 2, '#7dd3fc'], [17, 8, 3, 2, '#7dd3fc'], [7, 14, 3, 4, '#e2e8f0'], [22, 14, 3, 4, '#e2e8f0'], [14, 15, 4, 1, '#fbbf24'], [15, 14, 2, 4, '#fbbf24'], [9, 22, 14, 2, '#475569'], [9, 32, 6, 2, '#334155'], [17, 32, 6, 2, '#334155']] },
+    { id: 'k34black', name: '흑기사', emoji: '⚔️', theme: 'knight', tier: 'common', desc: '흑철 갑주 · 붉은 눈',
+      fills: [[0, 0, 32, 36, '#0c0f16', 0.95], [8, 1, 16, 10, '#1f2430', 0.96], [10, 7, 12, 8, '#2a303d', 0.96], [8, 14, 16, 10, '#232833', 0.96], [9, 25, 15, 6, '#181c25', 0.96], [9, 31, 14, 4, '#0f1218', 0.96]],
+      blocks: [[7, 0, 3, 4, '#3b4250'], [22, 0, 3, 4, '#3b4250'], [8, 1, 16, 4, '#2c3240'], [12, 9, 3, 2, '#ef4444'], [17, 9, 3, 2, '#ef4444'], [9, 11, 14, 2, '#12151c'], [14, 16, 4, 1, '#ef4444'], [6, 14, 3, 15, '#7f1d1d'], [23, 14, 3, 15, '#7f1d1d'], [26, 8, 2, 16, '#94a3b8'], [25, 24, 4, 2, '#f59e0b']] },
+    { id: 'k34shield', name: '방패 수호자', emoji: '⚔️', theme: 'knight', tier: 'common', desc: '대형 방패 · 철벽',
+      fills: [[0, 0, 32, 36, '#111a2b', 0.95], [8, 1, 16, 10, '#8494ad', 0.96], [10, 7, 12, 8, '#e3cbaa', 0.96], [8, 14, 16, 10, '#9fb0c7', 0.96], [9, 25, 15, 6, '#6b7a91', 0.96], [9, 31, 14, 4, '#4b5768', 0.96]],
+      blocks: [[7, 0, 18, 5, '#71809a'], [15, 0, 2, 5, '#cbd5e1'], [12, 8, 3, 2, '#334155'], [17, 8, 3, 2, '#334155'], [6, 15, 10, 13, '#1e3a8a'], [8, 17, 6, 9, '#f8fafc'], [9, 18, 4, 1, '#1e3a8a'], [10, 20, 2, 5, '#1e3a8a'], [16, 15, 3, 8, '#e2e8f0'], [24, 6, 2, 22, '#cbd5e1'], [23, 4, 4, 4, '#94a3b8']] },
+    { id: 'k34guard', name: '왕실 근위병', emoji: '⚔️', theme: 'knight', tier: 'common', desc: '곰가죽 모자 · 금장 창',
+      fills: [[0, 0, 32, 36, '#171226', 0.95], [8, 1, 16, 10, '#3f3a55', 0.96], [10, 7, 12, 8, '#f0d5b8', 0.96], [8, 14, 16, 10, '#b91c1c', 0.96], [9, 25, 15, 6, '#7f1d1d', 0.96], [9, 31, 14, 4, '#4c1d1d', 0.96]],
+      blocks: [[6, 0, 20, 6, '#1f1b2e'], [8, 0, 16, 2, '#2c2740'], [9, 6, 14, 1, '#cbd5e1'], [12, 9, 3, 3, '#1f2937'], [17, 9, 3, 3, '#1f2937'], [13, 12, 6, 1, '#3f3a55'], [9, 15, 14, 1, '#fbbf24'], [9, 22, 14, 1, '#fbbf24'], [12, 17, 1, 1, '#fde047'], [16, 17, 1, 1, '#fde047'], [20, 17, 1, 1, '#fde047'], [25, 6, 2, 22, '#94a3b8'], [23, 5, 6, 3, '#cbd5e1']] },
+    { id: 'k34mage', name: '궁정 마법사', emoji: '⚔️', theme: 'knight', tier: 'rare', desc: '별빛 로브 · 마법 지팡이',
+      fills: [[0, 0, 32, 36, '#1a1240', 0.95], [8, 1, 16, 10, '#2e1b6b', 0.96], [10, 7, 12, 8, '#e8d9ff', 0.96], [8, 14, 16, 11, '#6d28d9', 0.96], [9, 25, 15, 8, '#5b21b6', 0.96], [10, 32, 12, 3, '#4c1d95', 0.96]],
+      blocks: [[11, 0, 10, 4, '#7c3aed'], [13, 0, 6, 2, '#8b5cf6'], [6, 4, 20, 2, '#7c3aed'], [15, 1, 2, 2, '#fde047'], [12, 9, 3, 3, '#fde047'], [17, 9, 3, 3, '#fde047'], [11, 17, 2, 2, '#fde047'], [18, 16, 2, 2, '#fde047'], [14, 21, 2, 2, '#fde047'], [24, 7, 2, 19, '#78350f'], [22, 4, 6, 4, '#a78bfa']] },
+    { id: 'k34lance', name: '백은 창병', emoji: '⚔️', theme: 'knight', tier: 'rare', desc: '백은 창 · 경기병',
+      fills: [[0, 0, 32, 36, '#0e2030', 0.95], [8, 1, 16, 10, '#cbd5e1', 0.96], [10, 7, 12, 8, '#f4dfc4', 0.96], [8, 14, 16, 10, '#e2e8f0', 0.96], [9, 25, 15, 6, '#94a3b8', 0.96], [9, 31, 14, 4, '#64748b', 0.96]],
+      blocks: [[13, 0, 6, 3, '#38bdf8'], [7, 0, 18, 5, '#b8c4d4'], [10, 6, 12, 1, '#475569'], [12, 8, 3, 2, '#1e293b'], [17, 8, 3, 2, '#1e293b'], [25, 2, 2, 28, '#93c5fd'], [24, 1, 4, 3, '#e0f2fe'], [9, 16, 6, 6, '#1d4ed8'], [11, 18, 2, 2, '#f8fafc'], [6, 15, 3, 12, '#0ea5e9']] },
+    { id: 'k34dragonslayer', name: '드래곤 슬레이어', emoji: '⚔️', theme: 'knight', tier: 'hero', desc: '용비늘 투구 · 대검',
+      fills: [[0, 0, 32, 36, '#2a1010', 0.95], [8, 1, 16, 10, '#4c1d1d', 0.96], [10, 7, 12, 8, '#d9b08c', 0.96], [8, 14, 16, 10, '#7f1d1d', 0.96], [9, 25, 15, 6, '#581c1c', 0.96], [9, 31, 14, 4, '#3b1212', 0.96]],
+      blocks: [[6, 0, 4, 5, '#f59e0b'], [22, 0, 4, 5, '#f59e0b'], [8, 1, 16, 4, '#8b2b2b'], [12, 9, 3, 2, '#fbbf24'], [17, 9, 3, 2, '#fbbf24'], [10, 15, 12, 1, '#b45309'], [10, 18, 12, 1, '#b45309'], [10, 21, 12, 1, '#b45309'], [26, 3, 2, 24, '#e2e8f0'], [25, 2, 4, 2, '#f8fafc'], [25, 26, 4, 2, '#f59e0b']] },
+    { id: 'k34armorcat', name: '철갑 냥이', emoji: '⚔️', theme: 'knight', tier: 'hero', desc: '갑주 냥이 · 깃발',
+      fills: [[0, 0, 32, 36, '#132030', 0.95], [8, 0, 16, 10, '#64748b', 0.96], [10, 7, 12, 8, '#94a3b8', 0.96], [9, 14, 14, 10, '#475569', 0.96], [10, 25, 12, 5, '#334155', 0.96], [9, 30, 14, 5, '#1e293b', 0.96]],
+      blocks: [[8, 0, 4, 4, '#94a3b8'], [20, 0, 4, 4, '#94a3b8'], [9, 1, 2, 2, '#f9a8d4'], [21, 1, 2, 2, '#f9a8d4'], [12, 9, 3, 3, '#fde047'], [17, 9, 3, 3, '#fde047'], [15, 12, 2, 1, '#f472b6'], [11, 15, 10, 6, '#94a3b8'], [15, 16, 2, 4, '#38bdf8'], [24, 8, 3, 12, '#78350f'], [27, 8, 6, 7, '#b91c1c'], [27, 9, 1, 5, '#fbbf24'], [24, 22, 3, 4, '#334155'], [26, 19, 2, 4, '#475569']] }
   ];
   var BY_SKIN = {};
   SKINS.forEach(function (s) { BY_SKIN[s.id] = s; });
@@ -81947,21 +82206,44 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'p33plasmawisp', name: '플라즈마 위습', theme: 'neon', tier: 'legend' },
     { id: 'p33dokkaebi', name: '꼬마 도깨비', theme: 'myth', tier: 'rare' },
     { id: 'p33haetae', name: '아기 해태', theme: 'myth', tier: 'hero' },
-    { id: 'p33bonghwang', name: '아기 봉황', theme: 'myth', tier: 'legend' }
+    { id: 'p33bonghwang', name: '아기 봉황', theme: 'myth', tier: 'legend' },
+    /* ---- v5.34 ---- */
+    { id: 'p34parrot', name: '앵무새 꼬꼬', theme: 'pirate', tier: 'rare' },
+    { id: 'p34octo', name: '아기 문어', theme: 'pirate', tier: 'hero' },
+    { id: 'p34mimic', name: '보물 미믹', theme: 'pirate', tier: 'legend' },
+    { id: 'p34pudding', name: '슈가 푸딩', theme: 'sweet', tier: 'rare' },
+    { id: 'p34macacat', name: '마카롱 냥', theme: 'sweet', tier: 'hero' },
+    { id: 'p34gummy', name: '곰돌이 젤리', theme: 'sweet', tier: 'legend' },
+    { id: 'p34griffin', name: '아기 그리폰', theme: 'knight', tier: 'rare' },
+    { id: 'p34wyvern', name: '미니어처 드래곤', theme: 'knight', tier: 'hero' },
+    { id: 'p34shield', name: '날아다니는 방패', theme: 'knight', tier: 'legend' }
   ];
   var TRAILS33 = [
     { id: 't33glitch', name: '글리치 코드', theme: 'neon', tier: 'common' },
     { id: 't33laser', name: '레이저 라인', theme: 'neon', tier: 'legend' },
     { id: 't33ink', name: '먹붓 자국', theme: 'myth', tier: 'common' },
-    { id: 't33moonhwa', name: '월화 꽃잎', theme: 'myth', tier: 'rare' }
+    { id: 't33moonhwa', name: '월화 꽃잎', theme: 'myth', tier: 'rare' },
+    /* ---- v5.34 ---- */
+    { id: 't34foam', name: '물거품 궤적', theme: 'pirate', tier: 'common' },
+    { id: 't34coin', name: '황금 동전 비', theme: 'pirate', tier: 'legend' },
+    { id: 't34sugar', name: '슈가 파우더', theme: 'sweet', tier: 'common' },
+    { id: 't34syrup', name: '레인보우 시럽', theme: 'sweet', tier: 'legend' },
+    { id: 't34sword', name: '황금 검기', theme: 'knight', tier: 'common' },
+    { id: 't34holyfire', name: '불꽃 성화', theme: 'knight', tier: 'legend' }
   ];
   var FRAMES33 = [
     { id: 'fr33neon', name: '🌌 네온 서킷', cls: 'v57-fr-t33neon', theme: 'neon', tier: 'hero', why: '🎰 테마 뽑기 · 🌌 사이버 네온' },
-    { id: 'fr33myth', name: '🏯 신수 문양', cls: 'v57-fr-t33myth', theme: 'myth', tier: 'hero', why: '🎰 테마 뽑기 · 🏯 신수 설화' }
+    { id: 'fr33myth', name: '🏯 신수 문양', cls: 'v57-fr-t33myth', theme: 'myth', tier: 'hero', why: '🎰 테마 뽑기 · 🏯 신수 설화' },
+    { id: 'fr34pirate', name: '🏴‍☠️ 나침반 닻', cls: 'v57-fr-t34pirate', theme: 'pirate', tier: 'hero', why: '🎰 테마 뽑기 · 🏴‍☠️ 심해 해적단' },
+    { id: 'fr34sweet', name: '🧁 생크림 리본', cls: 'v57-fr-t34sweet', theme: 'sweet', tier: 'hero', why: '🎰 테마 뽑기 · 🧁 달콤 디저트 왕국' },
+    { id: 'fr34knight', name: '⚔️ 왕실 문장', cls: 'v57-fr-t34knight', theme: 'knight', tier: 'hero', why: '🎰 테마 뽑기 · ⚔️ 왕국 기사단' }
   ];
   var TITLES33 = [
     { id: 'ti33neon', name: '🌌 네온의 지배자', short: '🌌 네온의 지배자', theme: 'neon', tier: 'legend', rank: 5 },
-    { id: 'ti33myth', name: '🏯 설화의 수호자', short: '🏯 설화의 수호자', theme: 'myth', tier: 'legend', rank: 5 }
+    { id: 'ti33myth', name: '🏯 설화의 수호자', short: '🏯 설화의 수호자', theme: 'myth', tier: 'legend', rank: 5 },
+    { id: 'ti34pirate', name: '🏴‍☠️ 심해의 약탈자', short: '🏴‍☠️ 심해의 약탈자', theme: 'pirate', tier: 'legend', rank: 5 },
+    { id: 'ti34sweet', name: '🧁 달콤한 제왕', short: '🧁 달콤한 제왕', theme: 'sweet', tier: 'legend', rank: 5 },
+    { id: 'ti34knight', name: '⚔️ 전설의 성기사', short: '⚔️ 전설의 성기사', theme: 'knight', tier: 'legend', rank: 5 }
   ];
 
   /* 테마별 15종 목록 */
@@ -82207,6 +82489,9 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v57Prof .tab{font-size:11.5px !important;padding:0 2px !important;}',
       '#v57Prof .skcard .v533b{font-style:normal;font-size:8.5px;font-weight:900;padding:1px 4px;border-radius:6px;background:#0b1424;color:#7dd3fc;border:1px solid #22304a;line-height:1.2;}',
       '#v57Prof .skcard .v533b.myth{color:#fcd34d;border-color:#4a3410;}',
+      '#v57Prof .skcard .v533b.pirate{color:#5eead4;border-color:#0f4c5c;}',
+      '#v57Prof .skcard .v533b.sweet{color:#f9a8d4;border-color:#4a1030;}',
+      '#v57Prof .skcard .v533b.knight{color:#fcd34d;border-color:#4a3410;}',
       '@keyframes v533pop{0%{transform:scale(.55);opacity:0}55%{transform:scale(1.07);opacity:1}100%{transform:scale(1);opacity:1}}',
       '@keyframes v533shine{0%{background-position:0% 50%}100%{background-position:200% 50%}}',
       '#v533G{position:fixed;inset:0;z-index:12800;display:flex;align-items:center;justify-content:center;background:rgba(6,10,20,.9);padding:8px;font-family:system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;}',
@@ -82217,6 +82502,9 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v533G .hd .coin{font-size:12.5px;font-weight:900;color:#fde047;white-space:nowrap;}',
       '#v533G .x{height:36px;padding:0 11px;border-radius:11px;border:2px solid #33456a;background:linear-gradient(180deg,#28364f,#162032);color:#dbe7f8;font-size:12.5px;font-weight:900;box-shadow:0 3px 0 #0a101c;white-space:nowrap;}',
       '#v533G .bns{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:9px 12px 0;}',
+      '#v533G .bn.wide{grid-column:1 / -1;flex-direction:row;align-items:center;gap:8px;min-height:44px;}',
+      '#v533G .bn.wide s{margin-left:auto;}',
+      '@media (max-width:420px){#v533G .bn b{font-size:12px;}#v533G .bn i{font-size:8.5px;}#v533G .bn s{font-size:9px;}}',
       '#v533G .bn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 9px;border-radius:13px;border:2px solid #26344e;background:#0c1524;color:#a8bad5;text-align:left;box-shadow:0 3px 0 #070c16;min-height:52px;}',
       '#v533G .bn i{font-style:normal;font-size:9px;font-weight:900;letter-spacing:.6px;opacity:.75;}',
       '#v533G .bn b{font-family:"Jua",sans-serif;font-size:13.5px;color:#e6f0ff;line-height:1.15;white-space:nowrap;}',
@@ -82271,7 +82559,10 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v57Prof .v533ban b{display:block;font-family:"Jua",sans-serif;font-size:13px;color:#fff;}',
       '#v57Prof .v533ban i{display:block;font-style:normal;font-size:10.5px;font-weight:800;color:#93a8c8;margin-top:2px;}',
       '.v57-fr-t33neon{box-shadow:0 0 0 2px #22d3ee,0 0 0 4px rgba(168,85,247,.55),0 0 16px rgba(34,211,238,.6) !important;border-radius:10px;}',
-      '.v57-fr-t33myth{box-shadow:0 0 0 2px #fbbf24,0 0 0 4px rgba(185,28,28,.55),0 0 16px rgba(251,191,36,.65) !important;border-radius:10px;}'
+      '.v57-fr-t33myth{box-shadow:0 0 0 2px #fbbf24,0 0 0 4px rgba(185,28,28,.55),0 0 16px rgba(251,191,36,.65) !important;border-radius:10px;}',
+      '.v57-fr-t34pirate{box-shadow:0 0 0 2px #2dd4bf,0 0 0 4px rgba(56,189,248,.5),0 0 16px rgba(45,212,191,.6) !important;border-radius:10px;}',
+      '.v57-fr-t34sweet{box-shadow:0 0 0 2px #f9a8d4,0 0 0 4px rgba(251,191,36,.45),0 0 16px rgba(249,168,212,.6) !important;border-radius:10px;}',
+      '.v57-fr-t34knight{box-shadow:0 0 0 2px #fcd34d,0 0 0 4px rgba(148,163,184,.6),0 0 16px rgba(252,211,77,.6) !important;border-radius:10px;}'
     ].join('\n');
     (doc.head || doc.documentElement).appendChild(s);
   }
@@ -82304,7 +82595,8 @@ if (typeof module !== 'undefined' && module.exports) {
     c.restore();
   }
   /* 테마 잔상은 뽑기 화면에서도 또렷하게 보이도록 전용 미리보기로 그린다 */
-  var TCOL = { t33glitch: ['#22d3ee', '#a855f7', '#67e8f9'], t33laser: ['#fb7185', '#fff1f2'], t33ink: ['#dbe1ff', '#a5b4fc'], t33moonhwa: ['#fbcfe8', '#fef3c7', '#f9a8d4'] };
+  var TCOL = { t33glitch: ['#22d3ee', '#a855f7', '#67e8f9'], t33laser: ['#fb7185', '#fff1f2'], t33ink: ['#dbe1ff', '#a5b4fc'], t33moonhwa: ['#fbcfe8', '#fef3c7', '#f9a8d4'],
+    t34foam: ['#7dd3fc', '#e0f2fe', '#38bdf8'], t34coin: ['#fbbf24', '#fde047'], t34sugar: ['#fef3c7', '#fbcfe8'], t34syrup: ['#f472b6', '#fbbf24', '#34d399', '#60a5fa'], t34sword: ['#fde047', '#fff7ed'], t34holyfire: ['#fbbf24', '#f97316', '#fef3c7'] };
   function drawTrailCv(cv, id, t) {
     var pal = TCOL[id];
     if (!pal) {
@@ -82324,6 +82616,12 @@ if (typeof module !== 'undefined' && module.exports) {
       if (id === 't33laser') { c.fillRect(x - 3, y, 8, 2); }
       else if (id === 't33ink') { c.fillRect(x - 2, y - 2, 4, 4); c.globalAlpha = c.globalAlpha * 0.45; c.fillRect(x - 4, y - 1, 9, 2); }
       else if (id === 't33glitch') { c.fillRect(x - 2, y - 2, 2, 3); c.fillRect(x + 1, y + 1, 3, 2); }
+      else if (id === 't34foam') { c.fillRect(x - 1, y - 1, 2, 2); c.fillRect(x + 2, y + 1, 2, 2); }
+      else if (id === 't34coin') { c.fillRect(x - 2, y - 3, 4, 6); c.fillStyle = '#fffbeb'; c.fillRect(x - 1, y - 2, 2, 4); }
+      else if (id === 't34sugar') { c.fillRect(x - 1, y - 1, 2, 2); }
+      else if (id === 't34syrup') { c.fillRect(x - 2, y - 2, 4, 5); c.fillStyle = '#fffbeb'; c.fillRect(x - 1, y - 3, 2, 2); }
+      else if (id === 't34sword') { c.fillRect(x - 4, y, 9, 2); c.fillStyle = '#fffbeb'; c.fillRect(x - 2, y, 5, 1); }
+      else if (id === 't34holyfire') { c.fillRect(x - 2, y - 3, 5, 6); c.fillStyle = '#fde047'; c.fillRect(x - 1, y - 1, 3, 3); }
       else { c.fillRect(x - 2, y - 2, 3, 3); c.fillRect(x + 1, y + 2, 2, 2); }
     }
     c.globalAlpha = 1;
@@ -82368,13 +82666,14 @@ if (typeof module !== 'undefined' && module.exports) {
   }
 
   function bannerHtml() {
-    return THEMES.map(function (th) {
+    return THEMES.map(function (th, idx) {
       var list = ITEMS[th.id] || [];
       var got = list.filter(function (i) { return owned(i.id); }).length;
-      return '<button type="button" class="bn' + (S.theme === th.id ? ' on' : '') + '" data-v533th="' + th.id + '"' +
+      var wide = (THEMES.length % 2 === 1 && idx === THEMES.length - 1) ? ' wide' : '';
+      return '<button type="button" class="bn' + (S.theme === th.id ? ' on' : '') + wide + '" data-v533th="' + th.id + '"' +
         ' style="background:' + (S.theme === th.id ? th.grad : '#0c1524') + '">' +
         '<b>' + th.emoji + ' ' + esc(th.name) + '</b>' +
-        '<i>' + esc(th.sub) + ' · 15종</i>' +
+        '<i>' + esc(th.sub) + '</i>' +
         '<s>보유 ' + got + ' / ' + list.length + '</s></button>';
     }).join('');
   }
@@ -82383,7 +82682,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (it.type === 'skin') return '<canvas data-v533cv="' + esc(it.id) + '" width="32" height="36"></canvas>';
     if (it.type === 'pet') return '<canvas data-v533pcv="' + esc(it.id) + '" width="34" height="34"></canvas>';
     if (it.type === 'trail') return '<canvas data-v533tcv="' + esc(it.id) + '" width="42" height="24"></canvas>';
-    if (it.type === 'frame') return '<span style="display:block;width:24px;height:24px;margin:8px auto 9px;border-radius:8px;background:#0b1220;box-shadow:0 0 0 2px ' + (it.theme === 'neon' ? '#22d3ee' : '#fbbf24') + ',inset 0 0 0 2px rgba(168,85,247,.55),0 0 10px ' + (it.theme === 'neon' ? '#22d3ee' : '#fbbf24') + '"></span>';
+    if (it.type === 'frame') return '<span style="display:block;width:24px;height:24px;margin:8px auto 9px;border-radius:8px;background:#0b1220;box-shadow:0 0 0 2px ' + themeOf(it.theme).col + ',inset 0 0 0 2px rgba(168,85,247,.55),0 0 10px ' + themeOf(it.theme).col + '"></span>';
     return '<span class="em">🏅</span>';
   }
 
@@ -82502,7 +82801,7 @@ if (typeof module !== 'undefined' && module.exports) {
         tl.push({
           id: x.id, name: x.name, short: x.short, rank: x.rank, grade: 'legend',
           need: function () { return owned(x.id); },
-          why: '🎰 테마 뽑기 · ' + (x.theme === 'neon' ? '🌌 사이버 네온' : '🏯 신수 설화')
+          why: '🎰 테마 뽑기 · ' + themeOf(x.theme).emoji + ' ' + themeOf(x.theme).name
         });
       });
     } catch (e) {}
@@ -82535,8 +82834,8 @@ if (typeof module !== 'undefined' && module.exports) {
   }
   function entryHtml() {
     return '<div class="v533ban" style="flex-direction:column;align-items:stretch;gap:6px">' +
-      '<b>🎰 테마 뽑기 — 2개 테마 · 30종</b>' +
-      '<i>🌌 사이버 네온 · 🏯 신수 설화 — 테마마다 스킨 8 · 펫 3 · 잔상 2 · 테두리 1 · 칭호 1</i>' +
+      '<b>🎰 테마 뽑기 — ' + THEMES.length + '개 테마 · ' + THEMES.reduce(function (n, t) { return n + (ITEMS[t.id] || []).length; }, 0) + '종</b>' +
+      '<i>' + THEMES.map(function (t) { return t.emoji + ' ' + esc(t.name); }).join(' · ') + ' — 테마마다 스킨 8 · 펫 3 · 잔상 2 · 테두리 1 · 칭호 1</i>' +
       '<button type="button" id="v533Go" class="btn pri" style="min-height:44px;padding:0 14px;border-radius:12px;font-size:13.5px;font-weight:900;border:2px solid #5a3204;background:linear-gradient(180deg,#ffe79a,#f7b91f 60%,#dc9a0d);color:#6b4708;box-shadow:0 3px 0 #6b4405">🎰 테마 뽑기 열기</button>' +
       '</div>';
   }
@@ -82560,7 +82859,7 @@ if (typeof module !== 'undefined' && module.exports) {
   root.JW533 = {
     themes: THEMES, items: ITEMS, skins: SKINS, pets: PETS33, trails: TRAILS33, frames: FRAMES33, titles: TITLES33,
     st: function () { return S; }, owned: owned, pull: doPull, equip: equipItem, open: open, close: close,
-    art: art, tier: TIER, version: 'v5.33'
+    art: art, tier: TIER, version: 'v5.34'
   };
-  try { console.log('[JW533] theme gacha ready — 2 themes / 30 items'); } catch (e) {}
+  try { console.log('[JW533] theme gacha ready — ' + THEMES.length + ' themes / ' + Object.keys(ALL).length + ' items'); } catch (e) {}
 })(window);
