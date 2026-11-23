@@ -42139,6 +42139,15 @@ extends CanvasLayer
     };
     try { requestAnimationFrame(loop); } catch (e) { setInterval(function () { fallGuard(performance.now()); }, 60); }
   }
+  /* 판이 시작되면 뽑기 창은 스스로 닫힌다 (인게임 위에 남지 않게) */
+  setInterval(function () {
+    try {
+      if (!inPlay()) return;
+      var m = $('v533G');
+      if (m && !m.classList.contains('hide')) m.classList.add('hide');
+    } catch (e) {}
+  }, 600);
+
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', boot);
   else setTimeout(boot, 200);
 
@@ -69234,7 +69243,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.32';
+  var BUILD = 'v5.33';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -72011,6 +72020,7 @@ if (typeof module !== 'undefined' && module.exports) {
         '<button type="button" class="tab" data-v57pt="title">🏅 칭호</button>' +
         '<button type="button" class="tab" data-v57pt="pet">🐾 펫</button>' +
         '<button type="button" class="tab" data-v57pt="trail">✨ 잔상</button>' +
+        '<button type="button" class="tab" data-v57pt="theme" style="grid-column:span 2">🎰 테마 뽑기</button>' +
       '</div>' +
       '<div class="body" id="v57PrBody"></div></div>';
     doc.body.appendChild(m);
@@ -72091,6 +72101,12 @@ if (typeof module !== 'undefined' && module.exports) {
     if (rc) rc.innerHTML = '최고 <b>' + bestM() + 'm</b> · 클리어 <b>' + ((prof().mapsCleared || []).length) + '</b>맵 · 완등 <b>' + (prof().clears || 0) + '</b>회';
 
     var h = '';
+    /* v5.33: [🎰 테마 뽑기] 탭은 테마 뽑기 모듈이 그린다 */
+    if (TAB === 'theme') {
+      try { if (root.JW533UI) { root.JW533UI.render(body); return; } } catch (e) {}
+      body.innerHTML = '<div class="note">테마 뽑기를 불러오는 중이에요</div>';
+      return;
+    }
     /* v5.29: [🐾 펫] [✨ 잔상] 탭은 새 펫뽑기 모듈이 그린다 */
     if (TAB === 'pet' || TAB === 'trail') {
       try { if (root.JW529UI) { root.JW529UI.render(TAB, body); return; } } catch (e) {}
@@ -72105,7 +72121,8 @@ if (typeof module !== 'undefined' && module.exports) {
       skins = (skins || []).filter(function (s) { return s.id === cur || !(V.skinLocked && V.skinLocked(s.id)); });
       h += '<div class="skgrid">' + skins.map(function (s) {
         return '<button type="button" class="skcard' + (s.id === cur ? ' on' : '') + '" data-v57sk="' + esc(s.id) + '">' +
-          '<canvas width="32" height="36" data-v57skcv="' + esc(s.id) + '"></canvas><b>' + (s.emoji || '') + ' ' + esc(s.name) + '</b></button>';
+          '<canvas width="32" height="36" data-v57skcv="' + esc(s.id) + '"></canvas><b>' + (s.emoji || '') + ' ' + esc(s.name) + '</b>' +
+          (s.theme ? '<i class="v533b ' + esc(s.theme) + '">' + (s.theme === 'myth' ? '🏯 신수' : '🌌 네온') + '</i>' : '') + '</button>';
       }).join('') + '</div>';
       h += '<div class="note">스킨을 누르면 바로 적용됩니다 · 인게임·멀티·타이틀에 즉시 반영</div>';
       /* v5.27: 스킨 꾸미기(색상·펫·모자·안경·등·꼬리·말풍선)를 같은 화면에 합친다. */
@@ -78891,6 +78908,13 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'p_fairy', name: '별 요정', tier: 'hero' },
     /* ---- 뽑기: 전설 1 ---- */
     { id: 'p_toad', name: '황금 두꺼비', tier: 'legend' },
+    /* ---- v5.33 테마 뽑기 전용 6종 (일반 펫 뽑기 풀에는 들어가지 않는다) ---- */
+    { id: 'p33holodrone', name: '홀로 드론', tier: 'rare', theme: 'neon' },
+    { id: 'p33cybercat', name: '네온 냥봇', tier: 'hero', theme: 'neon' },
+    { id: 'p33plasmawisp', name: '플라즈마 위습', tier: 'legend', theme: 'neon' },
+    { id: 'p33dokkaebi', name: '꼬마 도깨비', tier: 'rare', theme: 'myth' },
+    { id: 'p33haetae', name: '아기 해태', tier: 'hero', theme: 'myth' },
+    { id: 'p33bonghwang', name: '아기 봉황', tier: 'legend', theme: 'myth' },
     /* ---- 보상 전용 4 ---- */
     { id: 'p_egg', name: '첫걸음 알', tier: 'rare', award: true, why: '첫 완등 1회', need: function () { return (prof().clears || 0) >= 1; }, prog: function () { return ((prof().clears || 0) >= 1 ? 1 : 0) + ' / 1회'; } },
     { id: 'p_sprout', name: '새싹 정령', tier: 'hero', award: true, why: '누적 등반 500m', need: function () { return (stats().climbM || 0) >= 500; }, prog: function () { return Math.floor(stats().climbM || 0) + ' / 500m'; } },
@@ -78899,7 +78923,7 @@ if (typeof module !== 'undefined' && module.exports) {
   ];
   var BY_ID = {};
   PETS.forEach(function (p) { BY_ID[p.id] = p; });
-  function gachaOf(tier) { return PETS.filter(function (p) { return !p.award && p.tier === tier; }); }
+  function gachaOf(tier) { return PETS.filter(function (p) { return !p.award && !p.theme && p.tier === tier; }); }
 
   /* ================================================================
      꼬리 잔상 12종 (기본 1 + 기록 해금 11)
@@ -78916,7 +78940,12 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 't_bubble', name: '물방울', col: '#7dd3fc', why: '최고 연승 3', need: function () { return (prof().bestStreak || 0) >= 3; }, prog: function () { return (prof().bestStreak || 0) + ' / 3 연승'; } },
     { id: 't_gold', name: '황금 가루', col: '#fbbf24', why: '최고 100층', need: function () { return (stats().bestPlat || 0) >= 100; }, prog: function () { return (stats().bestPlat || 0) + ' / 100층'; } },
     { id: 't_mist', name: '유령 안개', col: '#c4b5fd', why: '누적 낙하 100m', need: function () { return (stats().fallM || 0) >= 100; }, prog: function () { return Math.floor(stats().fallM || 0) + ' / 100m'; } },
-    { id: 't_confetti', name: '색종이', col: '#f87171', why: 'PERFECT 콤보 10', need: function () { return (stats().maxCombo || 0) >= 10; }, prog: function () { return (stats().maxCombo || 0) + ' / 10 콤보'; } }
+    { id: 't_confetti', name: '색종이', col: '#f87171', why: 'PERFECT 콤보 10', need: function () { return (stats().maxCombo || 0) >= 10; }, prog: function () { return (stats().maxCombo || 0) + ' / 10 콤보'; } },
+    /* v5.33 테마 뽑기 전용 4종 — 뽑기로 얻으면 ST.grant 로 열린다 */
+    { id: 't33glitch', name: '글리치 코드', col: '#22d3ee', tier: 'common', theme: 'neon', why: '🎰 테마 뽑기 · 🌌 사이버 네온', need: function () { return !!(ST.grant && ST.grant['t33glitch']); }, prog: function () { return '테마 뽑기로 획득'; } },
+    { id: 't33laser', name: '레이저 라인', col: '#fb7185', tier: 'legend', theme: 'neon', why: '🎰 테마 뽑기 · 🌌 사이버 네온', need: function () { return !!(ST.grant && ST.grant['t33laser']); }, prog: function () { return '테마 뽑기로 획득'; } },
+    { id: 't33ink', name: '먹붓 자국', col: '#dbe1ff', tier: 'common', theme: 'myth', why: '🎰 테마 뽑기 · 🏯 신수 설화', need: function () { return !!(ST.grant && ST.grant['t33ink']); }, prog: function () { return '테마 뽑기로 획득'; } },
+    { id: 't33moonhwa', name: '월화 꽃잎', col: '#fbcfe8', tier: 'rare', theme: 'myth', why: '🎰 테마 뽑기 · 🏯 신수 설화', need: function () { return !!(ST.grant && ST.grant['t33moonhwa']); }, prog: function () { return '테마 뽑기로 획득'; } }
   ];
   var T_BY_ID = {};
   TRAILS.forEach(function (t) { T_BY_ID[t.id] = t; });
@@ -79262,6 +79291,79 @@ if (typeof module !== 'undefined' && module.exports) {
         R(c, '#f472b6', -1, -20, 2, 2);
         break;
       }
+      /* ---- v5.33 🌌 사이버 네온 ---- */
+      case 'p33holodrone': {
+        var d1 = '#cbd5e1', d2 = '#64748b', cy = '#22d3ee';
+        var sp1 = Math.round(Math.sin(t * 14) * 1);
+        R(c, 'rgba(203,213,225,.55)', -17, -20 + sp1, 9, 1);
+        R(c, 'rgba(203,213,225,.55)', 8, -20 - sp1, 9, 1);
+        R(c, d2, -2, -19, 2, 3); R(c, d2, 1, -19, 2, 3);
+        R(c, d2, -9, -13, 18, 6); R(c, d1, -8, -16, 16, 4);
+        R(c, '#0b1220', -6, -12, 12, 4); R(c, cy, -4, -11, 2, 2); R(c, cy, 2, -11, 2, 2);
+        R(c, cy, -1, -8, 2, 1);
+        R(c, 'rgba(34,211,238,.35)', -6, -6, 12, 2);
+        R(c, cy, -9, -7, 2, 2); R(c, cy, 7, -7, 2, 2);
+        break;
+      }
+      case 'p33cybercat': {
+        var c1s = '#3b4a6b', c2s = '#22d3ee', pk1 = '#f472b6';
+        R(c, c1s, -9, -9, 18, 9); R(c, c1s, -7, -14, 14, 6);
+        R(c, c2s, -8, -17, 3, 3); R(c, c2s, 5, -17, 3, 3);
+        R(c, '#0b1220', -6, -12, 4, 3); R(c, '#0b1220', 2, -12, 4, 3);
+        R(c, c2s, -5, -11, 2, 2); R(c, c2s, 3, -11, 2, 2);
+        R(c, pk1, -1, -8, 3, 2);
+        R(c, '#94a3b8', -1, -19, 1, 4); R(c, c2s, -2, -21, 3, 2);
+        var wt1 = Math.round(Math.sin(t * 6) * 2);
+        R(c, c2s, 9, -11 + wt1, 2, 8); R(c, c2s, 11, -14 + wt1, 2, 6);
+        R(c, '#22304a', -7, -2, 4, 2); R(c, '#22304a', 3, -2, 4, 2);
+        break;
+      }
+      case 'p33plasmawisp': {
+        var w1 = '#22d3ee', w2 = '#a855f7', wc = '#f0fdff';
+        c.fillStyle = 'rgba(34,211,238,.26)'; c.beginPath(); c.arc(0, -12, 13, 0, 6.3); c.fill();
+        R(c, w2, -7, -16, 14, 8); R(c, w1, -5, -18, 10, 6); R(c, wc, -2, -16, 4, 4);
+        R(c, '#0b1220', -4, -14, 2, 2); R(c, '#0b1220', 2, -14, 2, 2);
+        var wf1 = Math.round(Math.sin(t * 9) * 2);
+        R(c, w1, -9, -10 + wf1, 3, 7); R(c, w2, -2, -8 + wf1, 3, 6); R(c, w1, 5, -11 + wf1, 3, 7);
+        R(c, 'rgba(34,211,238,.65)', -11, -20, 2, 2); R(c, 'rgba(168,85,247,.65)', 9, -19, 2, 2);
+        break;
+      }
+      /* ---- v5.33 🏯 신수 설화 ---- */
+      case 'p33dokkaebi': {
+        var k1 = '#a3e635', k2 = '#65a30d', hn1 = '#fbbf24', cl1 = '#92400e';
+        R(c, k2, -8, -8, 16, 8); R(c, k1, -7, -14, 14, 7);
+        R(c, hn1, -6, -18, 3, 4); R(c, hn1, 3, -18, 3, 4);
+        R(c, '#1f2937', -5, -12, 3, 3); R(c, '#1f2937', 2, -12, 3, 3);
+        R(c, '#dc2626', -1, -9, 3, 2);
+        R(c, cl1, 9, -14, 3, 10); R(c, cl1, 8, -16, 5, 3);
+        R(c, k2, -8, -2, 4, 2); R(c, k2, 4, -2, 4, 2);
+        break;
+      }
+      case 'p33haetae': {
+        var h1 = '#38bdf8', h2 = '#0369a1', hg = '#f59e0b', hg2 = '#fde047';
+        c.fillStyle = 'rgba(245,158,11,.85)'; c.beginPath(); c.arc(0, -13, 11, 0, 6.3); c.fill();
+        R(c, h2, -7, -8, 14, 8); R(c, h1, -6, -15, 12, 7);
+        R(c, hg, -8, -17, 4, 3); R(c, hg, 4, -17, 4, 3);
+        eye(c, -5, -13, blink); eye(c, 2, -13, blink);
+        R(c, hg2, -2, -10, 4, 2); R(c, '#7c2d12', -1, -9, 2, 1);
+        R(c, h2, -8, -2, 4, 2); R(c, h2, 4, -2, 4, 2);
+        R(c, hg2, 8, -8, 4, 4); R(c, '#fffbeb', 9, -7, 2, 2);
+        break;
+      }
+      case 'p33bonghwang': {
+        var b1r = '#f43f5e', b2r = '#b91c1c', bg1 = '#fbbf24';
+        var bw = Math.round(Math.sin(t * 8) * 2);
+        R(c, 'rgba(251,191,36,.8)', -15, -16 - bw, 7, 9);
+        R(c, 'rgba(251,191,36,.8)', 8, -16 + bw, 7, 9);
+        R(c, b2r, -7, -7, 14, 7); R(c, b1r, -6, -14, 12, 8);
+        R(c, bg1, -5, -18, 3, 4); R(c, bg1, 2, -18, 3, 4);
+        eye(c, -4, -12, blink); eye(c, 2, -12, blink);
+        R(c, bg1, -2, -9, 4, 2);
+        var bf = Math.round(Math.sin(t * 5) * 1);
+        R(c, b1r, -2, -1 + bf, 4, 3); R(c, bg1, -1, -3 + bf, 2, 2);
+        R(c, b1r, 7, -10, 4, 3);
+        break;
+      }
       default: {
         R(c, '#94a3b8', -7, -8, 14, 8); R(c, '#cbd5e1', -5, -12, 10, 5);
         eye(c, -4, -9, blink); eye(c, 1, -9, blink);
@@ -79334,6 +79436,8 @@ if (typeof module !== 'undefined' && module.exports) {
     if (tid === 't_rainbow') return ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa'][i % 5];
     if (tid === 't_confetti') return ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#f472b6'][i % 5];
     if (tid === 't_aurora') return ['#6ee7b7', '#a78bfa', '#67e8f9'][i % 3];
+    if (tid === 't33glitch') return ['#22d3ee', '#a855f7', '#67e8f9'][i % 3];
+    if (tid === 't33moonhwa') return ['#fbcfe8', '#fef3c7', '#f9a8d4'][i % 3];
     return (T_BY_ID[tid] && T_BY_ID[tid].col) || '#dbe7f8';
   }
 
@@ -79384,6 +79488,26 @@ if (typeof module !== 'undefined' && module.exports) {
       } else if (tid === 't_aurora') {
         ctx.fillStyle = col;
         ctx.fillRect((sx | 0) - 5, (sy | 0) - 5, 10, 11);
+      } else if (tid === 't33glitch') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 2, (sy | 0) - 2, 2, 3);
+        ctx.fillRect((sx | 0) + 1, (sy | 0) + 1, 3, 2);
+        if ((p.k + i) % 3 === 0) { ctx.globalAlpha = a * 0.4; ctx.fillRect((sx | 0) - 6, (sy | 0), 12, 1); }
+      } else if (tid === 't33laser') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 5, (sy | 0) - 1, 11, 2);
+        ctx.fillStyle = '#fff1f2';
+        ctx.fillRect((sx | 0) - 2, (sy | 0), 5, 1);
+      } else if (tid === 't33ink') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 2, (sy | 0) - 2, 4, 4);
+        ctx.globalAlpha = a * 0.32;
+        ctx.fillRect((sx | 0) - 4, (sy | 0) + 1, 8, 2);
+      } else if (tid === 't33moonhwa') {
+        ctx.fillStyle = col;
+        ctx.fillRect((sx | 0) - 2, (sy | 0) - 2, 3, 3);
+        ctx.fillRect((sx | 0) + 1, (sy | 0) + 2, 2, 2);
+        if ((p.k + i) % 2 === 0) { ctx.globalAlpha = a * 0.35; ctx.fillRect((sx | 0) - 4, (sy | 0), 9, 1); }
       } else {
         ctx.fillStyle = col;
         ctx.fillRect((sx | 0) - 3, (sy | 0) - 3, 6, 6);
@@ -79650,6 +79774,11 @@ if (typeof module !== 'undefined' && module.exports) {
   root.JW529UI = { render: render };
   root.JW529 = {
     st: function () { return ST; }, pets: PETS, trails: TRAILS, tiers: TIER, pull: doPull,
+    /* v5.33 테마 뽑기 연동: 보유·해금 등록과 코인 사용/적립을 한 곳(ST+save)으로만 통과시킨다 */
+    own: function (id) { if (BY_ID[id]) { ST.owned[id] = 1; save(); } },
+    grant: function (id) { ST.grant = ST.grant || {}; ST.grant[id] = 1; save(); },
+    spend: function (n) { n = Math.round(Number(n) || 0); if (n <= 0) return true; if (ST.coins < n) return false; ST.coins -= n; save(); return true; },
+    addCoins: function (n) { n = Math.round(Number(n) || 0); if (!n) return; ST.coins = Math.max(0, (Number(ST.coins) || 0) + n); save(); },
     equip: function (id) { if (BY_ID[id]) { ST.owned[id] = 1; ST.equip = id; save(); } },
     setTrail: function (id) { if (T_BY_ID[id]) { ST.trail = id; save(); } },
     coins: function (n) { ST.coins = Math.max(0, Math.round(n)); save(); },
@@ -81722,4 +81851,716 @@ if (typeof module !== 'undefined' && module.exports) {
       } catch (e) { return { error: String((e && e.message) || e) }; }
     }
   };
+})(window);
+
+
+/* ==========================================================================
+   v5.33 : 🎰 테마 뽑기 2종 — 🌌 사이버 네온 · 🏯 신수 설화 (테마당 15종 · 총 30종)
+   --------------------------------------------------------------------------
+   · 테마 1 🌌 사이버 네온 : 스킨 8 + 펫 3 + 꼬리 잔상 2 + 테두리 1 + 칭호 1 = 15
+   · 테마 2 🏯 신수 설화  : 스킨 8 + 펫 3 + 꼬리 잔상 2 + 테두리 1 + 칭호 1 = 15
+   · 재화: 기존 펫 코인(JW529) 그대로 — 1회 50 · 5회 225
+   · 등급 확률 공개(일반60 / 희귀28 / 영웅10 / 전설2) + 테마별 천장(10회 희귀+ / 30회 영웅+)
+   · 중복은 등급별 코인 환급(일반+20 / 희귀+35 / 영웅+60 / 전설+100) — 뽑기 손해를 줄인다
+   · 스토리 전용 60종 캐릭터·해금 구조는 건드리지 않는다. 새 스킨 id는 n33*·m33* 뿐이고,
+     뽑기로 보유하기 전에는 잠김(V.skinLocked 래핑) → 보유하면 기존 스킨 목록에 테마 배지로 뜬다.
+   · 장착은 기존 시스템 그대로: 스킨=setSkin · 펫/잔상=JW529 · 테두리=JW57PL · 칭호=JW51TITLES
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var V = root.JW43;
+  if (!V || root.JW533) return;
+  var doc = document;
+  var $ = function (id) { return doc.getElementById(id); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (c) { return c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '&' ? '&amp;' : '&quot;'; }); }
+  function api() { try { return V.api() || {}; } catch (e) { return {}; } }
+  function beep(f, d) { try { V.beep(f || 880, d || 0.05, 0.06, 'square', (f || 880) + 220); } catch (e) {} }
+  function inPlay() { try { var j = root.__jwg; return !!(j && j.game && j.game.inPlay); } catch (e) { return false; } }
+  function toast(msg, sub) { try { if (V.toast && !inPlay()) V.toast(msg, 'ok', sub || '', 2200); } catch (e) {} }
+
+  var PULL1 = 50, PULL5 = 225;
+  var TIER = {
+    common: { name: '일반', rate: 60, refund: 20, col: '#9fb3cd' },
+    rare: { name: '희귀', rate: 28, refund: 35, col: '#38bdf8' },
+    hero: { name: '영웅', rate: 10, refund: 60, col: '#a78bfa' },
+    legend: { name: '전설', rate: 2, refund: 100, col: '#fbbf24' }
+  };
+  var THEMES = [
+    { id: 'neon', emoji: '🌌', name: '사이버 네온', sub: 'CYBER NEON', col: '#22d3ee', grad: 'linear-gradient(135deg,#08111f,#132a4d 60%,#22d3ee)' },
+    { id: 'myth', emoji: '🏯', name: '신수 설화', sub: 'MYTHIC LEGEND', col: '#fbbf24', grad: 'linear-gradient(135deg,#22120a,#5b2a10 60%,#fbbf24)' }
+  ];
+  function themeOf(id) { for (var i = 0; i < THEMES.length; i++) if (THEMES[i].id === id) return THEMES[i]; return THEMES[0]; }
+
+  /* ================================================================
+     스킨 16종 (테마 8 + 8) — 기존 24종·20종과 같은 그림체(32×36 · source-atop 채색)
+     ================================================================ */
+  var SKINS = [
+    /* ---------------- 🌌 사이버 네온 ---------------- */
+    { id: 'n33runner', name: '네온 러너', emoji: '🌌', theme: 'neon', tier: 'common', desc: '잠입복 · 시안 바이저',
+      fills: [[0, 0, 32, 36, '#0b1226', 0.96], [8, 2, 16, 8, '#101a33', 0.96], [10, 7, 12, 8, '#d9e6f7', 0.96], [9, 14, 14, 10, '#111d3a', 0.96], [10, 25, 12, 5, '#0d1730', 0.96], [9, 30, 14, 5, '#0a1224', 0.96]],
+      blocks: [[9, 8, 14, 4, '#22d3ee'], [10, 8, 5, 1, '#a5f3fc'], [9, 12, 3, 1, '#67e8f9'], [20, 12, 3, 1, '#67e8f9'], [15, 15, 2, 8, '#22d3ee'], [9, 14, 14, 1, '#a855f7'], [7, 16, 2, 1, '#22d3ee'], [23, 16, 2, 1, '#22d3ee'], [9, 22, 14, 2, '#0a1224'], [9, 33, 6, 1, '#22d3ee'], [17, 33, 6, 1, '#22d3ee']] },
+    { id: 'n33plasmabot', name: '플라즈마 봇', emoji: '🌌', theme: 'neon', tier: 'common', desc: '장갑 프레임 · 주황 코어',
+      fills: [[0, 0, 32, 36, '#2b3348', 0.96], [8, 2, 16, 9, '#3f4a66', 0.96], [9, 14, 14, 10, '#37415c', 0.96], [10, 25, 12, 5, '#2b3348', 0.96], [9, 30, 14, 5, '#222a3d', 0.96]],
+      blocks: [[11, 7, 10, 4, '#0b1220'], [13, 8, 2, 3, '#fb923c'], [18, 8, 2, 3, '#fb923c'], [15, 0, 2, 2, '#94a3b8'], [14, 0, 4, 1, '#fb923c'], [14, 15, 4, 4, '#fb923c'], [15, 16, 2, 2, '#fde68a'], [10, 20, 3, 1, '#1f2736'], [19, 20, 3, 1, '#1f2736'], [7, 15, 3, 7, '#46527a'], [22, 15, 3, 7, '#46527a']] },
+    { id: 'n33cat', name: '네온 냥이', emoji: '🌌', theme: 'neon', tier: 'common', desc: '발광 귀 · 시안 눈',
+      fills: [[0, 0, 32, 36, '#101a2e', 0.95], [8, 0, 16, 9, '#1b2a4a', 0.95], [10, 7, 12, 8, '#2a3d63', 0.95], [9, 14, 14, 10, '#14203a', 0.95], [10, 25, 12, 5, '#101a2e', 0.95], [9, 30, 14, 5, '#0d1526', 0.95]],
+      blocks: [[8, 0, 4, 4, '#22d3ee'], [20, 0, 4, 4, '#22d3ee'], [9, 1, 2, 2, '#a5f3fc'], [21, 1, 2, 2, '#a5f3fc'], [12, 9, 3, 3, '#22d3ee'], [18, 9, 3, 3, '#22d3ee'], [13, 10, 1, 1, '#0b1226'], [19, 10, 1, 1, '#0b1226'], [15, 12, 2, 1, '#f472b6'], [6, 11, 4, 1, '#7dd3fc'], [22, 11, 4, 1, '#7dd3fc'], [26, 18, 3, 8, '#22d3ee'], [24, 24, 4, 3, '#22d3ee'], [9, 33, 6, 1, '#22d3ee'], [17, 33, 6, 1, '#22d3ee']] },
+    { id: 'n33hacker', name: '데이터 해커', emoji: '🌌', theme: 'neon', tier: 'common', desc: '후드 · 초록 코드 라인',
+      fills: [[0, 0, 32, 36, '#0f1620', 0.96], [7, 1, 18, 8, '#1b2530', 0.96], [10, 7, 12, 8, '#d8c3a5', 0.96], [9, 14, 14, 10, '#202c3a', 0.96], [10, 25, 12, 5, '#161f2b', 0.96], [9, 30, 14, 5, '#101821', 0.96]],
+      blocks: [[7, 1, 3, 8, '#131b24'], [22, 1, 3, 8, '#131b24'], [11, 8, 10, 3, '#0a1420'], [12, 9, 4, 1, '#4ade80'], [17, 9, 3, 1, '#4ade80'], [14, 12, 4, 1, '#8b5e3c'], [10, 16, 12, 1, '#4ade80'], [10, 18, 8, 1, '#22c55e'], [10, 20, 10, 1, '#16a34a']] },
+    { id: 'n33holo', name: '홀로 아이돌', emoji: '🌌', theme: 'neon', tier: 'rare', desc: '홀로그램 무대복 · 헤드셋',
+      fills: [[0, 0, 32, 36, '#2a1044', 0.93], [8, 2, 16, 7, '#ff7ad9', 0.95], [10, 7, 12, 8, '#f6e6ff', 0.95], [9, 14, 14, 10, '#3b1160', 0.95], [10, 25, 12, 5, '#241040', 0.95], [9, 30, 14, 5, '#1b0c30', 0.95]],
+      blocks: [[11, 9, 3, 3, '#22d3ee'], [18, 9, 3, 3, '#22d3ee'], [11, 12, 2, 1, '#f9a8d4'], [19, 12, 2, 1, '#f9a8d4'], [8, 6, 2, 2, '#fde047'], [22, 5, 2, 2, '#fde047'], [14, 15, 4, 4, '#22d3ee'], [9, 20, 14, 4, '#c084fc'], [24, 10, 2, 3, '#cbd5e1'], [25, 12, 1, 4, '#94a3b8'], [9, 33, 6, 1, '#f0abfc'], [17, 33, 6, 1, '#f0abfc']] },
+    { id: 'n33samurai', name: '사이버 사무라이', emoji: '🌌', theme: 'neon', tier: 'rare', desc: '흑갑주 · 홍색 바이저 · 카타나',
+      fills: [[0, 0, 32, 36, '#0b0b12', 0.96], [8, 2, 16, 6, '#1a1a24', 0.96], [10, 7, 12, 8, '#cbb8a6', 0.96], [9, 14, 14, 10, '#14141c', 0.96], [10, 25, 12, 5, '#101018', 0.96], [9, 30, 14, 5, '#0c0c14', 0.96]],
+      blocks: [[8, 1, 16, 4, '#1c2333'], [14, 0, 4, 2, '#f87171'], [10, 8, 12, 3, '#ef4444'], [11, 8, 4, 1, '#fca5a5'], [10, 11, 12, 3, '#0f172a'], [7, 14, 4, 3, '#2b3550'], [21, 14, 4, 3, '#2b3550'], [13, 16, 6, 2, '#ef4444'], [26, 6, 2, 16, '#cbd5e1'], [27, 7, 1, 14, '#e2e8f0'], [24, 20, 5, 2, '#f59e0b'], [9, 33, 6, 1, '#ef4444'], [17, 33, 6, 1, '#ef4444']] },
+    { id: 'n33ghost', name: '홀로그램 유령', emoji: '🌌', theme: 'neon', tier: 'rare', desc: '반투명 격자 몸',
+      fills: [[0, 0, 32, 36, '#0e2233', 0.9], [8, 1, 16, 12, '#c8f7ff', 0.92], [9, 14, 14, 10, '#a8e9fb', 0.92], [10, 25, 12, 5, '#8fdcf3', 0.9]],
+      blocks: [[12, 8, 3, 4, '#0d2434'], [18, 8, 3, 4, '#0d2434'], [14, 12, 4, 1, '#1e4a60'], [9, 16, 14, 1, '#5ec8e8'], [9, 19, 14, 1, '#5ec8e8'], [13, 14, 1, 10, '#5ec8e8'], [18, 14, 1, 10, '#5ec8e8']] },
+    { id: 'n33chrono', name: '크로노 스키퍼', emoji: '🌌', theme: 'neon', tier: 'hero', desc: '시간 도약자 · 시계 코어',
+      fills: [[0, 0, 32, 36, '#1a1030', 0.96], [8, 2, 16, 7, '#f3f0ff', 0.96], [10, 7, 12, 8, '#efe6d2', 0.96], [9, 14, 14, 10, '#241645', 0.96], [10, 25, 12, 5, '#1a1033', 0.96], [9, 30, 14, 5, '#140c28', 0.96]],
+      blocks: [[6, 4, 20, 2, '#67e8f9'], [12, 9, 3, 3, '#67e8f9'], [18, 9, 3, 3, '#67e8f9'], [14, 15, 4, 4, '#fde047'], [15, 15, 1, 3, '#78350f'], [16, 17, 2, 1, '#78350f'], [9, 14, 14, 1, '#a855f7'], [9, 22, 14, 1, '#a855f7'], [11, 16, 2, 8, '#a855f7'], [9, 33, 6, 1, '#67e8f9'], [17, 33, 6, 1, '#67e8f9']] },
+
+    /* ---------------- 🏯 신수 설화 ---------------- */
+    { id: 'm33taoist', name: '도사', emoji: '🏯', theme: 'myth', tier: 'common', desc: '전립 · 부적 도복',
+      fills: [[0, 0, 32, 36, '#e2e8f0', 0.95], [6, 0, 20, 6, '#4b5563', 0.96], [10, 7, 12, 8, '#f2d5b6', 0.95], [9, 14, 14, 10, '#e2e8f0', 0.95], [10, 25, 12, 5, '#cbd5e1', 0.95], [9, 30, 14, 5, '#94a3b8', 0.95]],
+      blocks: [[8, 0, 16, 3, '#4b5563'], [6, 3, 20, 2, '#374151'], [15, 0, 2, 2, '#f59e0b'], [12, 9, 3, 3, '#1f2937'], [18, 9, 3, 3, '#1f2937'], [14, 12, 4, 1, '#b91c1c'], [9, 14, 14, 1, '#94a3b8'], [9, 22, 14, 1, '#94a3b8'], [13, 16, 6, 6, '#fde047'], [14, 18, 2, 1, '#dc2626'], [16, 20, 2, 1, '#dc2626']] },
+    { id: 'm33baekho', name: '백호', emoji: '🏯', theme: 'myth', tier: 'common', desc: '서방의 수호신 · 검은 줄무늬',
+      fills: [[0, 0, 32, 36, '#f8fafc', 0.95], [8, 0, 16, 9, '#f8fafc', 0.95], [10, 7, 12, 8, '#ffffff', 0.95], [9, 14, 14, 10, '#f1f5f9', 0.95], [10, 25, 12, 5, '#e2e8f0', 0.95], [9, 30, 14, 5, '#cbd5e1', 0.95]],
+      blocks: [[8, 0, 3, 4, '#ffffff'], [21, 0, 3, 4, '#ffffff'], [11, 2, 2, 4, '#1f2937'], [19, 2, 2, 4, '#1f2937'], [12, 9, 3, 3, '#22d3ee'], [18, 9, 3, 3, '#22d3ee'], [15, 12, 3, 2, '#f472b6'], [10, 15, 2, 6, '#1f2937'], [20, 15, 2, 6, '#1f2937'], [13, 16, 1, 6, '#1f2937'], [9, 22, 14, 1, '#94a3b8'], [26, 16, 4, 8, '#f8fafc']] },
+    { id: 'm33hyeonmu', name: '현무', emoji: '🏯', theme: 'myth', tier: 'common', desc: '북방의 수호신 · 거북 등껍질',
+      fills: [[0, 0, 32, 36, '#1f2937', 0.96], [7, 3, 18, 12, '#334155', 0.96], [8, 14, 16, 12, '#2b3a4a', 0.96], [10, 25, 12, 5, '#1f2937', 0.96], [9, 30, 14, 5, '#111827', 0.96]],
+      blocks: [[7, 3, 18, 2, '#475569'], [12, 9, 3, 3, '#67e8f9'], [18, 9, 3, 3, '#67e8f9'], [14, 12, 4, 1, '#0f172a'], [9, 14, 14, 2, '#0f766e'], [11, 17, 10, 7, '#134e4a'], [12, 19, 8, 1, '#22c55e'], [12, 21, 8, 1, '#22c55e'], [13, 17, 6, 2, '#166534'], [25, 9, 3, 9, '#22c55e'], [26, 7, 2, 3, '#4ade80']] },
+    { id: 'm33jujak', name: '주작', emoji: '🏯', theme: 'myth', tier: 'common', desc: '남방의 수호신 · 불꽃 깃',
+      fills: [[0, 0, 32, 36, '#b91c1c', 0.95], [8, 0, 16, 9, '#dc2626', 0.95], [10, 7, 12, 8, '#fde68a', 0.95], [9, 14, 14, 10, '#dc2626', 0.95], [10, 25, 12, 5, '#991b1b', 0.95], [9, 30, 14, 5, '#7f1d1d', 0.95]],
+      blocks: [[15, 0, 3, 3, '#fbbf24'], [12, 9, 3, 3, '#111827'], [18, 9, 3, 3, '#111827'], [15, 12, 3, 2, '#f59e0b'], [4, 11, 4, 11, '#fb923c'], [24, 11, 4, 11, '#fb923c'], [9, 14, 14, 1, '#fde047'], [14, 16, 4, 6, '#fbbf24'], [4, 20, 4, 2, '#fde047'], [24, 20, 4, 2, '#fde047']] },
+    { id: 'm33gumiho', name: '구미호', emoji: '🏯', theme: 'myth', tier: 'rare', desc: '아홉 꼬리 · 붉은 눈',
+      fills: [[0, 0, 32, 36, '#f8fafc', 0.95], [8, 0, 16, 9, '#f1f5f9', 0.95], [10, 7, 12, 8, '#fff7ed', 0.95], [9, 14, 14, 10, '#f8fafc', 0.95], [10, 25, 12, 5, '#e2e8f0', 0.95], [9, 30, 14, 5, '#cbd5e1', 0.95]],
+      blocks: [[8, 0, 3, 5, '#f8fafc'], [21, 0, 3, 5, '#f8fafc'], [9, 0, 2, 3, '#fda4af'], [21, 0, 2, 3, '#fda4af'], [12, 9, 3, 3, '#dc2626'], [18, 9, 3, 3, '#dc2626'], [15, 12, 2, 1, '#9f1239'], [11, 4, 3, 1, '#dc2626'], [19, 4, 3, 1, '#dc2626'], [24, 13, 4, 10, '#f1f5f9'], [26, 21, 4, 6, '#f1f5f9'], [26, 19, 2, 2, '#fda4af'], [9, 22, 14, 1, '#fecdd3']] },
+    { id: 'm33seonnyeo', name: '선녀', emoji: '🏯', theme: 'myth', tier: 'rare', desc: '하늘옷 · 분홍 띠',
+      fills: [[0, 0, 32, 36, '#fdf2f8', 0.95], [8, 0, 16, 9, '#1f2937', 0.95], [10, 7, 12, 8, '#ffe4d6', 0.95], [9, 14, 14, 10, '#fce7f3', 0.95], [10, 25, 12, 5, '#fbcfe8', 0.95], [9, 30, 14, 5, '#f9a8d4', 0.95]],
+      blocks: [[15, 0, 3, 3, '#1f2937'], [6, 2, 4, 2, '#1f2937'], [22, 2, 4, 2, '#1f2937'], [12, 9, 3, 3, '#1f2937'], [18, 9, 3, 3, '#1f2937'], [12, 12, 8, 1, '#ef4444'], [9, 14, 14, 1, '#f9a8d4'], [14, 15, 4, 2, '#fda4af'], [24, 14, 5, 10, 'rgba(253,164,175,.85)'], [6, 12, 3, 12, 'rgba(253,164,175,.85)'], [9, 22, 14, 1, '#f472b6']] },
+    { id: 'm33dragon', name: '청룡의 후예', emoji: '🏯', theme: 'myth', tier: 'hero', desc: '동방의 수호신 · 뿔과 비늘',
+      fills: [[0, 0, 32, 36, '#0f3b3a', 0.96], [8, 0, 16, 9, '#1f6f63', 0.96], [10, 7, 12, 8, '#bfe8d8', 0.96], [9, 14, 14, 10, '#145c52', 0.96], [10, 25, 12, 5, '#0f3b3a', 0.96], [9, 30, 14, 5, '#0b2c2b', 0.96]],
+      blocks: [[8, 0, 3, 4, '#fde047'], [21, 0, 3, 4, '#fde047'], [12, 9, 3, 3, '#fbbf24'], [18, 9, 3, 3, '#fbbf24'], [15, 11, 2, 2, '#0b2c2b'], [10, 13, 12, 1, '#0d4a42'], [14, 15, 4, 4, '#a7f3d0'], [9, 14, 14, 1, '#fde047'], [6, 12, 3, 1, '#7dd3fc'], [23, 12, 3, 1, '#7dd3fc'], [25, 16, 4, 6, '#1f6f63'], [9, 33, 6, 1, '#fde047'], [17, 33, 6, 1, '#fde047']] },
+    { id: 'm33hwarang', name: '화랑', emoji: '🏯', theme: 'myth', tier: 'legend', desc: '금관 · 홍색 전포 · 세운 검',
+      fills: [[0, 0, 32, 36, '#3b1d11', 0.96], [8, 1, 16, 8, '#1f1208', 0.96], [10, 7, 12, 8, '#f6d6b8', 0.96], [9, 14, 14, 10, '#8b1d1d', 0.96], [10, 25, 12, 5, '#4b1a1a', 0.96], [9, 30, 14, 5, '#2b1010', 0.96]],
+      blocks: [[8, 1, 16, 2, '#fbbf24'], [15, 0, 3, 3, '#fde047'], [12, 9, 3, 3, '#1f2937'], [18, 9, 3, 3, '#1f2937'], [14, 12, 4, 1, '#b91c1c'], [9, 14, 14, 1, '#fbbf24'], [9, 22, 14, 1, '#fbbf24'], [13, 16, 2, 9, '#fbbf24'], [21, 4, 2, 10, '#cbd5e1'], [20, 13, 4, 2, '#fbbf24'], [10, 16, 3, 3, '#fde68a'], [9, 33, 6, 1, '#fbbf24'], [17, 33, 6, 1, '#fbbf24']] }
+  ];
+  var BY_SKIN = {};
+  SKINS.forEach(function (s) { BY_SKIN[s.id] = s; });
+
+  var PETS33 = [
+    { id: 'p33holodrone', name: '홀로 드론', theme: 'neon', tier: 'rare' },
+    { id: 'p33cybercat', name: '네온 냥봇', theme: 'neon', tier: 'hero' },
+    { id: 'p33plasmawisp', name: '플라즈마 위습', theme: 'neon', tier: 'legend' },
+    { id: 'p33dokkaebi', name: '꼬마 도깨비', theme: 'myth', tier: 'rare' },
+    { id: 'p33haetae', name: '아기 해태', theme: 'myth', tier: 'hero' },
+    { id: 'p33bonghwang', name: '아기 봉황', theme: 'myth', tier: 'legend' }
+  ];
+  var TRAILS33 = [
+    { id: 't33glitch', name: '글리치 코드', theme: 'neon', tier: 'common' },
+    { id: 't33laser', name: '레이저 라인', theme: 'neon', tier: 'legend' },
+    { id: 't33ink', name: '먹붓 자국', theme: 'myth', tier: 'common' },
+    { id: 't33moonhwa', name: '월화 꽃잎', theme: 'myth', tier: 'rare' }
+  ];
+  var FRAMES33 = [
+    { id: 'fr33neon', name: '🌌 네온 서킷', cls: 'v57-fr-t33neon', theme: 'neon', tier: 'hero', why: '🎰 테마 뽑기 · 🌌 사이버 네온' },
+    { id: 'fr33myth', name: '🏯 신수 문양', cls: 'v57-fr-t33myth', theme: 'myth', tier: 'hero', why: '🎰 테마 뽑기 · 🏯 신수 설화' }
+  ];
+  var TITLES33 = [
+    { id: 'ti33neon', name: '🌌 네온의 지배자', short: '🌌 네온의 지배자', theme: 'neon', tier: 'legend', rank: 5 },
+    { id: 'ti33myth', name: '🏯 설화의 수호자', short: '🏯 설화의 수호자', theme: 'myth', tier: 'legend', rank: 5 }
+  ];
+
+  /* 테마별 15종 목록 */
+  function itemsOf(themeId) {
+    var list = [];
+    SKINS.forEach(function (s) { if (s.theme === themeId) list.push({ id: s.id, type: 'skin', name: s.name, tier: s.tier, theme: s.theme }); });
+    PETS33.forEach(function (s) { if (s.theme === themeId) list.push({ id: s.id, type: 'pet', name: s.name, tier: s.tier, theme: s.theme }); });
+    TRAILS33.forEach(function (s) { if (s.theme === themeId) list.push({ id: s.id, type: 'trail', name: s.name, tier: s.tier, theme: s.theme }); });
+    FRAMES33.forEach(function (s) { if (s.theme === themeId) list.push({ id: s.id, type: 'frame', name: s.name, tier: s.tier, theme: s.theme }); });
+    TITLES33.forEach(function (s) { if (s.theme === themeId) list.push({ id: s.id, type: 'title', name: s.name, tier: s.tier, theme: s.theme }); });
+    return list;
+  }
+  var ITEMS = {};
+  THEMES.forEach(function (t) { ITEMS[t.id] = itemsOf(t.id); });
+  var ALL = {};
+  THEMES.forEach(function (t) { ITEMS[t.id].forEach(function (it) { ALL[it.id] = it; }); });
+  function poolOf(themeId, tier) { return (ITEMS[themeId] || []).filter(function (i) { return i.tier === tier; }); }
+  var TYPE_ICON = { skin: '🎭', pet: '🐾', trail: '✨', frame: '🖼️', title: '🏅' };
+  var TYPE_NAME = { skin: '스킨', pet: '펫', trail: '꼬리 잔상', frame: '테두리', title: '칭호' };
+
+  /* ================================================================
+     스킨 등록 (md.SKINS + md.skinCanvas 체인 + 잠금)
+     ================================================================ */
+  var W = 32, H = 36;
+  var DY = { idle1: 0, idle2: 1, charge: 5, jump: -1, fall: 1, hurt: 0 };
+  var artCache = {};
+  function art(skinId, pose) {
+    var s = BY_SKIN[skinId];
+    if (!s) return null;
+    pose = pose || 'idle1';
+    var key = skinId + '|' + pose;
+    if (artCache[key] !== undefined) return artCache[key];
+    var J = root.__jwg;
+    var A = J && J.ASSETS;
+    var base = A && A.sprites ? (A.sprites[pose] || A.sprites.idle1) : null;
+    if (!base) { artCache[key] = null; return null; }
+    var cv = doc.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var c = cv.getContext('2d');
+    if (!c) { artCache[key] = null; return null; }
+    c.imageSmoothingEnabled = false;
+    if (pose === 'splat') {
+      var flat = art(skinId, 'idle1');
+      if (flat) c.drawImage(flat, 0, 0, W, H, 1, 23, W - 2, 12);
+      artCache[key] = cv;
+      return cv;
+    }
+    c.drawImage(base, 0, 0);
+    var dy = DY[pose] || 0;
+    c.globalCompositeOperation = 'source-atop';
+    (s.fills || []).forEach(function (f) {
+      c.globalAlpha = f[5];
+      c.fillStyle = f[4];
+      c.fillRect(f[0], f[1] + (f[1] < 24 ? dy : 0), f[2], f[3]);
+    });
+    c.globalAlpha = 1;
+    c.globalCompositeOperation = 'source-over';
+    (s.blocks || []).forEach(function (b) {
+      c.fillStyle = b[4];
+      c.fillRect(b[0], b[1] + (b[1] < 24 ? dy : 0), b[2], b[3]);
+    });
+    artCache[key] = cv;
+    return cv;
+  }
+
+  function registerSkins() {
+    var md = root.JWMode;
+    if (!md) return;
+    if (Array.isArray(md.SKINS)) {
+      SKINS.forEach(function (s) {
+        if (!md.SKINS.some(function (x) { return x.id === s.id; })) {
+          md.SKINS.push({ id: s.id, name: s.name, emoji: s.emoji, theme: s.theme, v533: true, desc: s.desc });
+        }
+      });
+    }
+    if (typeof md.skinCanvas === 'function' && !md.__v533skin) {
+      md.__v533skin = true;
+      var orig = md.skinCanvas;
+      md.skinCanvas = function (skinId, pose) {
+        if (skinId && BY_SKIN[skinId]) {
+          try { var cvv = art(skinId, pose); if (cvv) return cvv; } catch (e) {}
+        }
+        return orig.apply(this, arguments);
+      };
+    }
+  }
+
+  /* ================================================================
+     저장
+     ================================================================ */
+  var KEY = 'jw533_theme_v1';
+  function blank() {
+    return { v: 1, owned: {}, theme: 'neon', pity: { neon: { r: 0, h: 0 }, myth: { r: 0, h: 0 } }, pulls: { neon: 0, myth: 0 }, last: { neon: [], myth: [] }, odds: false };
+  }
+  function load() {
+    var s = null;
+    try { s = V.lsGet(KEY, null); } catch (e) {}
+    if (!s || typeof s !== 'object') s = blank();
+    if (!s.owned || typeof s.owned !== 'object') s.owned = {};
+    if (!s.theme || !ITEMS[s.theme]) s.theme = 'neon';
+    if (!s.pity || typeof s.pity !== 'object') s.pity = {};
+    if (!s.pulls || typeof s.pulls !== 'object') s.pulls = { neon: 0, myth: 0 };
+    if (!s.last || typeof s.last !== 'object') s.last = { neon: [], myth: [] };
+    THEMES.forEach(function (t) {
+      var p = s.pity[t.id];
+      if (!p || typeof p !== 'object') p = { r: 0, h: 0 };
+      if (typeof p.r !== 'number') p.r = 0;
+      if (typeof p.h !== 'number') p.h = 0;
+      s.pity[t.id] = p;
+      if (typeof s.pulls[t.id] !== 'number') s.pulls[t.id] = 0;
+      if (!Array.isArray(s.last[t.id])) s.last[t.id] = [];
+    });
+    return s;
+  }
+  var S = load();
+  function save() { try { V.lsSet(KEY, S); } catch (e) {} }
+  function owned(id) { return !!(S && S.owned && S.owned[id]); }
+  function ownIt(it) {
+    if (!it) return;
+    S.owned[it.id] = 1;
+    try { if (it.type === 'pet' && root.JW529 && root.JW529.own) root.JW529.own(it.id); } catch (e) {}
+    try { if (it.type === 'trail' && root.JW529 && root.JW529.grant) root.JW529.grant(it.id); } catch (e) {}
+    save();
+  }
+
+  /* ================================================================
+     코인 (기존 펫 코인 그대로)
+     ================================================================ */
+  function coins() { try { var st = root.JW529 && root.JW529.st ? root.JW529.st() : null; return st ? (Number(st.coins) || 0) : 0; } catch (e) { return 0; } }
+  function spend(n) {
+    try {
+      if (root.JW529 && root.JW529.spend) return root.JW529.spend(n);
+      root.JW529.coins(coins() - n); return true;
+    } catch (e) { return false; }
+  }
+  function addCoins(n) {
+    try {
+      if (root.JW529 && root.JW529.addCoins) root.JW529.addCoins(n);
+      else root.JW529.coins(coins() + n);
+    } catch (e) {}
+  }
+  function coinStr(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  /* ================================================================
+     뽑기
+     ================================================================ */
+  function rollTier() {
+    var r = Math.random() * 100;
+    if (r < 2) return 'legend';
+    if (r < 12) return 'hero';
+    if (r < 40) return 'rare';
+    return 'common';
+  }
+  function pickTier(th) {
+    var p = S.pity[th];
+    var tier;
+    if (p.h >= 29) tier = (Math.random() < 0.18) ? 'legend' : 'hero';
+    else if (p.r >= 9) {
+      var q = Math.random();
+      if (q < 0.06) tier = 'legend';
+      else if (q < 0.30) tier = 'hero';
+      else tier = 'rare';
+    } else tier = rollTier();
+    if (!poolOf(th, tier).length) tier = 'common';
+    if (!poolOf(th, tier).length) tier = 'rare';
+    return tier;
+  }
+  function pullOne(th) {
+    var tier = pickTier(th);
+    var list = poolOf(th, tier);
+    if (!list.length) list = ITEMS[th];
+    var it = list[Math.floor(Math.random() * list.length)] || ITEMS[th][0];
+    var dup = owned(it.id);
+    var refund = 0;
+    if (dup) { refund = TIER[it.tier].refund; addCoins(refund); }
+    else ownIt(it);
+    S.pulls[th]++;
+    var p = S.pity[th];
+    if (tier === 'common') p.r++; else p.r = 0;
+    if (tier === 'hero' || tier === 'legend') p.h = 0; else p.h++;
+    return { id: it.id, name: it.name, type: it.type, tier: it.tier, dup: dup, refund: refund };
+  }
+  function doPull(n) {
+    var th = S.theme;
+    var cost = n === 5 ? PULL5 : PULL1 * n;
+    var have = coins();
+    if (have < cost) {
+      try { V.toast('🪙 펫 코인이 부족해요', 'danger', '필요 ' + coinStr(cost) + ' · 보유 ' + coinStr(have), 2600); } catch (e) {}
+      beep(300, 0.08);
+      return null;
+    }
+    spend(cost);
+    var out = [];
+    for (var i = 0; i < n; i++) out.push(pullOne(th));
+    S.last[th] = out;
+    save();
+    beep(880, 0.05);
+    setTimeout(function () { try { V.beep(1180, 0.06, 0.07, 'square', 1560); } catch (e) {} }, 90);
+    var best = out.filter(function (x) { return x.tier !== 'common'; }).length;
+    if (best) toast('✨ ' + best + '종이 희귀 이상!', themeOf(th).emoji + ' ' + themeOf(th).name + ' · 아래에서 확인');
+    try { if (root.JW57PROF && root.JW57PROF.paint) root.JW57PROF.paint(); } catch (e) {}
+    return out;
+  }
+
+  /* ================================================================
+     장착 (기존 시스템 그대로)
+     ================================================================ */
+  var EQ_GET = {
+    skin: function () { try { return api().meSkin() || ''; } catch (e) { return ''; } },
+    pet: function () { try { var st = root.JW529.st(); return st.equip || ''; } catch (e) { return ''; } },
+    trail: function () { try { var st = root.JW529.st(); return st.trail || ''; } catch (e) { return ''; } },
+    frame: function () { try { return root.JW57PL.frame().id; } catch (e) { return ''; } },
+    title: function () { try { return root.JW51TITLES.equipped(); } catch (e) { return ''; } }
+  };
+  function equipItem(id) {
+    var it = ALL[id];
+    if (!it) return;
+    if (!owned(id)) { try { V.toast('🔒 아직 없는 아이템', 'danger', '뽑기로 먼저 획득하세요', 2000); } catch (e) {} return; }
+    try {
+      if (it.type === 'skin') api().setSkin(id);
+      else if (it.type === 'pet') root.JW529.equip(id);
+      else if (it.type === 'trail') root.JW529.setTrail(id);
+      else if (it.type === 'frame') root.JW57PL.equip('frame', id);
+      else if (it.type === 'title') root.JW51TITLES.equip(id);
+    } catch (e) {}
+    beep(1020, 0.06);
+    try { if (api().renderLobby) api().renderLobby(); } catch (e) {}
+    try { if (api().syncSingle) api().syncSingle(); } catch (e) {}
+    paint();
+    try { if (root.JW57PROF && root.JW57PROF.paint) root.JW57PROF.paint(); } catch (e) {}
+  }
+
+  /* ================================================================
+     CSS
+     ================================================================ */
+  function css() {
+    if ($('v533Css')) return;
+    var s = doc.createElement('style');
+    s.id = 'v533Css';
+    s.textContent = [
+      /* 프로필 탭 7개: 4칸 × 2줄 (마지막 테마 탭이 2칸) */
+      '#v57Prof .tabs{grid-template-columns:repeat(4,1fr) !important;}',
+      '#v57Prof .tab{font-size:11.5px !important;padding:0 2px !important;}',
+      '#v57Prof .skcard .v533b{font-style:normal;font-size:8.5px;font-weight:900;padding:1px 4px;border-radius:6px;background:#0b1424;color:#7dd3fc;border:1px solid #22304a;line-height:1.2;}',
+      '#v57Prof .skcard .v533b.myth{color:#fcd34d;border-color:#4a3410;}',
+      '@keyframes v533pop{0%{transform:scale(.55);opacity:0}55%{transform:scale(1.07);opacity:1}100%{transform:scale(1);opacity:1}}',
+      '@keyframes v533shine{0%{background-position:0% 50%}100%{background-position:200% 50%}}',
+      '#v533G{position:fixed;inset:0;z-index:12800;display:flex;align-items:center;justify-content:center;background:rgba(6,10,20,.9);padding:8px;font-family:system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;}',
+      '#v533G.hide{display:none;}',
+      '#v533G .card{width:min(100%,520px);max-height:93dvh;display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(180deg,#121e36,#0a1120 60%,#070c16);border:2px solid #2a3d5e;border-radius:18px;box-shadow:0 20px 56px rgba(0,0,0,.8),inset 0 2px 0 rgba(255,255,255,.07);}',
+      '#v533G .hd{display:flex;align-items:center;gap:8px;padding:11px 12px;border-bottom:1px solid #1b2942;}',
+      '#v533G .hd b{flex:1 1 auto;font-family:"Jua",sans-serif;font-size:18px;color:#fff;white-space:nowrap;}',
+      '#v533G .hd .coin{font-size:12.5px;font-weight:900;color:#fde047;white-space:nowrap;}',
+      '#v533G .x{height:36px;padding:0 11px;border-radius:11px;border:2px solid #33456a;background:linear-gradient(180deg,#28364f,#162032);color:#dbe7f8;font-size:12.5px;font-weight:900;box-shadow:0 3px 0 #0a101c;white-space:nowrap;}',
+      '#v533G .bns{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:9px 12px 0;}',
+      '#v533G .bn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 9px;border-radius:13px;border:2px solid #26344e;background:#0c1524;color:#a8bad5;text-align:left;box-shadow:0 3px 0 #070c16;min-height:52px;}',
+      '#v533G .bn i{font-style:normal;font-size:9px;font-weight:900;letter-spacing:.6px;opacity:.75;}',
+      '#v533G .bn b{font-family:"Jua",sans-serif;font-size:13.5px;color:#e6f0ff;line-height:1.15;white-space:nowrap;}',
+      '#v533G .bn s{text-decoration:none;font-size:10px;font-weight:900;color:#93a8c8;}',
+      '#v533G .bn.on{border-color:#fbbf24;box-shadow:0 3px 0 #6b4405,0 0 0 2px rgba(251,191,36,.25) inset;}',
+      '#v533G .bn.on b{color:#fff;}',
+      '#v533G .body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:9px 12px 14px;display:flex;flex-direction:column;gap:8px;}',
+      '#v533G .top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 9px;border-radius:13px;background:linear-gradient(180deg,#16233d,#0d1728);border:2px solid #2a3d5e;}',
+      '#v533G .top .coin{flex:1 1 auto;font-family:"Jua",sans-serif;font-size:16px;color:#fde047;white-space:nowrap;}',
+      '#v533G .top .coin i{font-style:normal;font-size:10.5px;color:#93a8c8;font-weight:800;margin-left:3px;}',
+      '#v533G .btn{min-height:40px;padding:0 11px;border-radius:11px;font-size:12.5px;font-weight:900;white-space:nowrap;border:2px solid #33456a;background:linear-gradient(180deg,#243654,#162032);color:#e6f0ff;box-shadow:0 3px 0 #070c16;}',
+      '#v533G .btn.pri{background:linear-gradient(180deg,#ffe79a,#f7b91f 60%,#dc9a0d);color:#6b4708;border-color:#5a3204;}',
+      '#v533G .btn.mid{background:linear-gradient(180deg,#cfe6ff,#67a9fb 55%,#2f6fd0);color:#041a3a;border-color:#0b2c5c;}',
+      '#v533G .btn:disabled{opacity:.45;}',
+      '#v533G .pity{font-size:11px;font-weight:800;color:#8fa3c4;line-height:1.5;}',
+      '#v533G .pity b{color:#7dd3fc;}',
+      '#v533G .pity u{text-decoration:none;color:#fbbf24;}',
+      '#v533G .strip{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}',
+      '#v533G .res{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;border-radius:11px;background:#0b1424;border:2px solid #22304a;color:#dbe7f8;font:inherit;animation:v533pop .32s cubic-bezier(.2,1.4,.5,1) both;}',
+      '#v533G .res canvas{width:34px;height:34px;image-rendering:pixelated;}',
+      '#v533G .res .em{font-size:22px;line-height:34px;}',
+      '#v533G .res b{font-size:9px;font-weight:900;color:#eaf2ff;line-height:1.15;text-align:center;word-break:keep-all;}',
+      '#v533G .res i{font-style:normal;font-size:8px;font-weight:900;color:#93a8c8;text-align:center;}',
+      '#v533G .res.common{border-color:#41506b;}',
+      '#v533G .res.rare{border-color:#2563eb;background:linear-gradient(180deg,rgba(37,99,235,.24),#0b1424);}',
+      '#v533G .res.hero{border-color:#7c3aed;background:linear-gradient(180deg,rgba(124,58,237,.26),#0b1424);}',
+      '#v533G .res.legend{border-color:#f59e0b;background:linear-gradient(180deg,rgba(245,158,11,.3),#0b1424);box-shadow:0 0 0 1px rgba(253,224,71,.4) inset,0 0 12px rgba(251,191,36,.35);}',
+      '#v533G .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}',
+      '#v533G .it{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 3px;border-radius:12px;background:#0d1728;border:2px solid #22304a;color:#dbe7f8;min-height:76px;}',
+      '#v533G .it canvas{image-rendering:pixelated;}',
+      '#v533G .it canvas[data-v533cv]{width:38px;height:43px;}',
+      '#v533G .it canvas[data-v533pcv]{width:42px;height:38px;}',
+      '#v533G .it canvas[data-v533tcv]{width:42px;height:24px;border-radius:6px;background:#070d18;}',
+      '#v533G .res canvas{image-rendering:pixelated;}',
+      '#v533G .res canvas[data-v533rv]{width:30px;height:34px;}',
+      '#v533G .res canvas[data-v533rpv]{width:32px;height:29px;}',
+      '#v533G .res canvas[data-v533rtv]{width:34px;height:20px;border-radius:5px;background:#070d18;}',
+      '#v533G .it .em{font-size:26px;line-height:40px;filter:saturate(.5);}',
+      '#v533G .it b{font-size:9.5px;font-weight:900;line-height:1.15;text-align:center;word-break:keep-all;color:#eaf2ff;}',
+      '#v533G .it i{font-style:normal;font-size:8.5px;font-weight:900;color:#93a8c8;}',
+      '#v533G .it.lock{opacity:.78;}',
+      '#v533G .it.rare{border-color:#1d4ed8;}',
+      '#v533G .it.hero{border-color:#6d28d9;}',
+      '#v533G .it.legend{border-color:#b45309;box-shadow:0 0 0 1px rgba(253,224,71,.3) inset;}',
+      '#v533G .it.on{border-color:#38bdf8;background:linear-gradient(180deg,rgba(37,99,235,.25),rgba(13,23,40,.95));}',
+      '#v533G .odds{padding:9px 10px;border-radius:12px;background:#0b1424;border:2px solid #24344f;font-size:11px;font-weight:800;color:#c7d6ee;line-height:1.6;}',
+      '#v533G .odds b{color:#fde047;}',
+      '#v533G .odds .t{color:#7dd3fc;}',
+      '#v533G .note{font-size:11px;font-weight:800;color:#8fa3c4;line-height:1.45;}',
+      '#v57Prof .v533ban{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:12px;background:linear-gradient(135deg,#16233d,#0d1728 60%,#1b2b52);border:2px solid #2a3d5e;}',
+      '#v57Prof .v533ban .tx{flex:1 1 auto;min-width:0;}',
+      '#v57Prof .v533ban b{display:block;font-family:"Jua",sans-serif;font-size:13px;color:#fff;}',
+      '#v57Prof .v533ban i{display:block;font-style:normal;font-size:10.5px;font-weight:800;color:#93a8c8;margin-top:2px;}',
+      '.v57-fr-t33neon{box-shadow:0 0 0 2px #22d3ee,0 0 0 4px rgba(168,85,247,.55),0 0 16px rgba(34,211,238,.6) !important;border-radius:10px;}',
+      '.v57-fr-t33myth{box-shadow:0 0 0 2px #fbbf24,0 0 0 4px rgba(185,28,28,.55),0 0 16px rgba(251,191,36,.65) !important;border-radius:10px;}'
+    ].join('\n');
+    (doc.head || doc.documentElement).appendChild(s);
+  }
+
+  /* ================================================================
+     미리보기
+     ================================================================ */
+  function drawSkinCv(cv, id) {
+    var c = cv.getContext('2d');
+    if (!c) return;
+    c.clearRect(0, 0, cv.width, cv.height);
+    var sp = null;
+    try { sp = api().spriteFor(api().meColor ? api().meColor() : 'blue', 'idle1', id); } catch (e) { sp = null; }
+    if (!sp) return;
+    c.imageSmoothingEnabled = false;
+    var sc = Math.min(cv.width / sp.width, cv.height / sp.height);
+    var dw = Math.round(sp.width * sc), dh = Math.round(sp.height * sc);
+    try { c.drawImage(sp, Math.round((cv.width - dw) / 2), Math.round((cv.height - dh) / 2), dw, dh); } catch (e) {}
+  }
+  function drawPetCv(cv, id, t) {
+    var c = cv.getContext('2d');
+    if (!c) return;
+    c.clearRect(0, 0, cv.width, cv.height);
+    if (!root.JW529 || !root.JW529.drawPet) return;
+    c.save();
+    c.imageSmoothingEnabled = false;
+    c.translate(cv.width / 2, cv.height - 2);
+    c.scale(1.05, 1.05);
+    try { root.JW529.drawPet(c, id, t || 0.6); } catch (e) {}
+    c.restore();
+  }
+  /* 테마 잔상은 뽑기 화면에서도 또렷하게 보이도록 전용 미리보기로 그린다 */
+  var TCOL = { t33glitch: ['#22d3ee', '#a855f7', '#67e8f9'], t33laser: ['#fb7185', '#fff1f2'], t33ink: ['#dbe1ff', '#a5b4fc'], t33moonhwa: ['#fbcfe8', '#fef3c7', '#f9a8d4'] };
+  function drawTrailCv(cv, id, t) {
+    var pal = TCOL[id];
+    if (!pal) {
+      if (!root.JW529 || !root.JW529.previewTrail) return;
+      try { root.JW529.previewTrail(cv, id, t || 0.4); } catch (e) {}
+      return;
+    }
+    var c = cv.getContext('2d');
+    if (!c) return;
+    c.clearRect(0, 0, cv.width, cv.height);
+    c.fillStyle = '#070d18'; c.fillRect(0, 0, cv.width, cv.height);
+    var step = (cv.width - 10) / 5;
+    for (var i = 0; i < 6; i++) {
+      c.globalAlpha = Math.max(0.28, 0.96 - i * 0.12);
+      c.fillStyle = pal[i % pal.length];
+      var x = Math.round(5 + i * step), y = cv.height - 6 - Math.round(Math.sin(i * 0.8 + (t || 0) * 2) * 3);
+      if (id === 't33laser') { c.fillRect(x - 3, y, 8, 2); }
+      else if (id === 't33ink') { c.fillRect(x - 2, y - 2, 4, 4); c.globalAlpha = c.globalAlpha * 0.45; c.fillRect(x - 4, y - 1, 9, 2); }
+      else if (id === 't33glitch') { c.fillRect(x - 2, y - 2, 2, 3); c.fillRect(x + 1, y + 1, 3, 2); }
+      else { c.fillRect(x - 2, y - 2, 3, 3); c.fillRect(x + 1, y + 2, 2, 2); }
+    }
+    c.globalAlpha = 1;
+  }
+
+  /* ================================================================
+     모달
+     ================================================================ */
+  function ensure() {
+    css();
+    var m = $('v533G');
+    if (m) return m;
+    m = doc.createElement('div');
+    m.id = 'v533G';
+    m.className = 'hide';
+    m.innerHTML = '<div class="card">' +
+      '<div class="hd"><b>🎰 테마 뽑기</b><span class="coin" id="v533Coin">🪙 0</span>' +
+        '<button type="button" class="x" data-v533x="1">닫기 ✕</button></div>' +
+      '<div class="bns" id="v533Bns"></div>' +
+      '<div class="body" id="v533Body"></div></div>';
+    doc.body.appendChild(m);
+    m.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest) return;
+      if (t === m) { close(); return; }
+      if (t.closest('[data-v533x]')) { close(); return; }
+      var th = t.closest('[data-v533th]');
+      if (th) { S.theme = th.getAttribute('data-v533th'); save(); paint(); beep(760, 0.04); return; }
+      var a = t.closest('[data-v533act]');
+      if (a) {
+        var act = a.getAttribute('data-v533act');
+        if (act === 'pull1') doPull(1);
+        else if (act === 'pull5') doPull(5);
+        else if (act === 'odds') { S.odds = !S.odds; save(); paint(); }
+        paint();
+        return;
+      }
+      var eq = t.closest('[data-v533eq]');
+      if (eq) { equipItem(eq.getAttribute('data-v533eq')); return; }
+    });
+    return m;
+  }
+
+  function bannerHtml() {
+    return THEMES.map(function (th) {
+      var list = ITEMS[th.id] || [];
+      var got = list.filter(function (i) { return owned(i.id); }).length;
+      return '<button type="button" class="bn' + (S.theme === th.id ? ' on' : '') + '" data-v533th="' + th.id + '"' +
+        ' style="background:' + (S.theme === th.id ? th.grad : '#0c1524') + '">' +
+        '<b>' + th.emoji + ' ' + esc(th.name) + '</b>' +
+        '<i>' + esc(th.sub) + ' · 15종</i>' +
+        '<s>보유 ' + got + ' / ' + list.length + '</s></button>';
+    }).join('');
+  }
+
+  function previewOf(it, size) {
+    if (it.type === 'skin') return '<canvas data-v533cv="' + esc(it.id) + '" width="32" height="36"></canvas>';
+    if (it.type === 'pet') return '<canvas data-v533pcv="' + esc(it.id) + '" width="34" height="34"></canvas>';
+    if (it.type === 'trail') return '<canvas data-v533tcv="' + esc(it.id) + '" width="42" height="24"></canvas>';
+    if (it.type === 'frame') return '<span style="display:block;width:24px;height:24px;margin:8px auto 9px;border-radius:8px;background:#0b1220;box-shadow:0 0 0 2px ' + (it.theme === 'neon' ? '#22d3ee' : '#fbbf24') + ',inset 0 0 0 2px rgba(168,85,247,.55),0 0 10px ' + (it.theme === 'neon' ? '#22d3ee' : '#fbbf24') + '"></span>';
+    return '<span class="em">🏅</span>';
+  }
+
+  function paint() {
+    var m = ensure();
+    var bns = $('v533Bns');
+    if (bns) bns.innerHTML = bannerHtml();
+    var coinEl = $('v533Coin');
+    if (coinEl) coinEl.textContent = '🪙 ' + coinStr(coins());
+    var body = $('v533Body');
+    if (!body) return;
+    var th = themeOf(S.theme);
+    var list = ITEMS[th.id] || [];
+    var got = list.filter(function (i) { return owned(i.id); }).length;
+    var p = S.pity[th.id];
+
+    var h = '';
+    h += '<div class="top"><div class="coin">🪙 ' + coinStr(coins()) + ' <i>펫 코인</i></div>' +
+      '<button type="button" class="btn pri" data-v533act="pull1">🎲 1회 · ' + PULL1 + '</button>' +
+      '<button type="button" class="btn pri" data-v533act="pull5">🎲 5회 · ' + PULL5 + '</button>' +
+      '<button type="button" class="btn" data-v533act="odds">📊 확률표</button></div>';
+
+    h += '<div class="pity">' + th.emoji + ' <b>' + esc(th.name) + '</b> ' + got + ' / ' + list.length + '종 보유 · ' +
+      '천장 <b>' + Math.max(1, 10 - p.r) + '회</b> 뒤 희귀 이상 · <b>' + Math.max(1, 30 - p.h) + '회</b> 뒤 영웅 이상 · ' +
+      '누적 <u>' + S.pulls[th.id] + '회</u></div>';
+
+    var last = S.last[th.id] || [];
+    if (last.length) {
+      h += '<div class="strip">' + last.map(function (r) {
+        var it = ALL[r.id] || {};
+        var prev = '';
+        if (it.type === 'skin') prev = '<canvas data-v533rv="' + esc(r.id) + '" width="30" height="34"></canvas>';
+        else if (it.type === 'pet') prev = '<canvas data-v533rpv="' + esc(r.id) + '" width="32" height="32"></canvas>';
+        else if (it.type === 'trail') prev = '<canvas data-v533rtv="' + esc(r.id) + '" width="34" height="20"></canvas>';
+        else prev = '<span class="em">' + (TYPE_ICON[it.type] || '🎁') + '</span>';
+        return '<button type="button" class="res ' + r.tier + '" data-v533eq="' + esc(r.id) + '">' + prev +
+          '<b>' + esc(r.name) + '</b>' +
+          '<i>' + (r.dup ? '중복 +' + r.refund : 'NEW ' + (r.type === 'skin' ? '🎭' : r.type === 'pet' ? '🐾' : r.type === 'trail' ? '✨' : r.type === 'frame' ? '🖼️' : '🏅')) + '</i></button>';
+      }).join('') + '</div>' +
+      '<div class="note" style="margin-top:-2px">👆 결과 카드를 누르면 그 자리에서 바로 장착됩니다</div>';
+    }
+
+    /* 보유/미보유 15종 */
+    h += '<div class="note">' + th.emoji + ' ' + esc(th.name) + ' 15종 — 보유한 아이템은 눌러서 바로 장착' + (got === list.length ? ' · <span style="color:#fbbf24">전종 수집 완료!</span>' : '') + '</div>';
+    h += '<div class="grid">' + list.map(function (it) {
+      var on = false;
+      try { on = EQ_GET[it.type]() === it.id; } catch (e) {}
+      var has = owned(it.id);
+      return '<button type="button" class="it ' + it.tier + (has ? '' : ' lock') + (on ? ' on' : '') + '" data-v533eq="' + esc(it.id) + '">' +
+        previewOf(it) +
+        '<b>' + (has ? '' : '🔒 ') + esc(it.name) + '</b>' +
+        '<i>' + TYPE_ICON[it.type] + ' ' + (TIER[it.tier] ? TIER[it.tier].name : '') + (on ? ' · 장착' : (has ? ' · 장착하기' : '')) + '</i></button>';
+    }).join('') + '</div>';
+
+    if (S.odds) {
+      h += '<div class="odds"><b>📊 확률표</b> — ' + th.emoji + ' ' + esc(th.name) + ' (1회 ' + PULL1 + ' · 5회 ' + PULL5 + ')<br>' +
+        ['common', 'rare', 'hero', 'legend'].map(function (k) {
+          var pool = poolOf(th.id, k);
+          if (!pool.length) return '';
+          var per = TIER[k].rate / pool.length;
+          return '<span class="t">' + TIER[k].name + ' ' + TIER[k].rate + '%</span> — ' +
+            pool.map(function (i) { return TYPE_ICON[i.type] + esc(i.name) + ' ' + (Math.round(per * 10) / 10) + '%'; }).join(' · ');
+        }).join('<br>') +
+        '<br><b>천장</b> — 10회 안에 희귀 이상 확정 · 30회 안에 영웅 이상 확정 (확정이 나오면 0으로 돌아갑니다)' +
+        '<br><b>중복</b> — 이미 있는 아이템이 나오면 등급별 코인 환급: 일반 +' + TIER.common.refund + ' · 희귀 +' + TIER.rare.refund + ' · 영웅 +' + TIER.hero.refund + ' · 전설 +' + TIER.legend.refund +
+        '<br><span style="color:#93a8c8">스킨·펫·잔상·테두리·칭호는 모두 꾸미기 전용 — 속도·판정·밸런스에 영향이 없습니다.</span></div>';
+    }
+
+    h += '<div class="note">🪙 펫 코인은 완등·최고층·스토리 첫 클리어·하루 첫 접속으로 모입니다 · 테마를 바꿔도 보유 아이템과 천장 게이지는 테마별로 따로 쌓입니다</div>';
+
+    body.innerHTML = h;
+
+    /* 캔버스 그리기 */
+    body.querySelectorAll('canvas[data-v533cv]').forEach(function (cv) { drawSkinCv(cv, cv.getAttribute('data-v533cv')); });
+    body.querySelectorAll('canvas[data-v533pcv]').forEach(function (cv) { drawPetCv(cv, cv.getAttribute('data-v533pcv'), 0.7); });
+    body.querySelectorAll('canvas[data-v533tcv]').forEach(function (cv) { drawTrailCv(cv, cv.getAttribute('data-v533tcv'), 0.4); });
+    body.querySelectorAll('canvas[data-v533rv]').forEach(function (cv) { drawSkinCv(cv, cv.getAttribute('data-v533rv')); });
+    body.querySelectorAll('canvas[data-v533rpv]').forEach(function (cv) { drawPetCv(cv, cv.getAttribute('data-v533rpv'), 0.7); });
+    body.querySelectorAll('canvas[data-v533rtv]').forEach(function (cv) { drawTrailCv(cv, cv.getAttribute('data-v533rtv'), 0.4); });
+    /* 잠긴 스킨은 흐리게 */
+    body.querySelectorAll('.it.lock canvas').forEach(function (cv) { try { cv.style.opacity = '.62'; } catch (e) {} });
+  }
+
+  function open(themeId) {
+    css();
+    if (themeId && ITEMS[themeId]) { S.theme = themeId; save(); }
+    var m = ensure();
+    m.classList.remove('hide');
+    paint();
+  }
+  function close() { var m = $('v533G'); if (m) m.classList.add('hide'); }
+
+  /* ================================================================
+     기존 시스템에 30종 붙이기 (테두리·칭호)
+     ================================================================ */
+  function attachFrames() {
+    try {
+      var P = root.JW57PL;
+      if (!P || !Array.isArray(P.frames)) return;
+      FRAMES33.forEach(function (f) {
+        if (P.frames.some(function (x) { return x.id === f.id; })) return;
+        P.frames.push({
+          id: f.id, name: f.name, cls: f.cls, why: f.why,
+          need: function () { return owned(f.id); },
+          prog: function () { return '🎰 테마 뽑기'; }
+        });
+      });
+    } catch (e) {}
+  }
+  function attachTitles() {
+    try {
+      var tl = api().titles ? api().titles() : null;
+      if (!Array.isArray(tl)) return;
+      TITLES33.forEach(function (x) {
+        if (tl.some(function (y) { return y.id === x.id; })) return;
+        tl.push({
+          id: x.id, name: x.name, short: x.short, rank: x.rank, grade: 'legend',
+          need: function () { return owned(x.id); },
+          why: '🎰 테마 뽑기 · ' + (x.theme === 'neon' ? '🌌 사이버 네온' : '🏯 신수 설화')
+        });
+      });
+    } catch (e) {}
+  }
+
+  /* 스킨 잠금: 테마 스킨은 뽑기로 보유하기 전까지 잠김 (스토리 스킨 판정은 그대로 위임) */
+  function hookLock() {
+    try {
+      if (V.skinLocked && !V.skinLocked.__v533) {
+        var orig = V.skinLocked;
+        var w = function (id) {
+          if (id && BY_SKIN[id]) {
+            try { if (root.JWDEV && root.JWDEV.isDevAcct && root.JWDEV.isDevAcct()) return false; } catch (e) {}
+            return !owned(id);
+          }
+          return orig.apply(this, arguments);
+        };
+        w.__v533 = 1;
+        V.skinLocked = w;
+      }
+    } catch (e) {}
+  }
+
+  function boot() {
+    css();
+    registerSkins();
+    attachFrames();
+    attachTitles();
+    hookLock();
+  }
+  function entryHtml() {
+    return '<div class="v533ban" style="flex-direction:column;align-items:stretch;gap:6px">' +
+      '<b>🎰 테마 뽑기 — 2개 테마 · 30종</b>' +
+      '<i>🌌 사이버 네온 · 🏯 신수 설화 — 테마마다 스킨 8 · 펫 3 · 잔상 2 · 테두리 1 · 칭호 1</i>' +
+      '<button type="button" id="v533Go" class="btn pri" style="min-height:44px;padding:0 14px;border-radius:12px;font-size:13.5px;font-weight:900;border:2px solid #5a3204;background:linear-gradient(180deg,#ffe79a,#f7b91f 60%,#dc9a0d);color:#6b4708;box-shadow:0 3px 0 #6b4405">🎰 테마 뽑기 열기</button>' +
+      '</div>';
+  }
+
+  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  if (root.addEventListener) root.addEventListener('load', function () { setTimeout(boot, 300); });
+  setTimeout(boot, 1200);
+  setTimeout(function () { try { boot(); } catch (e) {} }, 2600);
+
+  root.JW533UI = { render: function (body) { if (!body) return; body.innerHTML = entryHtml(); var go = $('v533Go'); if (go) go.addEventListener('click', function () { open(S.theme); }); }, open: open, paint: paint };
+  root.JW533 = {
+    themes: THEMES, items: ITEMS, skins: SKINS, pets: PETS33, trails: TRAILS33, frames: FRAMES33, titles: TITLES33,
+    st: function () { return S; }, owned: owned, pull: doPull, equip: equipItem, open: open, close: close,
+    art: art, tier: TIER, version: 'v5.33'
+  };
+  try { console.log('[JW533] theme gacha ready — 2 themes / 30 items'); } catch (e) {}
 })(window);
