@@ -1,0 +1,14 @@
+{
+  "name": "성공하고싶은 재우",
+  "short_name": "재우",
+  "description": "Jump King 스타일 16비트 세로 등반 게임 · 맵 21종 · 모드 15종",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0b1024",
+  "theme_color": "#0b1024",
+  "icons": [
+    { "src": "./cover-small.jpg", "sizes": "1100x618", "type": "image/jpeg", "purpose": "any" }
+  ]
+}

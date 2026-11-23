@@ -1,0 +1,3780 @@
+{
+ "version": "v1",
+ "title": "성공하고싶은 재우 · 스토리 모드 64 스테이지",
+ "generatedAt": "2026-11-21",
+ "sourceOfTruth": "jaeu-jump-site/game.js (v5.15-r5, 읽기 전용 확인 · 코드 수정 없음)",
+ "lockPolicy": "lock_all_except_default_4",
+ "lockPolicyDesc": "스토리 모드·일반 모드·스킨 선택창 모두 기본 4종(기본 재우·고양이·개구리·로봇)만 열려 있고, 나머지 60종은 스토리 클리어로 해금",
+ "defaultUnlockedSkins": [
+  "jaeu",
+  "cat",
+  "frog",
+  "robot"
+ ],
+ "defaultUnlockedSkinNames": [
+  {
+   "id": "jaeu",
+   "name": "기본 재우",
+   "emoji": "🧑"
+  },
+  {
+   "id": "cat",
+   "name": "고양이",
+   "emoji": "🐱"
+  },
+  {
+   "id": "frog",
+   "name": "개구리",
+   "emoji": "🐸"
+  },
+  {
+   "id": "robot",
+   "name": "로봇",
+   "emoji": "🤖"
+  }
+ ],
+ "unlockRule": "스테이지 클리어 → 그 스테이지 주인공 캐릭터 해금 + 다음 스테이지 개방. 기본 4종(기본 재우·고양이·개구리·로봇)은 처음부터 보유. 5번(버섯) 이후 60종은 해당 스테이지 클리어 시 해금.",
+ "chapters": [
+  {
+   "id": "ch0",
+   "num": 0,
+   "title": "프롤로그 · 탈출",
+   "subtitle": "낯선 아침, 그리고 세 명의 친구",
+   "themeColor": "#86efac",
+   "stageRange": {
+    "from": 1,
+    "to": 4
+   },
+   "stageCount": 4
+  },
+  {
+   "id": "ch1",
+   "num": 1,
+   "title": "숲과 들의 친구들",
+   "subtitle": "쉬움 · 먹거리와 들의 친구들",
+   "themeColor": "#fcd34d",
+   "stageRange": {
+    "from": 5,
+    "to": 13
+   },
+   "stageCount": 9
+  },
+  {
+   "id": "ch2",
+   "num": 2,
+   "title": "바다와 이국 땅",
+   "subtitle": "보통 · 물과 먼 나라의 친구들",
+   "themeColor": "#7dd3fc",
+   "stageRange": {
+    "from": 14,
+    "to": 21
+   },
+   "stageCount": 8
+  },
+  {
+   "id": "ch3",
+   "num": 3,
+   "title": "도시의 하루",
+   "subtitle": "보통 · 도시와 직업의 친구들",
+   "themeColor": "#f9a8d4",
+   "stageRange": {
+    "from": 22,
+    "to": 31
+   },
+   "stageCount": 10
+  },
+  {
+   "id": "ch4",
+   "num": 4,
+   "title": "세계 여행",
+   "subtitle": "보통~어려움 · 랜드마크의 친구들",
+   "themeColor": "#c4b5fd",
+   "stageRange": {
+    "from": 32,
+    "to": 39
+   },
+   "stageCount": 8
+  },
+  {
+   "id": "ch5",
+   "num": 5,
+   "title": "밤의 세계",
+   "subtitle": "어려움 · 괴담과 공포의 친구들",
+   "themeColor": "#fda4af",
+   "stageRange": {
+    "from": 40,
+    "to": 47
+   },
+   "stageCount": 8
+  },
+  {
+   "id": "ch6",
+   "num": 6,
+   "title": "신화와 우주",
+   "subtitle": "어려움~극악 · 신화와 별의 친구들",
+   "themeColor": "#93c5fd",
+   "stageRange": {
+    "from": 48,
+    "to": 54
+   },
+   "stageCount": 7
+  },
+  {
+   "id": "ch7",
+   "num": 7,
+   "title": "심연의 문",
+   "subtitle": "극악 · 마왕에서 별빛 정상까지",
+   "themeColor": "#fca5a5",
+   "stageRange": {
+    "from": 55,
+    "to": 64
+   },
+   "stageCount": 10
+  }
+ ],
+ "stages": [
+  {
+   "index": 1,
+   "chapter": 0,
+   "chapterId": "ch0",
+   "mapId": "school",
+   "mapName": "재우의 학교 탈출",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 56,
+   "skinId": "jaeu",
+   "skinName": "기본 재우",
+   "skinEmoji": "🧑",
+   "hidden": false,
+   "startUnlocked": true,
+   "unlockSkin": null,
+   "title": "종이 울리기 전에",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "교실 창문을 넘어 옥상 계단까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "야간 당직 선생님 철수쌤",
+    "emoji": "🔦",
+    "hp": 2,
+    "pattern": "손전등 불빛을 좌우로 훑으며 다가온다. 불빛에 닿으면 1회 피격.",
+    "dialogue": [
+     "철수쌤: 거기 서! 아직 하교 시간 안 됐어!",
+     "철수쌤: …뭐야, 벌써 옥상이야? 하, 오늘은 봐주지."
+    ]
+   },
+   "introLines": [
+    "재우: 종이 울렸다… 근데 나 아직 교실에 있어.",
+    "재우: 창문 열면 옥상이 보여. 한 번만 넘어 볼까?",
+    "재우: 선생님한테 걸리면 끝이야. 조용히, 조용히."
+   ],
+   "clearLines": [
+    "재우: 옥상! 여기서부턴 아무도 못 말려.",
+    "재우: 근데… 세상이 갑자기 너무 높아 보이는데?"
+   ]
+  },
+  {
+   "index": 2,
+   "chapter": 0,
+   "chapterId": "ch0",
+   "mapId": "alley",
+   "mapName": "고양이 골목 & 지붕",
+   "mapIsNew": true,
+   "diff": "쉬움",
+   "total": 60,
+   "skinId": "cat",
+   "skinName": "고양이",
+   "skinEmoji": "🐱",
+   "hidden": false,
+   "startUnlocked": true,
+   "unlockSkin": "cat",
+   "title": "비 갠 뒤, 지붕 위로",
+   "mission": {
+    "type": "max_falls",
+    "target": 5,
+    "label": "골목 길고양이에게 생선 3개 나눠주기 — 낙하 5회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "골목 대장 냥",
+    "emoji": "😾",
+    "hp": 2,
+    "pattern": "고양이 그림자가 발판을 옆으로 밀고, 풍선 발판이 터진다.",
+    "dialogue": [
+     "골목 대장 냥: 이 골목 지붕은 내 구역이다, 냐옹.",
+     "골목 대장 냥: …크, 네 발소리 마음에 들었다. 통과."
+    ]
+   },
+   "introLines": [
+    "재우: 여기 골목… 비 온 냄새 나. 좋다.",
+    "고양이: 냐옹. 너, 방금 나 밟았지.",
+    "재우: 아, 미안! 근데 너도 지붕 타? 같이 가자!"
+   ],
+   "clearLines": [
+    "고양이: …냐옹. 생각보다 발이 빠르네.",
+    "재우: 고양이 합류! 이제 지붕은 우리 거야."
+   ]
+  },
+  {
+   "index": 3,
+   "chapter": 0,
+   "chapterId": "ch0",
+   "mapId": "pond",
+   "mapName": "개울가 연못 & 연잎 다리",
+   "mapIsNew": true,
+   "diff": "쉬움",
+   "total": 58,
+   "skinId": "frog",
+   "skinName": "개구리",
+   "skinEmoji": "🐸",
+   "hidden": false,
+   "startUnlocked": true,
+   "unlockSkin": "frog",
+   "title": "연잎 하나, 두 개",
+   "mission": {
+    "type": "time_limit",
+    "target": 225,
+    "label": "연못에 빠진 병아리 2마리 구하기 — 3분 45초 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "황소개구리 왕눈이",
+    "emoji": "🐸",
+    "hp": 2,
+    "pattern": "혀로 발판을 낚아채고, 물결로 연잎을 뒤집는다.",
+    "dialogue": [
+     "황소개구리 왕눈이: 개굴! 내 연못에서 물장구 치지 마라!",
+     "황소개구리 왕눈이: …개굴. 혀가 안 닿는 곳까지 갔구나."
+    ]
+   },
+   "introLines": [
+    "재우: 물장구 소리가 들려. …누가 노래하는 것 같아.",
+    "개구리: 개굴! 여긴 내 개울이야.",
+    "재우: 개구리다! 잠깐, 나 지금 병아리들 구하러 가야 돼."
+   ],
+   "clearLines": [
+    "개구리: 개굴! 물장구는 자신 있어. 따라와.",
+    "재우: 병아리 둘 다 구했어! 이제 너도 친구다."
+   ]
+  },
+  {
+   "index": 4,
+   "chapter": 0,
+   "chapterId": "ch0",
+   "mapId": "clock",
+   "mapName": "거대한 시계탑",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 76,
+   "skinId": "robot",
+   "skinName": "로봇",
+   "skinEmoji": "🤖",
+   "hidden": false,
+   "startUnlocked": true,
+   "unlockSkin": "robot",
+   "title": "태엽이 멈추기 전에",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "시계탑 꼭대기의 태엽기사를 이기면 클리어!",
+    "engineMode": "boss",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "태엽기사",
+    "emoji": "⚙️",
+    "hp": 3,
+    "pattern": "진자처럼 좌우로 돌진하고, 톱니 탄막을 3발씩 발사한다.",
+    "dialogue": [
+     "태엽기사: 태엽이 다 감기기 전엔 못 지나간다, 삐걱.",
+     "태엽기사: …태엽 다 풀렸다. 좋은 밤이었다, 삐걱."
+    ]
+   },
+   "introLines": [
+    "재우: 시계탑… 12시에 멈춘다는데.",
+    "로봇: 삐빅. 이 탑은 나의 고향이다.",
+    "재우: 로봇! 너 여기 살아? 그럼 같이 올라가자!"
+   ],
+   "clearLines": [
+    "로봇: 삐빅. 계산 완료. 너를 따라가겠다.",
+    "재우: 좋아, 친구들 모으러 가자!"
+   ]
+  },
+  {
+   "index": 5,
+   "chapter": 1,
+   "chapterId": "ch1",
+   "mapId": "mushroom",
+   "mapName": "요정 버섯 숲 & 세계수",
+   "mapIsNew": false,
+   "diff": "쉬움",
+   "total": 60,
+   "skinId": "mushroom",
+   "skinName": "버섯돌이",
+   "skinEmoji": "🍄",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "mushroom",
+   "title": "버섯 갓을 디디고",
+   "mission": {
+    "type": "combo",
+    "target": 4,
+    "label": "세계수 꼭대기까지 손 놓지 않고 오르기 — 4콤보만 달성하면 클리어!",
+    "engineMode": "normal",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "포자 왕",
+    "emoji": "🍄",
+    "hp": 2,
+    "pattern": "포자를 뿌려 화면을 뿌옇게 하고, 갓 발판을 폭신하게 만들어 점프를 흔든다.",
+    "dialogue": [
+     "포자 왕: 포자야, 내 포자를 두려워하거라.",
+     "포자 왕: …갓을 안 밟고 지나가다니. 너 꽤 예의가 바르구나."
+    ]
+   },
+   "introLines": [
+    "재우: 여기 버섯… 나보다 커!",
+    "버섯돌이: 쉿, 포자 날리면 미끄러져.",
+    "재우: 버섯이 말을 해! 하, 오늘 참 신기한 날이네."
+   ],
+   "clearLines": [
+    "버섯돌이: 갓을 잘 디뎠어. 세계수가 널 기억할 거야.",
+    "재우: 기억은 됐고, 다음 친구는 어디 있어?"
+   ]
+  },
+  {
+   "index": 6,
+   "chapter": 1,
+   "chapterId": "ch1",
+   "mapId": "honey",
+   "mapName": "거대 벌집 왕국",
+   "mapIsNew": false,
+   "diff": "쉬움",
+   "total": 60,
+   "skinId": "bee",
+   "skinName": "꿀벌",
+   "skinEmoji": "🐝",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "bee",
+   "title": "벌집의 층층 계단",
+   "mission": {
+    "type": "coins",
+    "target": 12,
+    "label": "벌집 왕국 곳곳의 꿀단지를 모으기 — 코인 12개만 모으면 클리어!",
+    "engineMode": "coins",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "경호대장 말벌",
+    "emoji": "🐝",
+    "hp": 2,
+    "pattern": "좌우로 순찰하며 찌르고, 밀랍 발판을 끈적하게 만든다.",
+    "dialogue": [
+     "경호대장 말벌: 윙! 벌집에 무단 침입이다!",
+     "경호대장 말벌: 윙… 꿀단지를 다 모으다니. 넌 손님이구나."
+    ]
+   },
+   "introLines": [
+    "꿀벌: 윙! 여긴 벌집이야. 꿀 냄새 맡고 왔어?",
+    "재우: 아니, 친구 찾으러 왔어. 근데 꿀 냄새 진짜 좋다.",
+    "꿀벌: 그럼 꿀단지도 챙겨. 대신 떨어지면 안 돼!"
+   ],
+   "clearLines": [
+    "꿀벌: 윙윙! 꿀 냄새 나는 친구, 마음에 들어.",
+    "재우: 나 냄새나는 거야?"
+   ]
+  },
+  {
+   "index": 7,
+   "chapter": 1,
+   "chapterId": "ch1",
+   "mapId": "cheese",
+   "mapName": "거대 스위스 치즈 탑",
+   "mapIsNew": false,
+   "diff": "쉬움",
+   "total": 60,
+   "skinId": "hamster",
+   "skinName": "햄스터",
+   "skinEmoji": "🐹",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "hamster",
+   "title": "치즈 구멍 속으로",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "구멍투성이 치즈 탑 꼭대기까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "치즈 도둑 쥐왕",
+    "emoji": "🐭",
+    "hp": 2,
+    "pattern": "치즈 벽을 갉아 새 발판을 만들고, 부스러기를 떨어뜨린다.",
+    "dialogue": [
+     "치즈 도둑 쥐왕: 내 치즈다! 구멍마다 다 내 거야!",
+     "치즈 도둑 쥐왕: 찍… 구멍을 다 외웠다고? 너, 쥐가 아니지?"
+    ]
+   },
+   "introLines": [
+    "재우: 치즈 냄새가 코를 찔러.",
+    "햄스터: 볼주머니에 치즈 넣고 왔어. 같이 갈래?",
+    "재우: 그 무거운 거 들고 올라간다고?"
+   ],
+   "clearLines": [
+    "햄스터: 볼주머니에 하나 더 넣었어. 줄까?",
+    "재우: 올라가면서 먹자. 그리고 이제 너도 친구다!"
+   ]
+  },
+  {
+   "index": 8,
+   "chapter": 1,
+   "chapterId": "ch1",
+   "mapId": "hatchery",
+   "mapName": "병아리 양계장 & 부화장",
+   "mapIsNew": true,
+   "diff": "쉬움",
+   "total": 56,
+   "skinId": "chick",
+   "skinName": "병아리",
+   "skinEmoji": "🐤",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "chick",
+   "title": "삐약, 아직 안 깨졌어",
+   "mission": {
+    "type": "max_falls",
+    "target": 5,
+    "label": "굴러오는 알을 피해 둥지까지 — 낙하 5회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "수탉 새벽대왕",
+    "emoji": "🐓",
+    "hp": 2,
+    "pattern": "새벽 울음으로 화면을 흔들고, 닭벼슬 발판을 뒤집는다.",
+    "dialogue": [
+     "수탉 새벽대왕: 꼬끼오! 아직 새벽인데 왜 깨어 있느냐!",
+     "수탉 새벽대왕: 꼬… 알을 다 지켰구나. 오늘은 울지 않으마."
+    ]
+   },
+   "introLines": [
+    "재우: 알이… 굴러온다!",
+    "병아리: 삐약! 알이 자꾸 굴러와!",
+    "재우: 잡아야 돼? 피해야 돼?"
+   ],
+   "clearLines": [
+    "병아리: 삐약! 나 아직 안 깨졌어!",
+    "재우: 그럼 이제 같이 안 깨지자."
+   ]
+  },
+  {
+   "index": 9,
+   "chapter": 1,
+   "chapterId": "ch1",
+   "mapId": "burrow",
+   "mapName": "당근밭 & 토끼 굴",
+   "mapIsNew": true,
+   "diff": "쉬움",
+   "total": 58,
+   "skinId": "rabbit",
+   "skinName": "토끼",
+   "skinEmoji": "🐰",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "rabbit",
+   "title": "당근 뽑고 굴로",
+   "mission": {
+    "type": "min_jump",
+    "target": 90,
+    "label": "당근 5개를 뽑아 굴 입구에 쌓기 — 점프 90회 이하로 완등",
+    "engineMode": "minjump",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "여우 허수아비",
+    "emoji": "🦊",
+    "hp": 2,
+    "pattern": "가짜 발판을 세우고, 밟으면 사라진다.",
+    "dialogue": [
+     "여우 허수아비: 내 밭에서 뭘 뽑는 거야.",
+     "여우 허수아비: …가짜 발판을 다 피하다니. 다음엔 진짜로 만들게."
+    ]
+   },
+   "introLines": [
+    "재우: 여기 땅이… 폭신해.",
+    "토끼: 깡총! 굴은 내가 제일 잘 알아.",
+    "재우: 어두운데… 발이 안 보여."
+   ],
+   "clearLines": [
+    "토끼: 당근 5개 뽑았어. 다 너 줄게.",
+    "재우: 당근 하나면 충분해. 대신 굴 앞자리는 내가 지킬게."
+   ]
+  },
+  {
+   "index": 10,
+   "chapter": 1,
+   "chapterId": "ch1",
+   "mapId": "wheatfield",
+   "mapName": "가을 밀밭 & 바람개비 언덕",
+   "mapIsNew": true,
+   "diff": "쉬움",
+   "total": 60,
+   "skinId": "scarecrow",
+   "skinName": "허수아비",
+   "skinEmoji": "🌾",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "scarecrow",
+   "title": "밀 이랑 위의 노을",
+   "mission": {
+    "type": "combo",
+    "target": 4,
+    "label": "바람개비를 타고 언덕 오르기 — 4콤보만 달성하면 클리어!",
+    "engineMode": "normal",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "까마귀 대장 검은부리",
+    "emoji": "🐦‍⬛",
+    "hp": 2,
+    "pattern": "발판을 쪼아 흔들고, 떼를 불러 시야를 가린다.",
+    "dialogue": [
+     "까마귀 대장 검은부리: 까악! 이 밭은 우리 사냥터다!",
+     "까마귀 대장 검은부리: 까악… 알겠다. 오늘은 다른 밭으로 가지."
+    ]
+   },
+   "introLines": [
+    "재우: 밀밭이 노을 때문에 다 금색이야.",
+    "허수아비: …나는 밭을 지킨다.",
+    "재우: 말하는 허수아비다! 안녕!"
+   ],
+   "clearLines": [
+    "허수아비: …너는 까마귀가 아니구나. 통과.",
+    "재우: 밭은 내가 볼게. 너는 나랑 밭 위로 올라가자."
+   ]
+  },
+  {
+   "index": 11,
+   "chapter": 1,
+   "chapterId": "ch1",
+   "mapId": "santa",
+   "mapName": "산타 선물 공장 & 거대 트리",
+   "mapIsNew": false,
+   "diff": "쉬움",
+   "total": 60,
+   "skinId": "santa",
+   "skinName": "산타",
+   "skinEmoji": "🎅",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "santa",
+   "title": "선물 공장 야간 근무",
+   "mission": {
+    "type": "time_limit",
+    "target": 225,
+    "label": "선물 포장 라인을 통과 — 3분 45초 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "장난감 정비공 엘프 대장",
+    "emoji": "🧝",
+    "hp": 2,
+    "pattern": "태엽 장난감을 굴려 발판을 밀고, 리본으로 길을 묶는다.",
+    "dialogue": [
+     "엘프 대장: 리본! 리본을 다시 묶어야 해!",
+     "엘프 대장: …벌써 통과했어? 넌 엘프가 아니지?"
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 선물 냄새? 아니, 나무 냄새.",
+    "산타: 호호, 야근이야? 선물이 늦으면 안 되거든.",
+    "재우: 산타 할아버지한테 야근을 시켜요?"
+   ],
+   "clearLines": [
+    "산타: 포장 완료! 넌 올해 선물 목록에 올랐어.",
+    "재우: 선물보다 친구가 더 좋아요. 같이 가요!"
+   ]
+  },
+  {
+   "index": 12,
+   "chapter": 1,
+   "chapterId": "ch1",
+   "mapId": "dessert",
+   "mapName": "디저트 과자 탑",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 88,
+   "skinId": "icecream",
+   "skinName": "아이스크림맨",
+   "skinEmoji": "🍦",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "icecream",
+   "title": "녹기 전에 올라가",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "과자 탑 꼭대기, 초콜릿이 녹기 전에 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "설탕 마녀",
+    "emoji": "🍬",
+    "hp": 3,
+    "pattern": "솜사탕 바람으로 밀고, 캐러멜을 부어 발판을 굳힌다.",
+    "dialogue": [
+     "설탕 마녀: 달콤한 건 원래 위험한 거야, 얘야.",
+     "설탕 마녀: …안 녹았네? 너, 설탕이 아니구나."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 발판이 젤리 같아.",
+    "아이스크림맨: 녹아… 녹는다고…!",
+    "재우: 그럼 빨리 올라가!"
+   ],
+   "clearLines": [
+    "아이스크림맨: 살았다. 반은 녹았지만.",
+    "재우: 반쪽만 남아도 친구야. 가자!"
+   ]
+  },
+  {
+   "index": 13,
+   "chapter": 1,
+   "chapterId": "ch1",
+   "mapId": "retro20",
+   "mapName": "2.0 오리지널",
+   "mapIsNew": false,
+   "diff": "쉬움",
+   "total": 60,
+   "skinId": "lightning",
+   "skinName": "번개맨",
+   "skinEmoji": "⚡",
+   "hidden": true,
+   "startUnlocked": false,
+   "unlockSkin": "lightning",
+   "title": "2분의 전설",
+   "mission": {
+    "type": "time_limit",
+    "target": 180,
+    "label": "가장 짧은 맵, 2분의 전설을 따라 — 3분 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "픽셀 수문장",
+    "emoji": "🕹️",
+    "hp": 2,
+    "pattern": "8비트 탄막을 일정한 리듬으로 뿌리고, 화면 끝으로 밀어낸다.",
+    "dialogue": [
+     "픽셀 수문장: 리듬을 맞춰라. 삐- 빅- 삐-",
+     "픽셀 수문장: …리듬을 탔군. 게임을 이해하는 녀석이야."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 옛날 게임 같아. 발판이 네모네모해.",
+    "번개맨: 번쩍! 이 맵, 2분이면 끝나.",
+    "재우: 2분? 나 아직 준비도 안 됐는데!"
+   ],
+   "clearLines": [
+    "번개맨: 번쩍! 기록 갱신이야.",
+    "재우: 2분 안에 왔으니까… 이제 네 속도 좀 가르쳐 줘."
+   ]
+  },
+  {
+   "index": 14,
+   "chapter": 2,
+   "chapterId": "ch2",
+   "mapId": "octocave",
+   "mapName": "문어 항아리 동굴",
+   "mapIsNew": true,
+   "diff": "보통",
+   "total": 72,
+   "skinId": "octopus",
+   "skinName": "문어",
+   "skinEmoji": "🐙",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "octopus",
+   "title": "항아리 속은 어두워",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "문어 항아리 동굴의 여덟 팔 왕좌까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "거대 문어 여덟팔",
+    "emoji": "🐙",
+    "hp": 3,
+    "pattern": "먹물로 시야를 가리고, 다리로 발판을 좌우로 옮긴다.",
+    "dialogue": [
+     "거대 문어 여덟팔: 내 항아리들을 뒤지지 마라.",
+     "거대 문어 여덟팔: …여덟 개를 다 피하다니. 팔이 부족했나 보군."
+    ]
+   },
+   "introLines": [
+    "재우: 동굴인데… 물소리가 들려.",
+    "문어: 팔이 여덟이라 손이 모자랄 일이 없지.",
+    "재우: 지금 팔 몇 개로 나 잡을 셈이야?"
+   ],
+   "clearLines": [
+    "문어: 항아리 네 개에 보물 넣었어. 하나는 네 거.",
+    "재우: 뭐가 들었는데? …열어 볼게!"
+   ]
+  },
+  {
+   "index": 15,
+   "chapter": 2,
+   "chapterId": "ch2",
+   "mapId": "atlantis",
+   "mapName": "심해 아틀란티스",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 88,
+   "skinId": "mermaid",
+   "skinName": "인어",
+   "skinEmoji": "🧜",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "mermaid",
+   "title": "가라앉은 종탑",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "아틀란티스 종탑의 수호자를 이기면 클리어!",
+    "engineMode": "boss",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "심해 종지기 크라켄 주니어",
+    "emoji": "🦑",
+    "hp": 3,
+    "pattern": "촉수로 발판을 감아 부수고, 물기둥으로 밀어올린다.",
+    "dialogue": [
+     "크라켄 주니어: 종은 내가 지킨다, 뿌우우.",
+     "크라켄 주니어: …종이 울렸다. 네가 울린 거구나."
+    ]
+   },
+   "introLines": [
+    "재우: 여긴 물속인데… 나 어떻게 숨 쉬고 있지?",
+    "인어: 여긴 물속인데, 넌 어떻게 숨 쉬어?",
+    "재우: 나도 궁금해!"
+   ],
+   "clearLines": [
+    "인어: 종이 울렸어. 아틀란티스가 널 알아봤어.",
+    "재우: 초대장 없이 왔는데도 환영받았어. 손님 대접 해 줘."
+   ]
+  },
+  {
+   "index": 16,
+   "chapter": 2,
+   "chapterId": "ch2",
+   "mapId": "fruitfarm",
+   "mapName": "바나나 농장 & 과일 시장",
+   "mapIsNew": true,
+   "diff": "보통",
+   "total": 72,
+   "skinId": "banana",
+   "skinName": "바나나맨",
+   "skinEmoji": "🍌",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "banana",
+   "title": "과일 수레 대소동",
+   "mission": {
+    "type": "coins",
+    "target": 12,
+    "label": "시장 수레 사이에서 과일 배달 — 코인 12개만 모으면 클리어!",
+    "engineMode": "coins",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "킹 바나나",
+    "emoji": "🍌",
+    "hp": 3,
+    "pattern": "껍질을 뿌려 미끄럽게 만들고, 수레를 굴려 발판을 민다.",
+    "dialogue": [
+     "킹 바나나: 껍질 조심해. 내가 다 뿌려놨거든.",
+     "킹 바나나: …안 미끄러졌어? 너, 바나나 껍질이랑 안 친하구나."
+    ]
+   },
+   "introLines": [
+    "재우: 바나나 냄새가 골목을 다 채웠어.",
+    "바나나맨: 바나나가 바나나를 팔면… 이상한가?",
+    "재우: 조금."
+   ],
+   "clearLines": [
+    "바나나맨: 배달 완료! 사장님이 칭찬했어.",
+    "재우: 사장님이 직접 배달하는 가게라니. 여기 자주 올게."
+   ]
+  },
+  {
+   "index": 17,
+   "chapter": 2,
+   "chapterId": "ch2",
+   "mapId": "savanna",
+   "mapName": "사바나 & 물길",
+   "mapIsNew": true,
+   "diff": "보통",
+   "total": 74,
+   "skinId": "elephant",
+   "skinName": "코끼리",
+   "skinEmoji": "🐘",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "elephant",
+   "title": "물길을 따라",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "마른 사바나를 지나 바오밥 언덕까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "뿔코뿔소",
+    "emoji": "🦏",
+    "hp": 3,
+    "pattern": "돌진으로 발판을 부수고, 흙먼지로 시야를 가린다.",
+    "dialogue": [
+     "뿔코뿔소: 쿵! 쿵! 내 물길이다!",
+     "뿔코뿔소: …쿵. 물을 나눠 줬구나. 그래, 같이 마시자."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 풀이 다 마르고 딱딱해.",
+    "코끼리: 코로 다 할 수 있어. 심지어 인사도.",
+    "재우: 안녕!"
+   ],
+   "clearLines": [
+    "코끼리: 물길 세 개 이었어. 동물들이 왔어.",
+    "재우: 코로 인사하는 법, 나도 배워 볼래."
+   ]
+  },
+  {
+   "index": 18,
+   "chapter": 2,
+   "chapterId": "ch2",
+   "mapId": "halloween",
+   "mapName": "할로윈 마을 & 사탕 거리",
+   "mapIsNew": true,
+   "diff": "보통",
+   "total": 74,
+   "skinId": "pumpkin",
+   "skinName": "호박맨",
+   "skinEmoji": "🎃",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "pumpkin",
+   "title": "사탕 거리의 밤",
+   "mission": {
+    "type": "combo",
+    "target": 5,
+    "label": "호박이 켜질 때만 발판이 보인다 — 5콤보만 달성하면 클리어!",
+    "engineMode": "normal",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "킹 펌킨",
+    "emoji": "🎃",
+    "hp": 3,
+    "pattern": "호박 폭탄을 던지고, 불빛이 꺼지면 암전이 온다.",
+    "dialogue": [
+     "킹 펌킨: 불이 꺼지면 아무것도 안 보여. 후후.",
+     "킹 펌킨: …어둠 속에서 안 넘어지다니. 네 눈은 호박이 아니지."
+    ]
+   },
+   "introLines": [
+    "재우: 여긴 밤인데… 거리가 환해.",
+    "호박맨: 오늘은 내가 주인공인 밤이야!",
+    "재우: 축제인데 왜 이렇게 무서워?"
+   ],
+   "clearLines": [
+    "호박맨: 호박이 다 켜졌어! 이제 축제야!",
+    "재우: 이거… 진짜 사탕 맞아? 같이 먹자!"
+   ]
+  },
+  {
+   "index": 19,
+   "chapter": 2,
+   "chapterId": "ch2",
+   "mapId": "slimemarsh",
+   "mapName": "슬라임 늪 왕국",
+   "mapIsNew": true,
+   "diff": "보통",
+   "total": 76,
+   "skinId": "slimeking",
+   "skinName": "슬라임킹",
+   "skinEmoji": "👑",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "slimeking",
+   "title": "젤리 왕좌",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "점액 늪을 건너 반란 슬라임을 꺾기 — 보스만 격파하면 클리어!",
+    "engineMode": "boss",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "반란 슬라임 검은젤리",
+    "emoji": "🫧",
+    "hp": 3,
+    "pattern": "발판을 통째로 삼켜 구멍을 만들고, 점액을 튀긴다.",
+    "dialogue": [
+     "검은젤리: 왕좌는 내 거다. 늪도 내 거다.",
+     "검은젤리: …흡. 내 점액을 다 피했어. 너, 젤리가 아니지."
+    ]
+   },
+   "introLines": [
+    "재우: 발이… 붙어. 이거 뭐야.",
+    "슬라임킹: 왕관이 무거워? 아니, 늪이 무거운 거지.",
+    "재우: 밟으면 가라앉는 발판이야!"
+   ],
+   "clearLines": [
+    "슬라임킹: 부하들을 모았어. 왕좌가 좀 시끄러워졌지.",
+    "재우: 시끄러운 왕좌, 나도 한번 앉아 볼래."
+   ]
+  },
+  {
+   "index": 20,
+   "chapter": 2,
+   "chapterId": "ch2",
+   "mapId": "venice",
+   "mapName": "베네치아 운하 & 붉은 종탑",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 76,
+   "skinId": "fox",
+   "skinName": "여우",
+   "skinEmoji": "🦊",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "fox",
+   "title": "가면 무도회의 밤",
+   "mission": {
+    "type": "time_limit",
+    "target": 315,
+    "label": "카니발이 끝나기 전 종탑까지 — 5분 15초 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "가면 무도회의 주인",
+    "emoji": "🎭",
+    "hp": 3,
+    "pattern": "가면을 바꿔 패턴을 바꾸고, 곤돌라 발판을 흔든다.",
+    "dialogue": [
+     "가면 무도회의 주인: 가면 없이 온 손님은 없습니다.",
+     "가면 무도회의 주인: …가면이 없는데도 당당하군요. 환영합니다."
+    ]
+   },
+   "introLines": [
+    "재우: 여기 물길 위에 집이 있어!",
+    "여우: 가면 써. 이 도시에선 얼굴을 보이면 안 돼.",
+    "재우: 왜?"
+   ],
+   "clearLines": [
+    "여우: 가면 벗어도 돼. 넌 이미 초대받았어.",
+    "재우: 가면은 벗었으니까, 이제 얼굴 보고 이야기하자."
+   ]
+  },
+  {
+   "index": 21,
+   "chapter": 2,
+   "chapterId": "ch2",
+   "mapId": "onsen",
+   "mapName": "등불 온천 목조 탑",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 76,
+   "skinId": "snowman",
+   "skinName": "눈사람",
+   "skinEmoji": "⛄",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "snowman",
+   "title": "증기를 피해 오르기",
+   "mission": {
+    "type": "max_falls",
+    "target": 4,
+    "label": "끓는 온천 김을 피해 목조 탑 정상까지 — 낙하 4회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "온천 주인 유키온나",
+    "emoji": "👘",
+    "hp": 3,
+    "pattern": "증기를 뿜어 발판을 숨기고, 얼음 발판을 미끄럽게 만든다.",
+    "dialogue": [
+     "유키온나: 증기를 마시면 길을 잃는다. 후우.",
+     "유키온나: …증기를 다 피하다니. 너, 얼음이 아니구나."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 따뜻한데 발판은 미끄러워.",
+    "눈사람: 여기… 따뜻해. 나 녹아.",
+    "재우: 그럼 나가야지!"
+   ],
+   "clearLines": [
+    "눈사람: 안 녹았어. 조금 줄었지만.",
+    "재우: 작아진 만큼 내가 더 안아 줄게."
+   ]
+  },
+  {
+   "index": 22,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "seoul",
+   "mapName": "서울 한강 & 남산타워",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 80,
+   "skinId": "ramen",
+   "skinName": "라면맨",
+   "skinEmoji": "🍜",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "ramen",
+   "title": "한강에서 라면 한 그릇",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "남산타워까지, 한강 바람을 맞으며 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "한강 갈매기 대장",
+    "emoji": "🐦",
+    "hp": 3,
+    "pattern": "급강하로 발판을 낚아채고, 라면 김에 시야를 가린다.",
+    "dialogue": [
+     "한강 갈매기 대장: 끼룩! 발판은 내 사냥터다!",
+     "한강 갈매기 대장: 끼룩… 라면은 안 뺏어 갈게. 그건 네 거야."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 라면 냄새가 나!",
+    "라면맨: 한강에서 라면 안 먹고 뭐 해?",
+    "재우: 지금 먹자는 거야?"
+   ],
+   "clearLines": [
+    "라면맨: 국물까지 다 마셨지?",
+    "재우: 다음엔 내가 끓일게. 국물은 자신 있거든."
+   ]
+  },
+  {
+   "index": 23,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "london",
+   "mapName": "런던 빅벤 & 대관람차",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 76,
+   "skinId": "detective",
+   "skinName": "탐정",
+   "skinEmoji": "🕵️",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "detective",
+   "title": "빅벤의 12시",
+   "mission": {
+    "type": "no_damage",
+    "target": 1,
+    "label": "수상한 안개 속, 빅벤을 넘어 — 피격 1회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "안개 사냥꾼 모리어티",
+    "emoji": "🎩",
+    "hp": 3,
+    "pattern": "안개를 불러 발판을 가리고, 시계추를 흔들어 밀어낸다.",
+    "dialogue": [
+     "모리어티: 안개 속에서는 아무도 날 못 봐.",
+     "모리어티: …한 번도 안 맞다니. 넌 안개를 읽는군."
+    ]
+   },
+   "introLines": [
+    "재우: 안개가… 너무 짙어. 발밑이 안 보여.",
+    "탐정: 이 안개는 자연 현상이 아니야.",
+    "재우: 그럼 뭐야?"
+   ],
+   "clearLines": [
+    "탐정: 증거 확보. 범인은… 날씨가 아니었어.",
+    "재우: 명탐정, 다음 사건은 내가 도울게."
+   ]
+  },
+  {
+   "index": 24,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "kitchen",
+   "mapName": "거인 부엌 & 토스터",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 52,
+   "skinId": "chef",
+   "skinName": "셰프",
+   "skinEmoji": "👨‍🍳",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "chef",
+   "title": "토스터가 켜졌다",
+   "mission": {
+    "type": "time_limit",
+    "target": 270,
+    "label": "터지기 직전의 토스터, 그 위층까지 — 4분 30초 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "조수 냄비봇",
+    "emoji": "🍳",
+    "hp": 3,
+    "pattern": "끓는 물을 쏟고, 프라이팬을 던져 발판을 뒤집는다.",
+    "dialogue": [
+     "조수 냄비봇: 삐- 조리 중. 통행 금지.",
+     "조수 냄비봇: 삐… 조리 완료. 손님, 통과하세요."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 부엌이 산만큼 커!",
+    "셰프: 지금 토스터가 켜졌어. 3분 뒤엔 다 태워.",
+    "재우: 그럼 빨리 꺼야지!"
+   ],
+   "clearLines": [
+    "셰프: 불 껐어. 근데 빵은 탔어.",
+    "재우: 탄 빵도 맛있어. 같이 먹자!"
+   ]
+  },
+  {
+   "index": 25,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "arcade",
+   "mapName": "네온 오락실",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 80,
+   "skinId": "neon",
+   "skinName": "네온 러너",
+   "skinEmoji": "🌃",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "neon",
+   "title": "네온 픽셀 속으로",
+   "mission": {
+    "type": "coins",
+    "target": 20,
+    "label": "오락실 곳곳의 코인을 모으기 — 코인 20개만 모으면 클리어!",
+    "engineMode": "coins",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "오락실 주인 네온 마스터",
+    "emoji": "👾",
+    "hp": 3,
+    "pattern": "픽셀 탄막을 뿌리고, 발판을 순간이동시킨다.",
+    "dialogue": [
+     "네온 마스터: 코인은 내 거다. 하나도 못 가져가.",
+     "네온 마스터: …코인 30개? 너, 나보다 오락실 체질이네."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 불이 다 켜져 있는데 밤 같아.",
+    "네온 러너: 여긴 픽셀 단위로 뛰어야 해.",
+    "재우: 픽셀 단위가 뭔데?"
+   ],
+   "clearLines": [
+    "네온 러너: 스코어 갱신. 이름 남겨.",
+    "재우: 이름 옆에 한 칸 더 남겨 둬. 오늘 기록 세웠으니까."
+   ]
+  },
+  {
+   "index": 26,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "carnival",
+   "mapName": "한밤중 네온 놀이공원",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 76,
+   "skinId": "clown",
+   "skinName": "광대",
+   "skinEmoji": "🤡",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "clown",
+   "title": "한밤중의 퍼레이드",
+   "mission": {
+    "type": "no_damage",
+    "target": 1,
+    "label": "퍼레이드 조명과 풍선 사이를 지나 — 피격 1회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "놀이공원 지배인 미스터 웃음",
+    "emoji": "🎪",
+    "hp": 3,
+    "pattern": "풍선을 터뜨려 발판을 흔들고, 회전목마를 돌려 길을 바꾼다.",
+    "dialogue": [
+     "미스터 웃음: 웃지 않으면 풍선이 터진다아-",
+     "미스터 웃음: …안 터졌네? 너, 웃음값을 냈구나."
+    ]
+   },
+   "introLines": [
+    "재우: 불이 다 켜졌는데… 사람이 한 명도 없어.",
+    "광대: 웃어! 여기선 웃는 게 규칙이야.",
+    "재우: 지금 안 웃기거든."
+   ],
+   "clearLines": [
+    "광대: 관중이 널 봤어. 박수 소리 들려?",
+    "재우: 웃음은 아껴 뒀어. 다음 공연 때 크게 웃을게."
+   ]
+  },
+  {
+   "index": 27,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "stadium",
+   "mapName": "초대형 스타디움",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 76,
+   "skinId": "bear",
+   "skinName": "곰돌이",
+   "skinEmoji": "🐻",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "bear",
+   "title": "관중석 위로",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "마스코트 곰, 빈 관중석을 지나 조명탑까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "응원단장 붐붐",
+    "emoji": "🥁",
+    "hp": 3,
+    "pattern": "북소리로 발판을 흔들고, 응원 깃발로 시야를 가린다.",
+    "dialogue": [
+     "응원단장 붐붐: 두구두구- 오늘의 도전자!",
+     "응원단장 붐붐: …전원 기립 박수! 관중석이 비었는데도 소리가 나네."
+    ]
+   },
+   "introLines": [
+    "재우: 경기장이 텅 비었어. 이상하다.",
+    "곰돌이: 오늘 경기, 관중이 없어.",
+    "재우: 왜?"
+   ],
+   "clearLines": [
+    "곰돌이: 골! …골대는 없지만.",
+    "재우: 골대는 없어도, 오늘 골은 내가 넣은 걸로 하자."
+   ]
+  },
+  {
+   "index": 28,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "baseball",
+   "mapName": "야구장 나이트 게임",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 76,
+   "skinId": "crab",
+   "skinName": "게",
+   "skinEmoji": "🦀",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "crab",
+   "title": "야간 시합, 포수석까지",
+   "mission": {
+    "type": "combo",
+    "target": 5,
+    "label": "글러브 집게로 공을 받으며 — 5콤보만 달성하면 클리어!",
+    "engineMode": "normal",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "야간 투수 그림자",
+    "emoji": "⚾",
+    "hp": 3,
+    "pattern": "강속구를 던져 발판을 부수고, 견제구로 밀어낸다.",
+    "dialogue": [
+     "야간 투수 그림자: 스트라이크! 넌 아웃이야.",
+     "야간 투수 그림자: …볼 넷. 네가 이겼어. 1루로 가."
+    ]
+   },
+   "introLines": [
+    "재우: 야구장인데… 밤에만 불이 켜져.",
+    "게: 집게발은 글러브야. 공 받아 봐.",
+    "재우: 나 포수 해 본 적 없어."
+   ],
+   "clearLines": [
+    "게: 사인 주고받자. 다음 공은… 직구.",
+    "재우: 사인 알아들었어. 다음 공은 네가 던져."
+   ]
+  },
+  {
+   "index": 29,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "boxing",
+   "mapName": "권투 링 체육관",
+   "mapIsNew": true,
+   "diff": "보통",
+   "total": 72,
+   "skinId": "boxer",
+   "skinName": "복서",
+   "skinEmoji": "🥊",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "boxer",
+   "title": "3라운드",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "링 위에서 챔피언을 꺾고 벨트까지 — 보스만 격파하면 클리어!",
+    "engineMode": "boss",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "챔피언 강철주먹",
+    "emoji": "🥊",
+    "hp": 4,
+    "pattern": "3연타를 날리고, 링 로프로 밀어내 떨어뜨린다.",
+    "dialogue": [
+     "챔피언 강철주먹: 3라운드. 숨이 차면 넌 끝이야.",
+     "챔피언 강철주먹: …숨이 안 차? 너, 나보다 링 체질이네."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 땀 냄새하고 가죽 냄새가 나.",
+    "복서: 링 밖으로 나가면 지는 거야. 여긴 내 집이야.",
+    "재우: 그럼 나도 오늘 이사 올게."
+   ],
+   "clearLines": [
+    "복서: 벨트는 네 거야. 오늘만큼은.",
+    "재우: 내일 링 잡아 둬. 내가 도전장 들고 올게."
+   ]
+  },
+  {
+   "index": 30,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "mansionclean",
+   "mapName": "호화 저택 대청소",
+   "mapIsNew": true,
+   "diff": "보통",
+   "total": 72,
+   "skinId": "maid",
+   "skinName": "메이드",
+   "skinEmoji": "🧹",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "maid",
+   "title": "위에서부터 청소",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "다락 창가까지, 먼지를 쓸며 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "까다로운 영감님",
+    "emoji": "🕯️",
+    "hp": 3,
+    "pattern": "촛대를 떨어뜨려 불을 붙이고, 먼지를 일으켜 발판을 가린다.",
+    "dialogue": [
+     "까다로운 영감님: 이봐! 촛대에 먼지 앉았어!",
+     "까다로운 영감님: …먼지를 다 털었구먼. 흠, 합격일세."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 조용한데 먼지 냄새가 나.",
+    "메이드: 청소는 위에서부터. 인생도 그렇고.",
+    "재우: 여기 먼지가 이렇게 많아?"
+   ],
+   "clearLines": [
+    "메이드: 다락까지 깨끗해. 이 집은 이제 네 집이야.",
+    "재우: 가족이라니. 그럼 이 집 청소는 내가 돕는 거야?"
+   ]
+  },
+  {
+   "index": 31,
+   "chapter": 3,
+   "chapterId": "ch3",
+   "mapId": "gyeongju",
+   "mapName": "경주 한옥 & 첨성대 달밤",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 76,
+   "skinId": "dokkaebi",
+   "skinName": "도깨비",
+   "skinEmoji": "👺",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "dokkaebi",
+   "title": "달빛 첨성대",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "한옥 지붕을 넘어 첨성대의 도깨비를 꺾기 — 보스만 격파하면 클리어!",
+    "engineMode": "boss",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "도깨비 장수 쇠뿔이",
+    "emoji": "👹",
+    "hp": 4,
+    "pattern": "방망이로 지붕을 내리치고, 도깨비불을 뿌린다.",
+    "dialogue": [
+     "도깨비 장수 쇠뿔이: 달이 밝다! 이런 밤엔 내가 제일 세지!",
+     "도깨비 장수 쇠뿔이: …크, 밤을 이겼구나. 방망이는 네 거다."
+    ]
+   },
+   "introLines": [
+    "재우: 기와지붕이… 달빛에 반짝여.",
+    "도깨비: 이 밤에 웬 인간이야. 씩씩하네.",
+    "재우: 너도 사람처럼 생겼네?"
+   ],
+   "clearLines": [
+    "도깨비: 방망이 하나 줄게. 대신 밤마다 놀아 줘.",
+    "재우: 약속은 지켜. 밤마다 놀러 올게."
+   ]
+  },
+  {
+   "index": 32,
+   "chapter": 4,
+   "chapterId": "ch4",
+   "mapId": "egypt",
+   "mapName": "이집트 피라미드",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 78,
+   "skinId": "mummy",
+   "skinName": "미라",
+   "skinEmoji": "🪦",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "mummy",
+   "title": "봉인된 계단",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "피라미드의 저주를 피해 태양 문까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "미라 대사제 아눕",
+    "emoji": "🪦",
+    "hp": 3,
+    "pattern": "붕대로 발판을 묶고, 모래바람으로 시야를 가린다.",
+    "dialogue": [
+     "아눕: 이 계단은 수천 년을 지켜 왔다.",
+     "아눕: …네 발은 그 시간을 견뎠구나. 통과하라."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 모래가 발목까지 와.",
+    "미라: …나는 여기서 아주 오래 기다렸다.",
+    "재우: 얼마나?"
+   ],
+   "clearLines": [
+    "미라: 봉인이 풀렸다. 이제 나도 쉴 수 있겠지.",
+    "재우: 쉬는 건 내가 지켜 줄게. 편하게 자."
+   ]
+  },
+  {
+   "index": 33,
+   "chapter": 4,
+   "chapterId": "ch4",
+   "mapId": "dino",
+   "mapName": "공룡 박물관 화석 탑",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 76,
+   "skinId": "dragon",
+   "skinName": "드래곤",
+   "skinEmoji": "🐲",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "dragon",
+   "title": "화석이 깨어나면",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "공룡 박물관 밤, 용의 골격을 지나 옥상까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "화석 용의 그림자",
+    "emoji": "🐲",
+    "hp": 3,
+    "pattern": "뼈 발판을 부수고, 밤의 울음으로 화면을 흔든다.",
+    "dialogue": [
+     "화석 용의 그림자: 크아아… 아직 내 뼈는 살아있다.",
+     "화석 용의 그림자: …고개를 숙였구나. 나도 인사하지."
+    ]
+   },
+   "introLines": [
+    "재우: 여긴 박물관인데… 뼈가 움직여.",
+    "드래곤: 저 골격… 내 조상이야.",
+    "재우: 그럼 조용히 지나가야지."
+   ],
+   "clearLines": [
+    "드래곤: 인사 받았어. 우리 가족이 허락했어.",
+    "재우: 가족 인사는 받았으니까, 이제 네 소개도 들려줘."
+   ]
+  },
+  {
+   "index": 34,
+   "chapter": 4,
+   "chapterId": "ch4",
+   "mapId": "rainbow",
+   "mapName": "무지개 하늘 궁전",
+   "mapIsNew": false,
+   "diff": "보통",
+   "total": 100,
+   "skinId": "angel",
+   "skinName": "천사",
+   "skinEmoji": "👼",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "angel",
+   "title": "무지개 다리 위에서",
+   "mission": {
+    "type": "no_damage",
+    "target": 1,
+    "label": "구름 발판이 사라지는 다리 위에서 — 피격 1회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "구름 도둑",
+    "emoji": "☁️",
+    "hp": 3,
+    "pattern": "구름을 데려가 발판을 없애고, 번개를 흘린다.",
+    "dialogue": [
+     "구름 도둑: 구름은 내 거야. 다 가져갈 거야.",
+     "구름 도둑: …구름 없이도 올라가다니. 넌 날개가 있구나."
+    ]
+   },
+   "introLines": [
+    "재우: 여긴 발판이 구름이야! 폭신해.",
+    "천사: 여긴 떨어져도 다치진 않아. 대신 아파.",
+    "재우: 그게 무슨 말이야?"
+   ],
+   "clearLines": [
+    "천사: 한 번도 안 아팠어. 네 날개는 어디 있어?",
+    "재우: 날개는 없어도 떨어지진 않을게. 약속해."
+   ]
+  },
+  {
+   "index": 35,
+   "chapter": 4,
+   "chapterId": "ch4",
+   "mapId": "newyork",
+   "mapName": "뉴욕 자유의 여신상",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 88,
+   "skinId": "police",
+   "skinName": "경찰관",
+   "skinEmoji": "👮",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "police",
+   "title": "여신상의 밤 순찰",
+   "mission": {
+    "type": "time_limit",
+    "target": 375,
+    "label": "NYPD 야간 순찰, 여신상 횃불까지 — 6분 15초 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "밀수 두목 셰이디",
+    "emoji": "🕶️",
+    "hp": 4,
+    "pattern": "부두 상자를 던지고, 사다리를 끊어 길을 막는다.",
+    "dialogue": [
+     "셰이디: 이 부두엔 내 물건만 있어.",
+     "셰이디: …순찰관이구나. 오늘은 물건 안 내릴게."
+    ]
+   },
+   "introLines": [
+    "재우: 불빛이 너무 많아. 눈이 부셔.",
+    "경찰관: 신분증.",
+    "재우: 없는데요."
+   ],
+   "clearLines": [
+    "경찰관: 신분 확인. 재우, 관광객. 통과. …순찰은 같이 하지.",
+    "재우: 파트너라니. 그럼 나도 배지 하나 만들어야 하나?"
+   ]
+  },
+  {
+   "index": 36,
+   "chapter": 4,
+   "chapterId": "ch4",
+   "mapId": "site",
+   "mapName": "고층 공사장 타워",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 88,
+   "skinId": "firefighter",
+   "skinName": "소방관",
+   "skinEmoji": "🚒",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "firefighter",
+   "title": "철골 위의 구조",
+   "mission": {
+    "type": "max_falls",
+    "target": 4,
+    "label": "무너지는 공사장에서 사람을 구조 — 낙하 4회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "붕괴 크레인",
+    "emoji": "🏗️",
+    "hp": 4,
+    "pattern": "크레인 팔을 휘둘러 발판을 부수고, 철골을 떨어뜨린다.",
+    "dialogue": [
+     "붕괴 크레인: 경고. 위험 지역. 접근 금지.",
+     "붕괴 크레인: …구조 완료. 시스템, 임무 종료."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 바람이 무서워.",
+    "소방관: 위에 사람 있어. 올라가야 해.",
+    "재우: 사다리는?"
+   ],
+   "clearLines": [
+    "소방관: 구조 완료. 아무도 안 다쳤어.",
+    "재우: 이번엔 네가 쉬어. 위는 내가 볼게."
+   ]
+  },
+  {
+   "index": 37,
+   "chapter": 4,
+   "chapterId": "ch4",
+   "mapId": "train",
+   "mapName": "달리는 기차 지붕",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 58,
+   "skinId": "cowboy",
+   "skinName": "카우보이",
+   "skinEmoji": "🤠",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "cowboy",
+   "title": "달리는 지붕 위",
+   "mission": {
+    "type": "time_limit",
+    "target": 270,
+    "label": "기차가 터널로 들어가기 전 — 4분 30초 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "기차 강도 두목 블랙잭",
+    "emoji": "🤠",
+    "hp": 4,
+    "pattern": "지붕을 달리며 총을 쏘고, 터널 입구로 강제로 밀어낸다.",
+    "dialogue": [
+     "블랙잭: 이 기차는 내 거야. 지붕 위에선 내가 왕이지.",
+     "블랙잭: …터널 앞에서 잡혔군. 다음엔 다른 기차로."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 발밑이 계속 흔들려!",
+    "카우보이: 이 기차, 내일 아침에 터널 들어가.",
+    "재우: 그럼 오늘 안에 가야지!"
+   ],
+   "clearLines": [
+    "카우보이: 잡았다. 이제 기차는 안전해.",
+    "재우: 기차는 안전해졌고, 우리는 이제 동업자야."
+   ]
+  },
+  {
+   "index": 38,
+   "chapter": 4,
+   "chapterId": "ch4",
+   "mapId": "arctic",
+   "mapName": "북극 빙하 성채",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 76,
+   "skinId": "penguin",
+   "skinName": "펭귄",
+   "skinEmoji": "🐧",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "penguin",
+   "title": "빙하 성채의 문",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "얼음 계단을 지나 북극의 성문까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "빙하 거인",
+    "emoji": "🧊",
+    "hp": 4,
+    "pattern": "얼음 주먹으로 발판을 깨고, 눈보라로 밀어낸다.",
+    "dialogue": [
+     "빙하 거인: 이 성은 얼음으로 지켜진다.",
+     "빙하 거인: …얼음을 안 깨다니. 넌 얼음이 아니구나."
+    ]
+   },
+   "introLines": [
+    "재우: 여긴 숨을 쉬면 코가 아파.",
+    "펭귄: 여기서 미끄러지면 바다까지 미끄러져.",
+    "재우: 바다 좋은데?"
+   ],
+   "clearLines": [
+    "펭귄: 성문 열렸어. 이제 우리 집이야.",
+    "재우: 집이 성이라는 말, 아직도 신기해."
+   ]
+  },
+  {
+   "index": 39,
+   "chapter": 4,
+   "chapterId": "ch4",
+   "mapId": "oldinn",
+   "mapName": "중국 객잔 & 강시 마을",
+   "mapIsNew": true,
+   "diff": "어려움",
+   "total": 80,
+   "skinId": "jiangshi",
+   "skinName": "강시",
+   "skinEmoji": "🧟",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "jiangshi",
+   "title": "부적을 붙여라",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "객잔 지붕 위 강시 대장을 봉인 — 보스만 격파하면 클리어!",
+    "engineMode": "boss",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "강시 대장 푸른송곳니",
+    "emoji": "🧟",
+    "hp": 4,
+    "pattern": "팔을 뻗어 뛰어오르고, 부적을 떼어내 공격을 되돌린다.",
+    "dialogue": [
+     "푸른송곳니: …쿵… 쿵… 쿵…",
+     "푸른송곳니: …부적… 붙었다… 잘… 잤다…"
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 등롱이 다 빨개.",
+    "강시: …쿵. …쿵. …쿵.",
+    "재우: 말은… 안 하는 거지?"
+   ],
+   "clearLines": [
+    "강시: …부적… 떨어졌다… 고맙다…",
+    "재우: 말 한마디 건넸을 뿐인데, 벌써 정 들었어."
+   ]
+  },
+  {
+   "index": 40,
+   "chapter": 5,
+   "chapterId": "ch5",
+   "mapId": "mansion",
+   "mapName": "유령의 저택",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 80,
+   "skinId": "ghost",
+   "skinName": "유령",
+   "skinEmoji": "👻",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "ghost",
+   "title": "저택의 촛불",
+   "mission": {
+    "type": "no_damage",
+    "target": 1,
+    "label": "촛불이 꺼지는 저택을 지나 — 피격 1회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "저택의 주인 백작 부인",
+    "emoji": "🕯️",
+    "hp": 4,
+    "pattern": "촛불을 꺼 암전을 만들고, 갑옷을 움직여 발판을 막는다.",
+    "dialogue": [
+     "백작 부인: 이 저택에서 촛불은 내 허락 없이 못 켠다.",
+     "백작 부인: …한 번도 안 맞았어? 너, 유령이 아니지?"
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 촛불이 스스로 켜져.",
+    "유령: 우—우— 살아있는 냄새.",
+    "재우: 너도 냄새나."
+   ],
+   "clearLines": [
+    "유령: 너, 무섭지 않아?",
+    "재우: 무섭다고 했지만, 사실은 조금 반가웠어."
+   ]
+  },
+  {
+   "index": 41,
+   "chapter": 5,
+   "chapterId": "ch5",
+   "mapId": "rockfest",
+   "mapName": "록 페스티벌 무대",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 90,
+   "skinId": "bat",
+   "skinName": "박쥐",
+   "skinEmoji": "🦇",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "bat",
+   "title": "무대 조명 사이로",
+   "mission": {
+    "type": "combo",
+    "target": 6,
+    "label": "무대 조명을 가로질러 — 6콤보만 달성하면 클리어!",
+    "engineMode": "normal",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "무대 지배인 라우드",
+    "emoji": "🎸",
+    "hp": 4,
+    "pattern": "스피커로 발판을 흔들고, 조명을 터뜨려 시야를 가린다.",
+    "dialogue": [
+     "라우드: 무대 위에선 소리가 왕이다!",
+     "라우드: …박수 소리가 안 멈추네. 앵콜이다, 앵콜!"
+    ]
+   },
+   "introLines": [
+    "재우: 귀가… 먹먹해.",
+    "박쥐: 시끄러워. 근데 좋아.",
+    "재우: 너 박쥐인데 소리 좋아해?"
+   ],
+   "clearLines": [
+    "박쥐: 앵콜 소리 들려. …널 향한 거야.",
+    "재우: 앵콜은 처음이야. 다음엔 너랑 같이 무대에 서 볼래."
+   ]
+  },
+  {
+   "index": 42,
+   "chapter": 5,
+   "chapterId": "ch5",
+   "mapId": "hospital",
+   "mapName": "병원 & 응급실",
+   "mapIsNew": true,
+   "diff": "어려움",
+   "total": 80,
+   "skinId": "doctor",
+   "skinName": "의사",
+   "skinEmoji": "🩺",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "doctor",
+   "title": "야간 응급실",
+   "mission": {
+    "type": "time_limit",
+    "target": 360,
+    "label": "응급 환자를 옥상 헬기까지 — 6분 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "그림자 의사",
+    "emoji": "🩺",
+    "hp": 4,
+    "pattern": "들것을 발판 삼아 추격하고, 경보로 조명을 어둡게 만든다.",
+    "dialogue": [
+     "그림자 의사: 환자는 내가 데려간다.",
+     "그림자 의사: …이송 완료. 내가 진 거군."
+    ]
+   },
+   "introLines": [
+    "재우: 복도가 조용해. 근데 불은 다 켜져 있어.",
+    "의사: 숨만 쉬어도 된다. 나머지는 내가 할게.",
+    "재우: 그럼 나는?"
+   ],
+   "clearLines": [
+    "의사: 이송 완료. 환자 셋 다 살았어.",
+    "재우: 당직 끝나면 내가 간식 사 줄게. 그때 잠깐이라도 자."
+   ]
+  },
+  {
+   "index": 43,
+   "chapter": 5,
+   "chapterId": "ch5",
+   "mapId": "lab",
+   "mapName": "미친 과학자의 실험실",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 90,
+   "skinId": "frank",
+   "skinName": "프랑켄슈타인",
+   "skinEmoji": "🧟",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "frank",
+   "title": "번개를 맞은 밤",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "실험실 지붕까지, 과학자를 막고 — 보스만 격파하면 클리어!",
+    "engineMode": "boss",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "미친 과학자 박사",
+    "emoji": "⚡",
+    "hp": 4,
+    "pattern": "번개를 끌어내려 발판을 태우고, 시험관을 던진다.",
+    "dialogue": [
+     "미친 과학자 박사: 번개! 번개를 다시!",
+     "미친 과학자 박사: …꺼졌어. 내 번개가 꺼졌어. 하, 오늘은 봐주마."
+    ]
+   },
+   "introLines": [
+    "재우: 천장에 하늘이 있어. 실내인데.",
+    "프랑켄슈타인: 저 사람이 나를 만들었어.",
+    "재우: 그럼 고맙다고 해야지."
+   ],
+   "clearLines": [
+    "프랑켄슈타인: 박사가 웃었어. 처음 봤어.",
+    "재우: 네가 웃으니까 나도 웃음이 나. 이상하지?"
+   ]
+  },
+  {
+   "index": 44,
+   "chapter": 5,
+   "chapterId": "ch5",
+   "mapId": "volcano",
+   "mapName": "공룡 화산 정글",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 84,
+   "skinId": "dino",
+   "skinName": "공룡",
+   "skinEmoji": "🦖",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "dino",
+   "title": "재가 내리는 숲",
+   "mission": {
+    "type": "max_falls",
+    "target": 4,
+    "label": "화산재 내리는 숲을 지나 — 낙하 4회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "용암 랩터 우두머리",
+    "emoji": "🦖",
+    "hp": 4,
+    "pattern": "돌진으로 발판을 부수고, 불씨를 흩뿌린다.",
+    "dialogue": [
+     "용암 랩터: 크르르… 여긴 내 사냥터다.",
+     "용암 랩터: …한 번도 안 떨어졌어? 너, 랩터가 아니지."
+    ]
+   },
+   "introLines": [
+    "재우: 눈이 오는 것 같은데… 따뜻해.",
+    "공룡: 여긴 내가 태어난 숲이야. 지금은 재만 남았어.",
+    "재우: 그럼 다시 심자."
+   ],
+   "clearLines": [
+    "공룡: 정상에서 봤어. 아래에 물줄기가 있어.",
+    "재우: 물줄기 찾았으니, 씨앗은 내가 챙겨 올게."
+   ]
+  },
+  {
+   "index": 45,
+   "chapter": 5,
+   "chapterId": "ch5",
+   "mapId": "canyon",
+   "mapName": "서쪽 그랜드 캐니언",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 90,
+   "skinId": "cactus",
+   "skinName": "선인장",
+   "skinEmoji": "🌵",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "cactus",
+   "title": "그랜드 캐니언의 바람",
+   "mission": {
+    "type": "min_jump",
+    "target": 135,
+    "label": "붉은 절벽을 따라 서쪽 끝까지 — 점프 135회 이하로 완등",
+    "engineMode": "minjump",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "독수리 그림자",
+    "emoji": "🦅",
+    "hp": 4,
+    "pattern": "급강하로 발판을 차고, 모래바람으로 밀어낸다.",
+    "dialogue": [
+     "독수리 그림자: 이 협곡은 내 하늘이다.",
+     "독수리 그림자: …땅에서 날 이겼어? 하, 인정하지."
+    ]
+   },
+   "introLines": [
+    "재우: 여기… 돌이 다 빨개. 노을 때문인가?",
+    "선인장: 여기선 물 한 모금이 금이야.",
+    "재우: 네 몸에 물 있잖아."
+   ],
+   "clearLines": [
+    "선인장: 서쪽 끝 봤어. 이제 돌아가자.",
+    "재우: 물 한 모금 아꼈 둘게. 네 몫으로."
+   ]
+  },
+  {
+   "index": 46,
+   "chapter": 5,
+   "chapterId": "ch5",
+   "mapId": "library",
+   "mapName": "마법 도서관 & 둥둥 책",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 90,
+   "skinId": "wizard",
+   "skinName": "마법사",
+   "skinEmoji": "🧙",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "wizard",
+   "title": "둥둥 떠다니는 책",
+   "mission": {
+    "type": "combo",
+    "target": 6,
+    "label": "책 발판을 밟고 도서관 꼭대기까지 — 6콤보만 달성하면 클리어!",
+    "engineMode": "normal",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "금서의 수호자",
+    "emoji": "📖",
+    "hp": 4,
+    "pattern": "책장을 넘겨 발판을 바꾸고, 글자로 길을 막는다.",
+    "dialogue": [
+     "금서의 수호자: 이 책은 읽는 게 아니야. 지키는 거야.",
+     "금서의 수호자: …책들이 널 좋아하네. 통과."
+    ]
+   },
+   "introLines": [
+    "재우: 책이… 날아다녀!",
+    "마법사: 조용히. 책들이 자고 있어.",
+    "재우: 책이 자?"
+   ],
+   "clearLines": [
+    "마법사: 네 이름이 책에 적혔어.",
+    "재우: 친구 목록이라니. 그 책, 나중에 읽어 봐도 돼?"
+   ]
+  },
+  {
+   "index": 47,
+   "chapter": 5,
+   "chapterId": "ch5",
+   "mapId": "ruins",
+   "mapName": "고대 돌 신전 폐허",
+   "mapIsNew": true,
+   "diff": "어려움",
+   "total": 80,
+   "skinId": "golem",
+   "skinName": "골렘",
+   "skinEmoji": "🗿",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "golem",
+   "title": "룬을 밝히는 순서",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "룬 3개를 순서대로 밝히고 수호자를 꺾기 — 보스만 격파하면 클리어!",
+    "engineMode": "boss",
+    "clearMode": "mission"
+   },
+   "boss": {
+    "name": "태고의 수호자",
+    "emoji": "🗿",
+    "hp": 4,
+    "pattern": "돌주먹으로 발판을 부수고, 룬 순서를 뒤집는다.",
+    "dialogue": [
+     "태고의 수호자: 룬의 순서를 틀리면 돌이 너를 삼킨다.",
+     "태고의 수호자: …순서를 외웠구나. 너도 돌의 말을 듣는구나."
+    ]
+   },
+   "introLines": [
+    "재우: 여긴… 돌이 다 이끼로 덮였어.",
+    "골렘: …나는 돌. 돌은 기다린다. 아주 오래.",
+    "재우: 얼마나?"
+   ],
+   "clearLines": [
+    "골렘: 룬이 밝았다. 이제 나도 걸을 수 있어.",
+    "재우: 오래 기다렸으면, 이제 천천히 걸어도 돼."
+   ]
+  },
+  {
+   "index": 48,
+   "chapter": 6,
+   "chapterId": "ch6",
+   "mapId": "olympus",
+   "mapName": "올림포스 신전",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 90,
+   "skinId": "origin_god",
+   "skinName": "태초의 신",
+   "skinEmoji": "🌀",
+   "hidden": true,
+   "startUnlocked": false,
+   "unlockSkin": "origin_god",
+   "title": "신전의 시련",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "올림포스의 시험을 통과하고 신전 꼭대기까지 — 보스 격파 후 완등",
+    "engineMode": "boss",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "신전의 문지기 타이탄",
+    "emoji": "🏛️",
+    "hp": 5,
+    "pattern": "번개를 떨어뜨리고, 신전 기둥을 뽑아 던진다.",
+    "dialogue": [
+     "타이탄: 이 신전은 신도 못 넘는다.",
+     "타이탄: …인간이 넘었다. 신전이 기억할 것이다."
+    ]
+   },
+   "introLines": [
+    "재우: 구름 위에 기둥이 서 있어. 발밑이 안 보여.",
+    "태초의 신: 올림포스에 인간이 오다니.",
+    "재우: 실례지만 지나갈게요."
+   ],
+   "clearLines": [
+    "태초의 신: …통과했다. 나도 아직 살아있군.",
+    "재우: 당연하죠! 같이 가요."
+   ]
+  },
+  {
+   "index": 49,
+   "chapter": 6,
+   "chapterId": "ch6",
+   "mapId": "fireworks",
+   "mapName": "불꽃축제 & 황금 고층빌딩",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 90,
+   "skinId": "flameskull",
+   "skinName": "불꽃 해골",
+   "skinEmoji": "💀",
+   "hidden": true,
+   "startUnlocked": false,
+   "unlockSkin": "flameskull",
+   "title": "불꽃이 꺼지기 전",
+   "mission": {
+    "type": "time_limit",
+    "target": 390,
+    "label": "축제 불꽃 아래, 황금 빌딩 옥상까지 — 6분 30초 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "불꽃 마술사",
+    "emoji": "🎆",
+    "hp": 4,
+    "pattern": "불꽃이 사방으로 터져 발판을 태우고, 연기로 시야를 가린다.",
+    "dialogue": [
+     "불꽃 마술사: 불꽃은 손끝에서 태어나 손끝에서 죽는다.",
+     "불꽃 마술사: …네 손엔 안 탔구나. 좋은 손이야."
+    ]
+   },
+   "introLines": [
+    "재우: 하늘이… 계속 터져! 무섭다.",
+    "불꽃 해골: 오늘 밤 하늘이 제일 밝아.",
+    "재우: 너 뼈인데 어떻게 웃어?"
+   ],
+   "clearLines": [
+    "불꽃 해골: 마지막 불꽃은 너한테 줄게.",
+    "재우: 손 뻗을게. 안 뜨거운 쪽으로."
+   ]
+  },
+  {
+   "index": 50,
+   "chapter": 6,
+   "chapterId": "ch6",
+   "mapId": "space",
+   "mapName": "우주 정거장",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 88,
+   "skinId": "astronaut",
+   "skinName": "우주비행사",
+   "skinEmoji": "🧑‍🚀",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "astronaut",
+   "title": "무중력 계단",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "우주 정거장 바깥에서 별까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "관리 AI 오르빗",
+    "emoji": "🛰️",
+    "hp": 4,
+    "pattern": "중력을 꺼 발판을 띄우고, 레이저로 길을 끊는다.",
+    "dialogue": [
+     "오르빗: 관리 모드. 무단 침입자 감지.",
+     "오르빗: …감지 실패. 당신은 승무원으로 등록합니다."
+    ]
+   },
+   "introLines": [
+    "재우: 발이 안 닿아. 둥둥 떠.",
+    "우주비행사: 여기선 점프가 두 배로 떠.",
+    "재우: 그럼 두 배로 조심할게."
+   ],
+   "clearLines": [
+    "우주비행사: 지구가 보여. 저기서 우리 왔어.",
+    "재우: 저 작은 점이 우리 집이라니. 돌아가면 뭐부터 할까?"
+   ]
+  },
+  {
+   "index": 51,
+   "chapter": 6,
+   "chapterId": "ch6",
+   "mapId": "pirate",
+   "mapName": "해적선 돛대 & 크라켄",
+   "mapIsNew": false,
+   "diff": "어려움",
+   "total": 90,
+   "skinId": "pirate",
+   "skinName": "해적",
+   "skinEmoji": "🏴‍☠️",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "pirate",
+   "title": "크라켄의 촉수",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "돛대를 오르고 크라켄을 몰아내기 — 보스 격파 후 완등",
+    "engineMode": "boss",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "크라켄",
+    "emoji": "🦑",
+    "hp": 4,
+    "pattern": "촉수로 돛대를 감아 흔들고, 물기둥을 세운다.",
+    "dialogue": [
+     "크라켄: 이 바다는 내 영역이다. 뿌우우.",
+     "크라켄: …촉수를 다 피하다니. 너, 바다 사람이구나."
+    ]
+   },
+   "introLines": [
+    "재우: 배가… 계속 흔들려. 파도가 무서워.",
+    "해적: 돛대 올라가서 깃발 다시 걸어!",
+    "재우: 거기 크라켄 있는데!"
+   ],
+   "clearLines": [
+    "해적: 깃발 올라갔어! 이 배는 이제 내 거야.",
+    "재우: 깃발은 네 거야. 나는 키를 잡아 볼래."
+   ]
+  },
+  {
+   "index": 52,
+   "chapter": 6,
+   "chapterId": "ch6",
+   "mapId": "sharkbay",
+   "mapName": "상어 해류 & 사냥터",
+   "mapIsNew": true,
+   "diff": "어려움",
+   "total": 82,
+   "skinId": "shark",
+   "skinName": "상어",
+   "skinEmoji": "🦈",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "shark",
+   "title": "해류를 거슬러",
+   "mission": {
+    "type": "max_falls",
+    "target": 4,
+    "label": "상어 순찰로를 지나 상어 왕의 바다까지 — 낙하 4회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "메갈로돈",
+    "emoji": "🦈",
+    "hp": 4,
+    "pattern": "돌진하며 발판을 물어뜯고, 해류를 반대로 돌린다.",
+    "dialogue": [
+     "메갈로돈: 이 해류는 내 사냥길이다.",
+     "메갈로돈: …해류를 거슬러 올라갔어? 너, 물고기가 아니지."
+    ]
+   },
+   "introLines": [
+    "재우: 물이… 나를 계속 밀어.",
+    "상어: 냄새가 나. …너, 뛰는 냄새.",
+    "재우: 그런 냄새도 있어?"
+   ],
+   "clearLines": [
+    "상어: 너… 안 물었어. 오늘은.",
+    "재우: 안 문다는 약속, 나는 기억할게."
+   ]
+  },
+  {
+   "index": 53,
+   "chapter": 6,
+   "chapterId": "ch6",
+   "mapId": "fuji",
+   "mapName": "후지산 & 네온 시부야",
+   "mapIsNew": false,
+   "diff": "극악",
+   "total": 100,
+   "skinId": "ninja",
+   "skinName": "닌자",
+   "skinEmoji": "🥷",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "ninja",
+   "title": "후지산에서 시부야까지",
+   "mission": {
+    "type": "time_limit",
+    "target": 450,
+    "label": "닌자처럼 산을 넘어 네온 거리까지 — 7분 30초 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "그림자 닌자 두목",
+    "emoji": "🥷",
+    "hp": 5,
+    "pattern": "연막으로 시야를 가리고, 표창을 흩뿌린다.",
+    "dialogue": [
+     "그림자 닌자 두목: 그림자 속에선 내가 유일한 빛이다.",
+     "그림자 닌자 두목: …그림자를 밟고 지나갔어. 제자가 될래?"
+    ]
+   },
+   "introLines": [
+    "재우: 산 위인데, 아래가 네온이야!",
+    "닌자: 발소리 죽여. 그림자가 들으면 안 돼.",
+    "재우: 그림자가 듣는다고?"
+   ],
+   "clearLines": [
+    "닌자: …네 발소리, 나쁘지 않았어.",
+    "재우: 칭찬은 고맙고. 발소리 죽이는 법은 내일 배울게."
+   ]
+  },
+  {
+   "index": 54,
+   "chapter": 6,
+   "chapterId": "ch6",
+   "mapId": "paris",
+   "mapName": "파리 에펠탑 야경",
+   "mapIsNew": false,
+   "diff": "극악",
+   "total": 84,
+   "skinId": "owl",
+   "skinName": "부엉이",
+   "skinEmoji": "🦉",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "owl",
+   "title": "밤의 에펠탑",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "조명층을 하나씩 지나 꼭대기까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "빛의 사냥꾼",
+    "emoji": "🔦",
+    "hp": 5,
+    "pattern": "조명을 꺼 발판을 숨기고, 빛줄기로 밀어낸다.",
+    "dialogue": [
+     "빛의 사냥꾼: 빛이 꺼지면 아무도 날 못 봐.",
+     "빛의 사냥꾼: …어둠에서 날 이겼어. 너, 밤눈이 밝구나."
+    ]
+   },
+   "introLines": [
+    "재우: 밤인데 철이 빛나. 스스로.",
+    "부엉이: 밤이 길어. 우리에겐 유리하지.",
+    "재우: 근데 왜 저 조명은 꺼져 있어?"
+   ],
+   "clearLines": [
+    "부엉이: 꼭대기야. 여기서 보면 도시가 별 같아.",
+    "재우: 밤이 이렇게 예쁜 줄은 몰랐어. 조금 더 있어도 돼?"
+   ]
+  },
+  {
+   "index": 55,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "bamboo",
+   "mapName": "대나무 숲 & 구름 신사",
+   "mapIsNew": false,
+   "diff": "극악",
+   "total": 88,
+   "skinId": "panda",
+   "skinName": "판다",
+   "skinEmoji": "🐼",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "panda",
+   "title": "구름 신사의 대나무 계단",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "대나무를 타고 구름 위 신사까지 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "대나무 정령",
+    "emoji": "🎋",
+    "hp": 5,
+    "pattern": "대나무를 자라게 해 길을 막고, 잎을 칼처럼 날린다.",
+    "dialogue": [
+     "대나무 정령: 대나무는 하루에 한 뼘씩 자란다. 너보다 빠르지.",
+     "대나무 정령: …한 뼘도 안 밀렸네. 신사가 널 받아들였다."
+    ]
+   },
+   "introLines": [
+    "재우: 대나무가… 계속 자라!",
+    "판다: 대나무 심심해 보여? 나는 배고파 보여.",
+    "재우: 먹고 올라가자."
+   ],
+   "clearLines": [
+    "판다: 신사 앞이야. 여기선 조용히 해.",
+    "재우: 신사 앞에서는 나도 조용할게. 대나무는 네가."
+   ]
+  },
+  {
+   "index": 56,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "wuxia",
+   "mapName": "무협 벚꽃 절벽",
+   "mapIsNew": false,
+   "diff": "극악",
+   "total": 84,
+   "skinId": "samurai",
+   "skinName": "사무라이",
+   "skinEmoji": "⚔️",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "samurai",
+   "title": "벚꽃 절벽의 결투",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "꽃잎이 떨어지기 전, 절벽 위 검객과 결투 — 보스 격파 후 완등",
+    "engineMode": "boss",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "절벽의 검객 청랑",
+    "emoji": "🗡️",
+    "hp": 5,
+    "pattern": "칼바람으로 발판을 베고, 순간이동해 뒤를 노린다.",
+    "dialogue": [
+     "청랑: 벚꽃이 떨어지기 전에 끝내겠다.",
+     "청랑: …꽃잎이 다 떨어졌다. 내가 진 거군."
+    ]
+   },
+   "introLines": [
+    "재우: 꽃잎이… 칼처럼 날아와.",
+    "사무라이: 여기서 검을 뽑으면 돌아갈 수 없어.",
+    "재우: 나는 검이 없는데."
+   ],
+   "clearLines": [
+    "사무라이: …좋은 승부였다. 다음엔 검을 들어라.",
+    "재우: 검 대신 말로 이겼어. 다음엔 진짜로 붙자."
+   ]
+  },
+  {
+   "index": 57,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "cyberpunk",
+   "mapName": "사이버펑크 네온 빌딩",
+   "mapIsNew": false,
+   "diff": "극악",
+   "total": 100,
+   "skinId": "cyborg",
+   "skinName": "사이보그",
+   "skinEmoji": "🦾",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "cyborg",
+   "title": "네온 빌딩 300초",
+   "mission": {
+    "type": "time_limit",
+    "target": 450,
+    "label": "해킹당한 빌딩, 옥상 서버까지 — 7분 30초 안에 완등",
+    "engineMode": "timeattack",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "보안 프로그램 블랙아이스",
+    "emoji": "🦾",
+    "hp": 5,
+    "pattern": "발판을 재배치하고, 레이저 격자를 펼친다.",
+    "dialogue": [
+     "블랙아이스: 접근 차단. 삭제합니다.",
+     "블랙아이스: …삭제 실패. 관리자 권한 확인. 환영합니다."
+    ]
+   },
+   "introLines": [
+    "재우: 불빛이 깜빡여. 화면 같아.",
+    "사이보그: 이 빌딩, 아직 살아있어. 나처럼.",
+    "재우: 그럼 서버 끄면 죽는 거야?"
+   ],
+   "clearLines": [
+    "사이보그: 서버 재시작. 도시가 숨 쉬어.",
+    "재우: 숨 쉬는 건 못 배웠지만, 같이 걷는 건 배울 수 있어."
+   ]
+  },
+  {
+   "index": 58,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "alien",
+   "mapName": "외계 수정 동굴 탈출",
+   "mapIsNew": false,
+   "diff": "극악",
+   "total": 100,
+   "skinId": "alien",
+   "skinName": "외계인",
+   "skinEmoji": "👽",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "alien",
+   "title": "수정 동굴의 노랫소리",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "울리는 수정을 피해 동굴 밖으로 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "수정 여왕",
+    "emoji": "💎",
+    "hp": 5,
+    "pattern": "수정을 자라게 해 길을 막고, 초음파로 발판을 흔든다.",
+    "dialogue": [
+     "수정 여왕: 이 노래는 우리 것. 너는 못 들어.",
+     "수정 여왕: …들었구나. 노래를 들은 자는 손님이다."
+    ]
+   },
+   "introLines": [
+    "재우: 소리가 몸을 흔들어. 발판까지 울려.",
+    "외계인: 이 소리, 우리 별의 노래야.",
+    "재우: 노래가 발판을 흔들어!"
+   ],
+   "clearLines": [
+    "외계인: 밖이야. 별이 두 개 보여.",
+    "재우: 별이 두 개라니. 하나는 내가 기억할게."
+   ]
+  },
+  {
+   "index": 59,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "snowclock",
+   "mapName": "눈보라 설산 시계 종탑",
+   "mapIsNew": false,
+   "diff": "극악",
+   "total": 100,
+   "skinId": "icespirit",
+   "skinName": "얼음정령",
+   "skinEmoji": "❄️",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "icespirit",
+   "title": "눈보라 종탑",
+   "mission": {
+    "type": "max_falls",
+    "target": 3,
+    "label": "눈보라 속 종탑을 올라 — 낙하 3회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "눈보라의 지배자",
+    "emoji": "❄️",
+    "hp": 5,
+    "pattern": "눈보라로 시야를 지우고, 종소리로 발판을 얼린다.",
+    "dialogue": [
+     "눈보라의 지배자: 눈보라는 내 숨결이다.",
+     "눈보라의 지배자: …한 번도 안 미끄러졌어? 너, 얼음이 아니구나."
+    ]
+   },
+   "introLines": [
+    "재우: 눈이 얼굴을 때려. 눈을 못 뜨겠어.",
+    "얼음정령: 여기선 숨도 얼어.",
+    "재우: 그럼 숨 참을게."
+   ],
+   "clearLines": [
+    "얼음정령: 종이 울렸어. 눈보라가 멈췄어.",
+    "재우: 춥지만 괜찮아. 손잡으면 조금 덜 추울 거야."
+   ]
+  },
+  {
+   "index": 60,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "trench",
+   "mapName": "심해 해구 & 난파선",
+   "mapIsNew": true,
+   "diff": "극악",
+   "total": 88,
+   "skinId": "diver",
+   "skinName": "다이버",
+   "skinEmoji": "🤿",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "diver",
+   "title": "해구의 블랙박스",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "산소가 남아 있는 동안 심해의 눈을 꺾기 — 보스 격파 후 완등",
+    "engineMode": "boss",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "심해의 눈 아비스",
+    "emoji": "👁️",
+    "hp": 5,
+    "pattern": "물기포를 터뜨려 밀어올리고, 수압으로 점프를 깎는다.",
+    "dialogue": [
+     "아비스: 여기는 아무도 오지 않는 곳이다.",
+     "아비스: …왔구나. 그럼 이제 아무도 안 오는 곳이 아니게."
+    ]
+   },
+   "introLines": [
+    "재우: 여긴… 빛이 없어. 완전히 깜깜해.",
+    "다이버: 숨 참아. 아래로 갈수록 조용해져.",
+    "재우: 조용한 게 무서운데."
+   ],
+   "clearLines": [
+    "다이버: 블랙박스 회수. 이제 올라가자.",
+    "재우: 숨… 아직 남았어. 천천히 올라가자."
+   ]
+  },
+  {
+   "index": 61,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "vcastle",
+   "mapName": "뱀파이어 성 & 지하 묘지",
+   "mapIsNew": true,
+   "diff": "극악",
+   "total": 86,
+   "skinId": "vampire",
+   "skinName": "뱀파이어",
+   "skinEmoji": "🧛",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "vampire",
+   "title": "핏빛 달의 성",
+   "mission": {
+    "type": "no_damage",
+    "target": 1,
+    "label": "촛불을 다시 밝히며 성 꼭대기까지 — 피격 1회 이하로 완등",
+    "engineMode": "normal",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "백작",
+    "emoji": "🧛",
+    "hp": 5,
+    "pattern": "박쥐로 변신해 사라지고, 암전 속에서 덮친다.",
+    "dialogue": [
+     "백작: 한 번만 물리면 넌 내 것이 된다.",
+     "백작: …한 번도 안 물렸어. 너, 피가 없는 거 아니지?"
+    ]
+   },
+   "introLines": [
+    "재우: 달이 빨개. 이상해.",
+    "뱀파이어: 밤이 길수록 나는 강해진다. 오늘 밤은 유난히 길군.",
+    "재우: 그럼 아침을 기다릴게."
+   ],
+   "clearLines": [
+    "뱀파이어: 촛불 일곱 개. 성이 다시 따뜻해졌어.",
+    "재우: 촛불 일곱 개, 이제 안 꺼지게 내가 지켜볼게."
+   ]
+  },
+  {
+   "index": 62,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "demonking",
+   "mapName": "마왕성 & 지옥의 문",
+   "mapIsNew": true,
+   "diff": "극악",
+   "total": 90,
+   "skinId": "demon",
+   "skinName": "악마",
+   "skinEmoji": "😈",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "demon",
+   "title": "지옥의 문",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "용암이 차오르는 동안 마왕의 인장을 부수기 — 보스 격파 후 완등",
+    "engineMode": "boss",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "그림자 군주",
+    "emoji": "😈",
+    "hp": 6,
+    "pattern": "용암을 소환하고, 번개로 발판을 부순다.",
+    "dialogue": [
+     "그림자 군주: 이 문은 너를 위해 열렸다.",
+     "그림자 군주: …문을 닫는 건 너였어. 처음 보는 손님이군."
+    ]
+   },
+   "introLines": [
+    "재우: 공기가 뜨거워. 숨이 막혀.",
+    "악마: 문을 두드린 건 너야. 그러니 들어와.",
+    "재우: 초대받은 거지?"
+   ],
+   "clearLines": [
+    "악마: 인장 셋이 부서졌어. 문이 닫힌다.",
+    "재우: 문이 닫히면, 너 나올 수 있어?"
+   ]
+  },
+  {
+   "index": 63,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "skycastle",
+   "mapName": "천공성 & 황금 용",
+   "mapIsNew": false,
+   "diff": "극악",
+   "total": 100,
+   "skinId": "knight",
+   "skinName": "기사",
+   "skinEmoji": "🛡️",
+   "hidden": false,
+   "startUnlocked": false,
+   "unlockSkin": "knight",
+   "title": "천공성의 황금 용",
+   "mission": {
+    "type": "boss_clear",
+    "target": 1,
+    "label": "구름 위 성벽, 황금 용과 마지막 결투 — 보스 격파 후 완등",
+    "engineMode": "boss",
+    "clearMode": "both"
+   },
+   "boss": {
+    "name": "황금 용",
+    "emoji": "🐉",
+    "hp": 7,
+    "pattern": "비늘 발판을 부수고, 구름 돌풍과 불꽃 숨결을 번갈아 쓴다.",
+    "dialogue": [
+     "황금 용: 여기까지 오른 인간은 아주 오래도록 없었다.",
+     "황금 용: …고개를 숙인다. 오너라, 별까지 데려다주마."
+    ]
+   },
+   "introLines": [
+    "재우: 여긴… 구름이 성벽보다 아래에 있어.",
+    "기사: 저 용은 성을 지키는 게 아니야. 성이 용을 지키는 거야.",
+    "재우: 그럼 성을 뺏으면 돼?"
+   ],
+   "clearLines": [
+    "기사: 용이 고개를 숙였어. 널 인정한 거야.",
+    "재우: 성이 우리 집이면, 용은 우리 가족이네."
+   ]
+  },
+  {
+   "index": 64,
+   "chapter": 7,
+   "chapterId": "ch7",
+   "mapId": "default",
+   "mapName": "구름 계곡 ~ 별빛 정상",
+   "mapIsNew": false,
+   "diff": "기본",
+   "total": 88,
+   "skinId": "goldjaeu",
+   "skinName": "황금 재우",
+   "skinEmoji": "🌟",
+   "hidden": true,
+   "startUnlocked": false,
+   "unlockSkin": "goldjaeu",
+   "title": "별빛 정상, 마지막 계단",
+   "mission": {
+    "type": "clear",
+    "target": 1,
+    "label": "구름 계곡에서 별빛 정상까지, 모든 친구와 함께 — 완등",
+    "engineMode": "normal",
+    "clearMode": "summit"
+   },
+   "boss": {
+    "name": "그림자 재우",
+    "emoji": "🌑",
+    "hp": 7,
+    "pattern": "재우와 똑같이 움직이며 점프 타이밍을 빼앗고, 별빛 탄막을 뿌린다.",
+    "dialogue": [
+     "그림자 재우: 네가 나를 이기면, 나는 네가 돼.",
+     "그림자 재우: …이겼구나. 이제 나도 너랑 같이 올라갈래."
+    ]
+   },
+   "introLines": [
+    "재우: 여기가… 끝이야?",
+    "그림자 재우: 아니, 여기가 시작이야.",
+    "재우: …너, 나잖아."
+   ],
+   "clearLines": [
+    "재우: 정상이다. 다들 보여?",
+    "황금 재우: 네가 올라온 길이 다 금이야. 이제 쉬어도 돼."
+   ]
+  }
+ ],
+ "newMaps19": [
+  {
+   "id": "alley",
+   "name": "고양이 골목 & 지붕",
+   "emoji": "🐾",
+   "desc": "빨래줄·전깃줄 발판 · 쥐가 물고 도망가는 판자 · 처마끝 미끄럼",
+   "diff": "쉬움",
+   "diffColor": "#86efac",
+   "total": 60,
+   "owner": "cat",
+   "ownerName": "고양이",
+   "stage": 2,
+   "chapter": 0,
+   "skyTop": "#35476b",
+   "skyMid": "#6d5c74",
+   "skyBot": "#e7b489",
+   "platColor": "#c79a6a",
+   "platBody": "#8a6440",
+   "platDeep": "#4a3524",
+   "platLine": "#2e2117",
+   "accentColor": "#ffd88a",
+   "bgTheme": "비 갓 그친 저녁 골목 · 젖은 벽돌 · 빨래줄 · 처마의 생선가게",
+   "zones": [
+    "0. 골목 하수구",
+    "1. 골목 입구",
+    "2. 생선가게 처마",
+    "3. 빨래줄 지붕",
+    "4. 종탑 지붕",
+    "5. 🐾 고양이 왕국"
+   ],
+   "gimmick": "줄 발판: 밟으면 처지고 3초 뒤 끊어진다. 쥐가 발판을 물고 옆으로 끌고 간다.",
+   "clrTitle": "지붕 위의 발소리",
+   "champTitle": "골목의 왕",
+   "iconFamily": "ghost",
+   "phys": {
+    "grav": 1320,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "골목 대장 냥",
+   "theme": "비 갠 뒤 골목 — 생선가게 처마, 빨래줄, 지붕 위 줄타기",
+   "missionFlavor": "골목 길고양이에게 생선 3개 나눠주기",
+   "oneLine": "냐옹? …너도 지붕 타는구나."
+  },
+  {
+   "id": "pond",
+   "name": "개울가 연못 & 연잎 다리",
+   "emoji": "🪷",
+   "desc": "물결 따라 오르내리는 연잎 · 미끄러운 개구리밥 · 모기떼",
+   "diff": "쉬움",
+   "diffColor": "#86efac",
+   "total": 58,
+   "owner": "frog",
+   "ownerName": "개구리",
+   "stage": 3,
+   "chapter": 0,
+   "skyTop": "#9fd3e6",
+   "skyMid": "#cfe9d8",
+   "skyBot": "#f0f7e0",
+   "platColor": "#8fb96a",
+   "platBody": "#5f8f4a",
+   "platDeep": "#33512c",
+   "platLine": "#22381e",
+   "accentColor": "#f7b6c8",
+   "bgTheme": "이른 아침 개울 · 갈대 · 연잎 · 물안개",
+   "zones": [
+    "0. 진흙 바닥",
+    "1. 갈대 개울",
+    "2. 연잎 디딤돌",
+    "3. 모기떼 수풀",
+    "4. 버들잎 둑",
+    "5. 🪷 버들잎 정상"
+   ],
+   "gimmick": "연잎이 물결 주기에 맞춰 상승·하강(타이밍 점프), 개구리밥이 덮인 발판은 미끄럽다.",
+   "clrTitle": "연잎 디딤",
+   "champTitle": "연못의 왕자",
+   "iconFamily": "wave",
+   "phys": {
+    "grav": 1320,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "황소개구리 왕눈이",
+   "theme": "갈대 개울과 연잎 — 물장구 소리, 개구리밥",
+   "missionFlavor": "연못에 빠진 병아리 2마리 구조",
+   "oneLine": "개굴! 물장구는 자신 있어."
+  },
+  {
+   "id": "hatchery",
+   "name": "병아리 양계장 & 부화장",
+   "emoji": "🐤",
+   "desc": "반대로 흐르는 컨베이어 · 굴러오는 알 · 깨지는 발판",
+   "diff": "쉬움",
+   "diffColor": "#86efac",
+   "total": 56,
+   "owner": "chick",
+   "ownerName": "병아리",
+   "stage": 8,
+   "chapter": 1,
+   "skyTop": "#ffe7b0",
+   "skyMid": "#fff3d0",
+   "skyBot": "#fffaf0",
+   "platColor": "#e3c07a",
+   "platBody": "#b8904e",
+   "platDeep": "#6b5127",
+   "platLine": "#4a3719",
+   "accentColor": "#ffd75e",
+   "bgTheme": "따뜻한 전구의 부화장 · 알 상자 · 모이통 마당",
+   "zones": [
+    "0. 알 더미 아래",
+    "1. 모이통 마당",
+    "2. 알 상자 미로",
+    "3. 인큐베이터 벨트",
+    "4. 둥지 계단",
+    "5. 🐤 둥지 꼭대기"
+   ],
+   "gimmick": "컨베이어가 반대 방향으로 흐르고, 굴러온 알이 부딪히면 발판이 깨진다.",
+   "clrTitle": "삐약 등반가",
+   "champTitle": "양계장의 왕",
+   "iconFamily": "dome",
+   "phys": {
+    "grav": 1320,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "수탉 새벽대왕",
+   "theme": "모이통 마당과 인큐베이터 — 따뜻한 전구, 알 상자",
+   "missionFlavor": "굴러오는 알 6개를 막아 부화시키기",
+   "oneLine": "삐약! 나 아직 안 깨졌어!"
+  },
+  {
+   "id": "burrow",
+   "name": "당근밭 & 토끼 굴",
+   "emoji": "🥕",
+   "desc": "뽑으면 나오는 당근 발판 · 어둠 속 굴길 · 늑대 허수아비",
+   "diff": "쉬움",
+   "diffColor": "#86efac",
+   "total": 58,
+   "owner": "rabbit",
+   "ownerName": "토끼",
+   "stage": 9,
+   "chapter": 1,
+   "skyTop": "#c9a075",
+   "skyMid": "#a9793f",
+   "skyBot": "#5c4028",
+   "platColor": "#b57b45",
+   "platBody": "#8a5527",
+   "platDeep": "#4a2c16",
+   "platLine": "#2f1c0e",
+   "accentColor": "#f28a3c",
+   "bgTheme": "당근 이랑과 땅속 굴 · 흙벽 · 뿌리",
+   "zones": [
+    "0. 굴속 깊은 곳",
+    "1. 당근밭 이랑",
+    "2. 굴속 미로",
+    "3. 늑대 허수아비 밭",
+    "4. 토끼집 지붕",
+    "5. 🥕 언덕 위 토끼집"
+   ],
+   "gimmick": "굴 구간은 가까이 가야 발판이 드러나는 암흑 시야, 당근을 뽑으면 새 발판이 자란다.",
+   "clrTitle": "당근 사냥꾼",
+   "champTitle": "굴속의 지배자",
+   "iconFamily": "tree",
+   "phys": {
+    "grav": 1320,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "여우 허수아비",
+   "theme": "당근 이랑과 땅속 굴 — 흙냄새, 늑대 허수아비",
+   "missionFlavor": "당근 5개를 뽑아 굴 입구에 쌓기",
+   "oneLine": "깡총! 굴은 내가 제일 잘 알아."
+  },
+  {
+   "id": "wheatfield",
+   "name": "가을 밀밭 & 바람개비 언덕",
+   "emoji": "🌾",
+   "desc": "돌아가는 바람개비 · 쪼아대는 까마귀 · 흔들리는 밀단",
+   "diff": "쉬움",
+   "diffColor": "#86efac",
+   "total": 60,
+   "owner": "scarecrow",
+   "ownerName": "허수아비",
+   "stage": 10,
+   "chapter": 1,
+   "skyTop": "#f6c98a",
+   "skyMid": "#fbdfa8",
+   "skyBot": "#fdf1cf",
+   "platColor": "#dfae5c",
+   "platBody": "#b3813a",
+   "platDeep": "#66491f",
+   "platLine": "#453015",
+   "accentColor": "#ffe9a3",
+   "bgTheme": "노을 진 가을 밀밭 · 바람개비 · 밀단",
+   "zones": [
+    "0. 밀 그루 아래",
+    "1. 밀 이랑",
+    "2. 바람개비 밭",
+    "3. 까마귀 떼",
+    "4. 밀단 창고",
+    "5. 🌾 노을 언덕"
+   ],
+   "gimmick": "바람개비가 도는 방향으로 캐릭터를 밀어내고, 까마귀가 발판을 쪼아 흔든다.",
+   "clrTitle": "황금 밀밭",
+   "champTitle": "가을의 수호자",
+   "iconFamily": "tree",
+   "phys": {
+    "grav": 1320,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "까마귀 대장 검은부리",
+   "theme": "노을 진 밀밭과 바람개비 — 까마귀 떼",
+   "missionFlavor": "까마귀 10마리 쫓아내기",
+   "oneLine": "…나는 밭을 지킨다. 아무도 못 지나가."
+  },
+  {
+   "id": "octocave",
+   "name": "문어 항아리 동굴",
+   "emoji": "🐙",
+   "desc": "항아리 통과(몸 축소) · 발판을 감아 옮기는 다리 · 먹물 암전",
+   "diff": "보통",
+   "diffColor": "#7dd3fc",
+   "total": 72,
+   "owner": "octopus",
+   "ownerName": "문어",
+   "stage": 14,
+   "chapter": 2,
+   "skyTop": "#2c6a7a",
+   "skyMid": "#1d4f60",
+   "skyBot": "#123340",
+   "platColor": "#6c9a92",
+   "platBody": "#47706c",
+   "platDeep": "#24413f",
+   "platLine": "#152b2a",
+   "accentColor": "#f6a89c",
+   "bgTheme": "조수 웅덩이와 항아리 · 먹물 · 산호 아치",
+   "zones": [
+    "0. 동굴 바닥",
+    "1. 조수 웅덩이",
+    "2. 항아리 미로",
+    "3. 먹물 동굴",
+    "4. 산호 아치",
+    "5. 🐙 여덟 팔 왕좌"
+   ],
+   "gimmick": "항아리에 들어가면 통과 판정이 작아지고, 문어 다리가 발판을 감아 좌우로 옮긴다.",
+   "clrTitle": "여덟 팔 등반가",
+   "champTitle": "항아리 군주",
+   "iconFamily": "wave",
+   "phys": {
+    "grav": 1360,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "거대 문어 여덟팔",
+   "theme": "조수 웅덩이와 항아리 — 먹물, 산호 아치",
+   "missionFlavor": "항아리 4개에 보물을 숨기고 동굴 탈출",
+   "oneLine": "팔이 여덟이라 손이 모자랄 일이 없지."
+  },
+  {
+   "id": "fruitfarm",
+   "name": "바나나 농장 & 과일 시장",
+   "emoji": "🍌",
+   "desc": "미끄러운 바나나 껍질 · 굴러오는 과일 수레 · 코코넛 창고",
+   "diff": "보통",
+   "diffColor": "#7dd3fc",
+   "total": 72,
+   "owner": "banana",
+   "ownerName": "바나나맨",
+   "stage": 16,
+   "chapter": 2,
+   "skyTop": "#bfe6c8",
+   "skyMid": "#e8f2c4",
+   "skyBot": "#fbf6d8",
+   "platColor": "#c08a52",
+   "platBody": "#92603a",
+   "platDeep": "#54371f",
+   "platLine": "#372315",
+   "accentColor": "#ffd75e",
+   "bgTheme": "바나나 농장과 과일 수레 시장 · 파라솔 · 나무 상자",
+   "zones": [
+    "0. 과일 상자 아래",
+    "1. 바나나 농장",
+    "2. 과일 수레 시장",
+    "3. 코코넛 창고",
+    "4. 과일탑 계단",
+    "5. 🍌 과일탑 정상"
+   ],
+   "gimmick": "바나나 껍질 발판은 한 번 밟으면 미끄러지고, 수레가 굴러와 발판을 옆으로 민다.",
+   "clrTitle": "과일 배달원",
+   "champTitle": "시장의 왕",
+   "iconFamily": "tree",
+   "phys": {
+    "grav": 1360,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "킹 바나나",
+   "theme": "바나나 나무 농장과 과일 수레 시장",
+   "missionFlavor": "시장에 과일 8개 배달",
+   "oneLine": "바나나가 바나나를 팔면… 이상한가?"
+  },
+  {
+   "id": "savanna",
+   "name": "사바나 & 물길",
+   "emoji": "🐘",
+   "desc": "코로 물을 뿜는 코끼리 · 떠내려가는 물길 발판 · 마른 덤불",
+   "diff": "보통",
+   "diffColor": "#7dd3fc",
+   "total": 74,
+   "owner": "elephant",
+   "ownerName": "코끼리",
+   "stage": 17,
+   "chapter": 2,
+   "skyTop": "#eac37e",
+   "skyMid": "#f6dfa9",
+   "skyBot": "#fbeecb",
+   "platColor": "#bb8b52",
+   "platBody": "#8d6337",
+   "platDeep": "#4f371d",
+   "platLine": "#33220f",
+   "accentColor": "#e8833f",
+   "bgTheme": "마른 풀밭과 아카시아 · 물길 · 바오밥 그늘",
+   "zones": [
+    "0. 마른 강바닥",
+    "1. 마른 풀밭",
+    "2. 아카시아 나무",
+    "3. 코끼리 물길",
+    "4. 바오밥 그늘",
+    "5. 🐘 바오밥 언덕"
+   ],
+   "gimmick": "코끼리가 코로 물을 뿜어 발판을 밀고, 물길 발판은 주기적으로 떠내려간다.",
+   "clrTitle": "물길 개척자",
+   "champTitle": "사바나의 왕",
+   "iconFamily": "tree",
+   "phys": {
+    "grav": 1360,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "뿔코뿔소",
+   "theme": "마른 풀밭과 아카시아 — 코끼리 물길",
+   "missionFlavor": "물웅덩이 3곳을 이어 동물들을 구하기",
+   "oneLine": "코로 다 할 수 있어. 심지어 인사도."
+  },
+  {
+   "id": "halloween",
+   "name": "할로윈 마을 & 사탕 거리",
+   "emoji": "🎃",
+   "desc": "켜지면 나타나는 호박 발판 · 사탕 버프 · 유령 의상 상점",
+   "diff": "보통",
+   "diffColor": "#7dd3fc",
+   "total": 74,
+   "owner": "pumpkin",
+   "ownerName": "호박맨",
+   "stage": 18,
+   "chapter": 2,
+   "skyTop": "#3a2b57",
+   "skyMid": "#5d3f6b",
+   "skyBot": "#8a5a3a",
+   "platColor": "#a06a33",
+   "platBody": "#74471f",
+   "platDeep": "#3f2610",
+   "platLine": "#2a190a",
+   "accentColor": "#ffa042",
+   "bgTheme": "잭오랜턴 밭과 사탕 거리 · 호박 마차 · 마녀 가게",
+   "zones": [
+    "0. 호박 밭 아래",
+    "1. 잭오랜턴 밭",
+    "2. 사탕 거리",
+    "3. 호박 마차 길",
+    "4. 마녀의 가게",
+    "5. 🎃 호박 왕관"
+   ],
+   "gimmick": "사탕을 먹으면 잠깐 몸이 부풀어 점프력이 오르고, 호박이 켜질 때만 발판이 보인다.",
+   "clrTitle": "사탕 사냥꾼",
+   "champTitle": "호박 왕관",
+   "iconFamily": "ghost",
+   "phys": {
+    "grav": 1360,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "킹 펌킨",
+   "theme": "잭오랜턴 밭과 사탕 거리 — 호박 마차",
+   "missionFlavor": "사탕 12개를 모아 마을 축제 열기",
+   "oneLine": "오늘은 내가 주인공인 밤이야!"
+  },
+  {
+   "id": "slimemarsh",
+   "name": "슬라임 늪 왕국",
+   "emoji": "🫧",
+   "desc": "가라앉는 점액 발판 · 발판을 삼키는 슬라임 · 젤리 벽",
+   "diff": "보통",
+   "diffColor": "#7dd3fc",
+   "total": 76,
+   "owner": "slimeking",
+   "ownerName": "슬라임킹",
+   "stage": 19,
+   "chapter": 2,
+   "skyTop": "#4c7a63",
+   "skyMid": "#6a9a5f",
+   "skyBot": "#8fb56a",
+   "platColor": "#8ec25e",
+   "platBody": "#639440",
+   "platDeep": "#33521f",
+   "platLine": "#22380f",
+   "accentColor": "#d4f57e",
+   "bgTheme": "끈적한 늪과 젤리 성벽 · 왕좌 · 점액 웅덩이",
+   "zones": [
+    "0. 늪 바닥",
+    "1. 끈적 늪",
+    "2. 슬라임 성벽",
+    "3. 젤리 회랑",
+    "4. 왕좌 앞",
+    "5. 🫧 왕관 첨탑"
+   ],
+   "gimmick": "점액 발판은 밟고 3초 뒤 가라앉고, 부하 슬라임이 발판을 통째로 삼킨다.",
+   "clrTitle": "점액 등반가",
+   "champTitle": "늪의 왕관",
+   "iconFamily": "wave",
+   "phys": {
+    "grav": 1360,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "반란 슬라임 검은젤리",
+   "theme": "끈적한 늪과 젤리 성 — 왕좌",
+   "missionFlavor": "부하 슬라임 5마리를 왕좌 앞에 모으기",
+   "oneLine": "왕관이 무거워? 아니, 늪이 무거운 거지."
+  },
+  {
+   "id": "boxing",
+   "name": "권투 링 체육관",
+   "emoji": "🥊",
+   "desc": "튕겨 올리는 링 로프 · 날아오는 글러브 · 링 밖 낙하",
+   "diff": "보통",
+   "diffColor": "#7dd3fc",
+   "total": 72,
+   "owner": "boxer",
+   "ownerName": "복서",
+   "stage": 29,
+   "chapter": 3,
+   "skyTop": "#33404f",
+   "skyMid": "#4d5b70",
+   "skyBot": "#7c8798",
+   "platColor": "#e4dccc",
+   "platBody": "#b8ae9a",
+   "platDeep": "#6b6455",
+   "platLine": "#453f33",
+   "accentColor": "#e56a5e",
+   "bgTheme": "복싱 체육관 · 샌드백 · 로프 링 · 챔피언 벨트",
+   "zones": [
+    "0. 체육관 지하",
+    "1. 체육관 현관",
+    "2. 샌드백 복도",
+    "3. 로프 링",
+    "4. 챔피언 락커",
+    "5. 🥊 챔피언 벨트"
+   ],
+   "gimmick": "링 로프가 트램펄린처럼 튕겨 올리고, 글러브가 날아와 캐릭터를 밀어낸다. 라운드 종이 울리면 발판이 통째로 교체.",
+   "clrTitle": "링 위의 등반",
+   "champTitle": "챔피언 벨트",
+   "iconFamily": "dome",
+   "phys": {
+    "grav": 1360,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "챔피언 강철주먹",
+   "theme": "복싱 체육관 — 샌드백, 로프 링, 챔피언 벨트",
+   "missionFlavor": "스파링 3라운드 버티기",
+   "oneLine": "링 밖으로 나가면 지는 거야. 여긴 내 집이야."
+  },
+  {
+   "id": "mansionclean",
+   "name": "호화 저택 대청소",
+   "emoji": "🧹",
+   "desc": "먼지 쌓인 발판 · 쓸면 생기는 길 · 물걸레 미끄럼",
+   "diff": "보통",
+   "diffColor": "#7dd3fc",
+   "total": 72,
+   "owner": "maid",
+   "ownerName": "메이드",
+   "stage": 30,
+   "chapter": 3,
+   "skyTop": "#3b3548",
+   "skyMid": "#5f5468",
+   "skyBot": "#8f8088",
+   "platColor": "#e9e0cf",
+   "platBody": "#c0b29c",
+   "platDeep": "#6e6354",
+   "platLine": "#463d33",
+   "accentColor": "#ffd98a",
+   "bgTheme": "대리석 저택 · 촛대 복도 · 식기 선반 · 다락 창가",
+   "zones": [
+    "0. 하인 계단",
+    "1. 대리석 현관",
+    "2. 촛대 복도",
+    "3. 식기 선반",
+    "4. 다락 계단",
+    "5. 🧹 다락 창가"
+   ],
+   "gimmick": "먼지가 쌓이면 발판이 느려지고, 빗자루로 쓸면 먼지가 걷히며 새 발판이 드러난다. 물걸레 구간은 미끄럽다.",
+   "clrTitle": "먼지 털기",
+   "champTitle": "저택의 청소왕",
+   "iconFamily": "dome",
+   "phys": {
+    "grav": 1360,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "까다로운 영감님",
+   "theme": "대리석 저택 — 촛대 복도, 식기 선반, 다락",
+   "missionFlavor": "방 5개 청소(먼지 더미 제거)",
+   "oneLine": "청소는 위에서부터. 인생도 그렇고."
+  },
+  {
+   "id": "oldinn",
+   "name": "중국 객잔 & 강시 마을",
+   "emoji": "🏮",
+   "desc": "팔을 뻗고 뛰어오는 강시 · 부적 봉인 · 기와지붕",
+   "diff": "어려움",
+   "diffColor": "#fca5a5",
+   "total": 80,
+   "owner": "jiangshi",
+   "ownerName": "강시",
+   "stage": 39,
+   "chapter": 4,
+   "skyTop": "#2b2334",
+   "skyMid": "#4a2c33",
+   "skyBot": "#6b3434",
+   "platColor": "#9a5a44",
+   "platBody": "#70402e",
+   "platDeep": "#3d2218",
+   "platLine": "#28150e",
+   "accentColor": "#ffb44a",
+   "bgTheme": "붉은 등롱의 중국 객잔 · 강시 마을 · 달빛 기와",
+   "zones": [
+    "0. 마을 우물",
+    "1. 객잔 마당",
+    "2. 등롱 거리",
+    "3. 지붕 기와",
+    "4. 부적 제단",
+    "5. 🏮 달빛 언덕"
+   ],
+   "gimmick": "강시가 팔을 뻗은 채 뛰어와 넘어야 하고, 부적을 붙이면 3초 멈춘다.",
+   "clrTitle": "부적술사",
+   "champTitle": "달빛 객잔의 주인",
+   "iconFamily": "dome",
+   "phys": {
+    "grav": 1400,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "강시 대장 푸른송곳니",
+   "theme": "붉은 등롱의 객잔과 강시 마을",
+   "missionFlavor": "부적 5장을 붙여 마을 봉인",
+   "oneLine": "…쿵. …쿵. …쿵."
+  },
+  {
+   "id": "hospital",
+   "name": "병원 & 응급실",
+   "emoji": "🏥",
+   "desc": "층마다 멈추는 엘리베이터 · 지나가는 들것 · 어두워지는 조명",
+   "diff": "어려움",
+   "diffColor": "#fca5a5",
+   "total": 80,
+   "owner": "doctor",
+   "ownerName": "의사",
+   "stage": 42,
+   "chapter": 5,
+   "skyTop": "#465f70",
+   "skyMid": "#7d97a4",
+   "skyBot": "#d6e6ea",
+   "platColor": "#cfdde1",
+   "platBody": "#a6b7bd",
+   "platDeep": "#5f7076",
+   "platLine": "#3d4b50",
+   "accentColor": "#8fe6c2",
+   "bgTheme": "야간 응급실 · 수술실 복도 · 약품 엘리베이터 · 옥상 헬기장",
+   "zones": [
+    "0. 지하 주차장",
+    "1. 응급실 접수",
+    "2. 수술실 복도",
+    "3. 약품 엘리베이터",
+    "4. 옥상 계단",
+    "5. 🏥 옥상 헬기장"
+   ],
+   "gimmick": "엘리베이터가 층마다 잠깐 멈추고(타이밍 점프), 경보가 울리면 조명이 어두워져 발판이 흐려진다.",
+   "clrTitle": "야간 당직",
+   "champTitle": "응급실의 수호자",
+   "iconFamily": "dome",
+   "phys": {
+    "grav": 1400,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "그림자 의사",
+   "theme": "야간 응급실 — 수술실 복도, 약품 엘리베이터, 옥상 헬기장",
+   "missionFlavor": "환자 3명을 옥상 헬기까지 이송",
+   "oneLine": "숨만 쉬어도 된다. 나머지는 내가 할게."
+  },
+  {
+   "id": "ruins",
+   "name": "고대 돌 신전 폐허",
+   "emoji": "🗿",
+   "desc": "깨어나 부수는 골렘 · 켜지면 생기는 룬 발판 · 무너지는 계단",
+   "diff": "어려움",
+   "diffColor": "#fca5a5",
+   "total": 80,
+   "owner": "golem",
+   "ownerName": "골렘",
+   "stage": 47,
+   "chapter": 5,
+   "skyTop": "#7b8a67",
+   "skyMid": "#a9b189",
+   "skyBot": "#d6cfa6",
+   "platColor": "#b5b393",
+   "platBody": "#8d8b6c",
+   "platDeep": "#4f4e3a",
+   "platLine": "#343326",
+   "accentColor": "#8fe0d8",
+   "bgTheme": "풀 덮인 신전 폐허 · 룬 벽 · 거대 석상",
+   "zones": [
+    "0. 지하 제단",
+    "1. 풀 덮인 계단",
+    "2. 무너진 기둥",
+    "3. 룬 벽",
+    "4. 거대 석상",
+    "5. 🗿 봉인된 제단"
+   ],
+   "gimmick": "룬을 순서대로 밝히면 새 발판이 생기고, 골렘이 깨어나 지나간 발판을 부순다.",
+   "clrTitle": "룬의 순례자",
+   "champTitle": "태고의 수호자",
+   "iconFamily": "pyramid",
+   "phys": {
+    "grav": 1400,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "태고의 수호자",
+   "theme": "풀 덮인 신전 폐허 — 룬 문자, 거대 석상",
+   "missionFlavor": "룬 3개를 순서대로 밝히기",
+   "oneLine": "…나는 돌. 돌은 기다린다. 아주 오래."
+  },
+  {
+   "id": "sharkbay",
+   "name": "상어 해류 & 사냥터",
+   "emoji": "🦈",
+   "desc": "한 방향으로 미는 해류 · 순찰하는 상어 · 청새치 떼",
+   "diff": "어려움",
+   "diffColor": "#fca5a5",
+   "total": 82,
+   "owner": "shark",
+   "ownerName": "상어",
+   "stage": 52,
+   "chapter": 6,
+   "skyTop": "#1e7a95",
+   "skyMid": "#12617d",
+   "skyBot": "#0c3f57",
+   "platColor": "#5a9cb0",
+   "platBody": "#3a7185",
+   "platDeep": "#1e4353",
+   "platLine": "#122b36",
+   "accentColor": "#a6f0e2",
+   "bgTheme": "얕은 산호에서 상어 왕의 바다까지 · 해류 · 물고기 떼",
+   "zones": [
+    "0. 해저 모래",
+    "1. 얕은 산호",
+    "2. 해류 협곡",
+    "3. 청새치 떼",
+    "4. 상어 순찰로",
+    "5. 🦈 상어 왕의 바다"
+   ],
+   "gimmick": "상어가 좌우로 순찰하며 닿으면 1회 피격, 해류가 계속 한 방향으로 밀어낸다.",
+   "clrTitle": "해류 탈출자",
+   "champTitle": "상어 왕",
+   "iconFamily": "wave",
+   "phys": {
+    "grav": 1400,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "메갈로돈",
+   "theme": "얕은 산호에서 상어 왕의 바다까지",
+   "missionFlavor": "물고기 떼를 피해 30초 버티기",
+   "oneLine": "냄새가 나. …너, 뛰는 냄새."
+  },
+  {
+   "id": "trench",
+   "name": "심해 해구 & 난파선",
+   "emoji": "🌊",
+   "desc": "산소 게이지 · 물기포 상승 · 수압으로 낮아지는 점프",
+   "diff": "극악",
+   "diffColor": "#f87171",
+   "total": 88,
+   "owner": "diver",
+   "ownerName": "다이버",
+   "stage": 60,
+   "chapter": 7,
+   "skyTop": "#10354f",
+   "skyMid": "#0a2438",
+   "skyBot": "#051520",
+   "platColor": "#35617a",
+   "platBody": "#22445a",
+   "platDeep": "#0f2532",
+   "platLine": "#08161e",
+   "accentColor": "#6ff0d0",
+   "bgTheme": "심해 해구 · 난파선 · 열수구 · 잠수정 도킹",
+   "zones": [
+    "0. 해구 바닥",
+    "1. 수면",
+    "2. 난파선 선체",
+    "3. 열수구 지대",
+    "4. 잠수정 도킹",
+    "5. 🌊 잠수정 탈출"
+   ],
+   "gimmick": "산소 게이지가 줄고 발판 위에서만 회복, 물기포가 위로 밀어올리고 수압이 점프력을 깎는다.",
+   "clrTitle": "심해 잠항자",
+   "champTitle": "해구의 지배자",
+   "iconFamily": "wave",
+   "phys": {
+    "grav": 1430,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "심해의 눈 아비스",
+   "theme": "수면에서 해구 바닥까지 — 난파선과 열수구",
+   "missionFlavor": "난파선의 블랙박스를 회수하고 탈출",
+   "oneLine": "숨 참아. 아래로 갈수록 조용해져."
+  },
+  {
+   "id": "vcastle",
+   "name": "뱀파이어 성 & 지하 묘지",
+   "emoji": "🧛",
+   "desc": "꺼지면 암전되는 촛불 · 화면을 가리는 박쥐 떼 · 관에서 튀어나옴",
+   "diff": "극악",
+   "diffColor": "#f87171",
+   "total": 86,
+   "owner": "vampire",
+   "ownerName": "뱀파이어",
+   "stage": 61,
+   "chapter": 7,
+   "skyTop": "#2b1a35",
+   "skyMid": "#4a2030",
+   "skyBot": "#6b2436",
+   "platColor": "#7a6a7a",
+   "platBody": "#544a58",
+   "platDeep": "#2e2833",
+   "platLine": "#1c1721",
+   "accentColor": "#f76a72",
+   "bgTheme": "촛불 켜진 뱀파이어 성 · 지하 묘지 · 핏빛 달",
+   "zones": [
+    "0. 지하 묘지",
+    "1. 성문",
+    "2. 촛불 복도",
+    "3. 관 뚜껑",
+    "4. 종탑",
+    "5. 🧛 핏빛 달 정상"
+   ],
+   "gimmick": "촛불이 꺼지면 발판이 보이지 않고, 박쥐 떼가 화면을 가리며, 관에서 뱀파이어가 튀어나온다.",
+   "clrTitle": "촛불 지기",
+   "champTitle": "핏빛 백작",
+   "iconFamily": "ghost",
+   "phys": {
+    "grav": 1430,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "백작",
+   "theme": "촛불 켜진 성과 지하 묘지 — 핏빛 달",
+   "missionFlavor": "촛불 7개를 다시 밝히기",
+   "oneLine": "밤이 길수록 나는 강해진다. 오늘 밤은 유난히 길군."
+  },
+  {
+   "id": "demonking",
+   "name": "마왕성 & 지옥의 문",
+   "emoji": "😈",
+   "desc": "차오르는 용암 · 발판을 부수는 번개 · 무너지는 뼈 감옥",
+   "diff": "극악",
+   "diffColor": "#f87171",
+   "total": 90,
+   "owner": "demon",
+   "ownerName": "악마",
+   "stage": 62,
+   "chapter": 7,
+   "skyTop": "#3d1b1b",
+   "skyMid": "#2a1010",
+   "skyBot": "#160808",
+   "platColor": "#7a4530",
+   "platBody": "#55291c",
+   "platDeep": "#2e1009",
+   "platLine": "#1b0804",
+   "accentColor": "#ff7a33",
+   "bgTheme": "지옥문 · 용암 다리 · 뼈 감옥 · 마왕의 왕좌",
+   "zones": [
+    "0. 지옥의 구덩이",
+    "1. 지옥문",
+    "2. 용암 다리",
+    "3. 뼈 감옥",
+    "4. 번개 탑",
+    "5. 😈 마왕의 왕좌"
+   ],
+   "gimmick": "용암이 아래에서 계속 차올라 강제로 올라가야 하고, 번개가 발판을 부순다.",
+   "clrTitle": "지옥문 통과",
+   "champTitle": "마왕의 왕좌",
+   "iconFamily": "fire",
+   "phys": {
+    "grav": 1430,
+    "jump": 1,
+    "horiz": 1
+   },
+   "bossName": "그림자 군주",
+   "theme": "지옥문에서 마왕의 왕좌까지",
+   "missionFlavor": "마왕의 인장 3개 부수기",
+   "oneLine": "문을 두드린 건 너야. 그러니 들어와."
+  }
+ ],
+ "missionTypes": {
+  "clear": {
+   "desc": "정상 도달(완등)만 하면 성공",
+   "engineMode": "normal",
+   "count": 16
+  },
+  "time_limit": {
+   "desc": "제한 시간 안에 완등",
+   "engineMode": "timeattack",
+   "count": 11
+  },
+  "max_falls": {
+   "desc": "한 판에서 낙하 허용 횟수 이하로 완등",
+   "engineMode": "normal",
+   "count": 7
+  },
+  "combo": {
+   "desc": "한 판에서 연속 착지 콤보 목표 달성(피버 콤보 5부터 시작)",
+   "engineMode": "normal",
+   "count": 6
+  },
+  "no_damage": {
+   "desc": "한 판에서 피격 0회로 완등",
+   "engineMode": "normal",
+   "count": 5
+  },
+  "boss_clear": {
+   "desc": "마지막 구간 보스 격파 후 완등",
+   "engineMode": "boss",
+   "count": 14
+  },
+  "coins": {
+   "desc": "코인 모드로 목표 개수 수집 후 완등",
+   "engineMode": "coins",
+   "count": 3
+  },
+  "min_jump": {
+   "desc": "점프 횟수 제한 이하로 완등(최소 점프 등반)",
+   "engineMode": "minjump",
+   "count": 2
+  }
+ },
+ "missionTypeCount": {
+  "clear": 16,
+  "max_falls": 7,
+  "time_limit": 11,
+  "boss_clear": 14,
+  "combo": 6,
+  "coins": 3,
+  "min_jump": 2,
+  "no_damage": 5
+ },
+ "counts": {
+  "chapters": 8,
+  "stages": 64,
+  "skins": 64,
+  "maps": 64,
+  "newMaps": 19,
+  "bosses": 64,
+  "startUnlocked": 4
+ },
+ "integration": {
+  "saveKeys": {
+   "story": "jw64_story_v1 = { ch:0~7, stage:1~64, cleared:[mapId], seen:[mapId:lineIdx], boss:{mapId:true} }",
+   "chars": "jw64_char_v1 = { unlocked:{charId:true} }  (해금은 파생 계산 권장)"
+  },
+  "namespaceWarn": "skin id ↔ map id가 같은 5쌍: alien, pirate, dino, santa, mushroom → 저장·랭킹 키에 'skin:'/'map:' 접두어 필수",
+  "zonesIndex": "zones 배열은 index 0~5 (0 = 지하/예비, 1~5 = 구간). zoneOf()가 1~5를 반환한다.",
+  "assets": "신규 19맵은 assets/maps/t/{id}.jpg + assets/maps/{id}.jpg 19쌍 필요(없으면 default 썸네일로 폴백)",
+  "totalsNote": "기존 24개(JW50 레이어) 맵은 total을 넘기지 않아 난이도 기본층수(60/76/90/100)로 생성된다. 표의 total은 그 실제 생성값 기준."
+ },
+ "clearModeDesc": "스테이지별 클리어 조건(v5.22): summit=정상 도달만으로 클리어(미션은 보너스), mission=미션 완료만으로 클리어(정상 불필요), both=미션+정상 둘 다 필요"
+}
