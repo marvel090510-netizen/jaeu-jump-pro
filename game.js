@@ -69234,7 +69234,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.31-r3';
+  var BUILD = 'v5.32';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81156,4 +81156,570 @@ if (typeof module !== 'undefined' && module.exports) {
   };
 
   try { console.log('[v531] daily missions ready', (ST && ST.d) || dayKey()); } catch (e) {}
+})(window);
+/* ===== v532 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.32 : ⏱️ 스피드런 타이머 & 맵 마스터리 배지
+   --------------------------------------------------------------------------
+   · 인게임 좌상단에 아주 콤팩트한 1줄 배지 — 경과 시간(00:00.0) + 추락 횟수.
+     시간 문자열이 0.1초 단위로 바뀔 때만 DOM(textContent)에 쓴다 → 60fps 루프 부하 없음.
+     일시정지 중에는 엔진 update()가 일찍 return 해서 JWG.tick 자체가 안 돌므로
+     이 배지도 그대로 멈춘다 (game.time 도 멈춘다).
+   · 추락 판정은 '기존 판정 그대로' — 심연 바닥(abyss_floor) 착지 = 추락. 엔진이 이미
+     세고 있는 window.__v59fallN 의 델타만 읽는다 (새 판정을 만들지 않는다).
+   · 판 경계는 game.time 되감김(새 판은 0부터)으로 잡는다. 싱글·스토리 판만 대상이고,
+     멀티 레이스는 JWMode.solo.active 가 아니라서 배지도 기록도 붙지 않는다.
+   · 클리어 판정의 단일 출처는 JWMode.endSolo('clear') — 일반·빠른 시작·스토리 스테이지
+     클리어가 모두 이 문으로 들어온다 (결과창 showSoloEnd 와 같은 시점).
+   · 맵별 마스터리 3종 + 최고 기록: localStorage 'jw532_mastery'
+       { v:1, m:{ mapId:{ bestTimeMs, clear, noFall, speedrun } } }
+   · 처음 달성한 배지만 펫 코인(v5.29 JW529) 지급: 완주 +40 · 노폴 +60 · 스피드런 +80.
+     코인 저장은 v5.29·v5.31 과 똑같이 JW529.st()/coins() 만 거친다 (중복 지급 불가).
+   · 스피드런 목표: Math.max(45, round(층수 × 1.35))초
+       → 88층 1:59 · 100층 2:15 · 76층 1:43 · 52층 1:10.
+       근거: 풀충전 약 0.85초 + 비행 0.5~0.8초 → 숙련 1.2~1.5초/층. 무추락 숙련 주파 기준선.
+   · 타이틀 연동: 45맵 체크판 · 맵 고르기(맵 선택 목록) 타일과 '지금 고른 맵' 카드에
+     최고 기록과 🏅🛡️⏱️(미획득은 흐리게)를 표시한다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var V = root.JW43;
+  if (!V) return;
+  if (root.JW532) return;
+
+  var doc = document;
+  var KEY = 'jw532_mastery';
+  var TARGET_MIN = 45;      /* 아주 짧은 맵도 최소 45초 */
+  var TARGET_K = 1.35;      /* 층수 × 1.35초 */
+  var COIN = { clear: 40, noFall: 60, speedrun: 80 };
+  var BADGES = [
+    { k: 'clear', ic: '🏅', nm: '완주' },
+    { k: 'noFall', ic: '🛡️', nm: '노폴' },
+    { k: 'speedrun', ic: '⏱️', nm: '스피드런' }
+  ];
+
+  function $(id) { try { return doc.getElementById(id); } catch (e) { return null; } }
+  function esc(s) { try { return root.JWEsc ? root.JWEsc(String(s == null ? '' : s)) : String(s == null ? '' : s); } catch (e) { return String(s == null ? '' : s); } }
+  function beep(f, d, v, t, f2) { try { V.beep(f, d || 0.07, v || 0.09, t || 'square', f2 || null); } catch (e) {} }
+
+  /* ==========================================================================
+     0. 시간 표기
+     ========================================================================== */
+  function fmt(ms) {
+    ms = Math.max(0, Math.round(Number(ms) || 0));
+    var t = Math.floor(ms / 100);                 /* 0.1초 단위 */
+    var m = Math.floor(t / 600);
+    var s = Math.floor(t / 10) % 60;
+    var d = t % 10;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s + '.' + d;
+  }
+
+  /* ==========================================================================
+     1. 저장소
+     ========================================================================== */
+  function blank() { return { v: 1, m: {} }; }
+  function normalize(o) {
+    var out = blank();
+    if (!o || typeof o !== 'object' || !o.m || typeof o.m !== 'object') return out;
+    Object.keys(o.m).forEach(function (id) {
+      var e = o.m[id];
+      if (!e || typeof e !== 'object') return;
+      var ms = Math.round(Number(e.bestTimeMs) || 0);
+      if (ms < 0) ms = 0;
+      out.m[id] = {
+        bestTimeMs: ms,
+        clear: !!e.clear,
+        noFall: !!e.noFall,
+        speedrun: !!e.speedrun
+      };
+    });
+    return out;
+  }
+  var ST = null;
+  function load() {
+    var o = null;
+    try { o = V.lsGet(KEY, null); } catch (e) { o = null; }
+    return normalize(o);
+  }
+  function save() { try { V.lsSet(KEY, ST); } catch (e) {} }
+  ST = load();
+
+  function entry(id) { if (!ST.m[id]) ST.m[id] = { bestTimeMs: 0, clear: false, noFall: false, speedrun: false }; return ST.m[id]; }
+  function get(id) { var e = ST.m[id]; return e ? { bestTimeMs: e.bestTimeMs || 0, clear: !!e.clear, noFall: !!e.noFall, speedrun: !!e.speedrun } : null; }
+
+  function targetSec(mapId) {
+    var f = 88;
+    try { f = Number(V.mapTotal ? V.mapTotal(mapId) : 88); } catch (e) { f = 88; }
+    if (!f || f < 1 || !isFinite(f)) f = 88;
+    return Math.max(TARGET_MIN, Math.round(f * TARGET_K));
+  }
+
+  /* ==========================================================================
+     2. 펫 코인 (v5.29 JW529) — 읽기는 st(), 쓰기는 coins() 만
+     ========================================================================== */
+  function coinNow() {
+    try {
+      var P = root.JW529;
+      if (!P || !P.st) return null;
+      var s = P.st();
+      return (s && typeof s.coins === 'number' && isFinite(s.coins)) ? s.coins : null;
+    } catch (e) { return null; }
+  }
+  function addCoins(n) {
+    try {
+      var P = root.JW529;
+      if (!P || !P.st || !P.coins) return false;
+      var cur = coinNow();
+      if (cur == null) return false;
+      P.coins(Math.max(0, Math.round(cur + n)));
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* ==========================================================================
+     3. 기록 판정 (클리어 1회당 1번만 호출된다)
+     ========================================================================== */
+  function applyClear(mapId, ms, falls) {
+    if (!mapId || mapId === 'custom') return null;
+    ms = Math.max(0, Math.round(Number(ms) || 0));
+    falls = Math.max(0, Math.round(Number(falls) || 0));
+    var e = entry(mapId);
+    var tgt = targetSec(mapId);
+    var prevBest = e.bestTimeMs || 0;
+    var isRecord = (!prevBest || ms < prevBest);
+    var newFlags = [];
+    var coins = 0;
+    if (isRecord) e.bestTimeMs = ms;
+    if (!e.clear) { e.clear = true; newFlags.push('clear'); coins += COIN.clear; }
+    if (falls <= 0 && !e.noFall) { e.noFall = true; newFlags.push('noFall'); coins += COIN.noFall; }
+    if (ms <= tgt * 1000 && !e.speedrun) { e.speedrun = true; newFlags.push('speedrun'); coins += COIN.speedrun; }
+    save();
+    var paid = coins > 0 ? addCoins(coins) : false;
+    return {
+      mapId: mapId, ms: ms, falls: falls, targetSec: tgt,
+      bestTimeMs: e.bestTimeMs, prevBestMs: prevBest,
+      isNewRecord: !!prevBest && ms < prevBest,
+      firstClear: prevBest === 0,
+      flags: { clear: e.clear, noFall: e.noFall, speedrun: e.speedrun },
+      newFlags: newFlags, coins: coins, paid: paid
+    };
+  }
+
+  /* ==========================================================================
+     4. 인게임 HUD 배지 (좌상단 1줄)
+     ========================================================================== */
+  var hud = null, lastTenth = -1, lastTxt = '';
+  /* 인게임 HUD 상자는 버전마다 바뀌었다(gameHud 판 -> v49Hud 카드). 그래서 배지는 body 에 두고
+     '지금 보이는 HUD 카드' 아래에 맞춰 두는다. */
+  function hudBox() {
+    var h = $('v49Hud');
+    if (h) {
+      var r = h.getBoundingClientRect();
+      if (r.width > 40 && r.height > 20) return r;
+    }
+    var p = doc.querySelector('#gameHud > div:first-child > div.pixel-panel');
+    if (p) {
+      var q = p.getBoundingClientRect();
+      if (q.width > 40 && q.height > 20) return q;
+    }
+    return null;
+  }
+  function hudEnsure() {
+    var el = $('v532Hud');
+    if (!el) {
+      el = doc.createElement('div');
+      el.id = 'v532Hud';
+      el.style.cssText = 'z-index:24;pointer-events:none;display:none;' +
+        'background:rgba(7,10,23,.9);border:2px solid #38bdf8;color:#e0f2fe;' +
+        'font-family:"Galmuri11","Jua",system-ui,sans-serif;font-size:10.5px;font-weight:900;' +
+        'letter-spacing:.2px;line-height:1.5;padding:1px 6px 2px;white-space:nowrap;' +
+        'box-shadow:0 2px 0 rgba(5,3,10,.55);';
+      el.innerHTML = '<span id="v532HudT">⏱️ 00:00.0</span><span id="v532HudF" style="color:#86efac"> · 무추락</span>';
+      try { document.body.appendChild(el); } catch (e) {}
+    }
+    hud = el;
+    return el;
+  }
+  function shownEl(id) {
+    var el = $(id);
+    if (!el) return null;
+    try { if (getComputedStyle(el).display === 'none') return null; } catch (e) { return null; }
+    var r = el.getBoundingClientRect();
+    return (r.height > 5 && r.width > 5) ? r : null;
+  }
+  function hudPlace() {
+    if (!hud) return;
+    var box = hudBox();
+    var left = 10, top = 96;
+    if (box) { left = Math.round(box.left); top = Math.round(box.bottom) + 4; }
+    /* 스토리 판: 왼쪽에 '스토리 모드' 배지(top 116)와 미션 배너(top 146)가 먼저 있다.
+       겹치지 않게 그 아래로 내려 놓는다 (배너는 시작 5.5초만 떠 있다). */
+    try {
+      var sb = shownEl('storyHudBadge');
+      if (sb) top = Math.max(top, Math.round(sb.bottom) + 3);
+      var bn = shownEl('storyHudBanner');
+      if (bn) top = Math.max(top, Math.round(bn.bottom) + 3);
+    } catch (e) {}
+    var s = hud.style;
+    try {
+      s.setProperty('position', 'fixed', 'important');
+      s.setProperty('left', left + 'px', 'important');
+      s.setProperty('top', top + 'px', 'important');
+      s.setProperty('transform', 'none', 'important');
+      s.setProperty('margin', '0', 'important');
+    } catch (e) {}
+  }
+  function hudShow() { var el = hudEnsure(); if (!el) return; if (el.style.display !== 'block') el.style.display = 'block'; hudPlace(); }
+  function hudHide() { if (hud && hud.style.display !== 'none') hud.style.display = 'none'; lastTenth = -1; lastTxt = ''; }
+  function hudOnScreen() { try { return !!(root.__jwg && root.__jwg.game && root.__jwg.game.inPlay && soloOn()); } catch (e) { return false; } }
+  function hudPaint(ms, falls) {
+    var el = hudEnsure();
+    if (!el) return;
+    var tenth = Math.floor(ms / 100);
+    if (tenth === lastTenth) return;          /* 0.1초에 한 번만 */
+    lastTenth = tenth;
+    var txt = '⏱️ ' + fmt(ms);
+    var t = $('v532HudT'), f = $('v532HudF');
+    if (t && t.textContent !== txt) t.textContent = txt;
+    var ftxt = falls <= 0 ? ' · 무추락' : ' · 추락 ' + falls + '회';
+    var fc = falls <= 0 ? '#86efac' : '#fca5a5';
+    if (f) {
+      if (f.textContent !== ftxt) f.textContent = ftxt;
+      if (f.style.color !== fc) f.style.color = fc;
+    }
+    var bc = falls <= 0 ? '#38bdf8' : '#fb7185';
+    if (el.style.borderColor !== bc) el.style.borderColor = bc;
+    if (el.style.display !== 'block') el.style.display = 'block';
+    if (lastTxt === '') hudPlace();
+    lastTxt = txt;
+  }
+
+  /* ==========================================================================
+     5. 판(run) 추적 — 프레임마다 한 번 (v42Tick 뒤)
+     ========================================================================== */
+  var run = { on: false, t0: 0, last: 0, falls0: 0, mapId: 'default', done: false, res: null };
+
+  function soloOn() { try { return !!(root.JWMode && root.JWMode.solo && root.JWMode.solo.active); } catch (e) { return false; } }
+  function fallN() { return (typeof root.__v59fallN === 'number') ? root.__v59fallN : 0; }
+  function fallsNow() { var d = fallN() - (run.falls0 || 0); return d > 0 ? d : (run.on ? 0 : 0); }
+
+  function startRunAt(g) {
+    run.on = true;
+    run.t0 = g.time;
+    run.last = g.time;
+    run.falls0 = fallN();
+    run.done = false;
+    run.res = null;
+    run.mapId = (root.JWMap && root.JWMap.current) || 'default';
+    lastTenth = -1; lastTxt = '';
+  }
+
+  function recordFromEnd(d) {
+    var map = (d && d.mapId) || run.mapId || (root.JWMap && root.JWMap.current) || 'default';
+    var sec = Math.max(0, Number(d && d.time) || 0);
+    if (run.on && run.t0 > 0.0001) sec = Math.max(0, sec - run.t0);
+    run.done = true;
+    run.res = applyClear(map, Math.round(sec * 1000), fallsNow());
+    try { decorate(); } catch (e) {}
+    return run.res;
+  }
+
+  function tickRun() {
+    var jw = root.__jwg, g = jw && jw.game;
+    if (!g) return;
+    var on = !!g.inPlay && soloOn() && !g.victory;
+    if (!on) {
+      if (g.victory && run.on && !run.done) { try { recordFromEnd({ time: g.time, mapId: run.mapId }); } catch (e) {} }
+      hudHide();
+      return;
+    }
+    /* 새 판: 판이 꺼져 있었거나, game.time 이 되감겼다(새 판은 0부터) */
+    if (!run.on || g.time + 0.001 < (run.last || 0)) startRunAt(g);
+    run.last = g.time;
+    /* 0.5초마다 HUD 자리만 다시 본다 (폰트·초상 로딩으로 상자가 늦게 커지는 기기 대비) */
+    run.f = (run.f || 0) + 1;
+    if (run.f % 30 === 0) hudPlace();
+    hudPaint(Math.max(0, (g.time - run.t0) * 1000), fallsNow());
+  }
+
+  /* ==========================================================================
+     6. 결과창(클리어 모달) 카드
+     ========================================================================== */
+  function badgeChip(b, on, extra) {
+    var col = on ? '#fbbf24' : '#64748b';
+    var bg = on ? '#2a1a04' : '#0b1122';
+    var bd = on ? '#a16207' : '#334155';
+    var op = on ? '1' : '.5';
+    return '<span title="' + esc(b.nm + (extra ? ' · ' + extra : '')) + '" style="display:inline-flex;align-items:center;gap:3px;' +
+      'background:' + bg + ';border:2px solid ' + bd + ';color:' + col + ';opacity:' + op + ';' +
+      'font-size:10px;font-weight:900;padding:1px 6px;line-height:1.6;white-space:nowrap;">' +
+      b.ic + ' ' + b.nm + '</span>';
+  }
+
+  function endCardEnsure() {
+    var m = $('soloEnd');
+    if (!m) return null;
+    var card = m.querySelector('.m41-card');
+    if (!card) return null;
+    var box = $('v532End');
+    if (!box) {
+      box = doc.createElement('div');
+      box.id = 'v532End';
+      box.style.cssText = 'display:none;margin:5px 0 3px;padding:7px 9px;background:#080d1c;border:2px solid #38bdf8;text-align:left;';
+      box.innerHTML =
+        '<div style="display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;">' +
+          '<span style="font-size:10.5px;font-weight:900;color:#7dd3fc;">⏱️ 이번 기록</span>' +
+          '<b id="v532EndTime" style="font-size:19px;font-weight:900;color:#fff;letter-spacing:.6px;line-height:1.1;">00:00.0</b>' +
+          '<span id="v532EndFalls" style="font-size:10.5px;font-weight:900;color:#86efac;">무추락</span>' +
+        '</div>' +
+        '<div id="v532EndRec" style="font-size:10.5px;font-weight:900;color:#fbbf24;margin-top:1px;"></div>' +
+        '<div id="v532EndBadges" style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;"></div>' +
+        '<div id="v532EndCoin" style="font-size:10.5px;font-weight:900;color:#86efac;margin-top:4px;line-height:1.45;"></div>';
+      var sub = $('soloEndSub');
+      if (sub && sub.parentNode === card) card.insertBefore(box, sub.nextSibling);
+      else card.insertBefore(box, card.firstChild);
+    }
+    return box;
+  }
+
+  function paintEnd() {
+    var box = endCardEnsure();
+    var d = (root.JWMode && root.JWMode.lastSoloEnd) || null;
+    if (!box) return;
+    if (!d || !d.clear) { box.style.display = 'none'; return; }
+    if (!run.res) { try { recordFromEnd(d); } catch (e) {} }
+    var res = run.res;
+    box.style.display = 'block';
+    if (!res) {
+      var t0 = $('v532EndTime'); if (t0) t0.textContent = fmt((Number(d.time) || 0) * 1000);
+      var f0 = $('v532EndFalls'); if (f0) f0.textContent = fallsNow() <= 0 ? '무추락' : '추락 ' + fallsNow() + '회';
+      var r0 = $('v532EndRec'); if (r0) r0.textContent = '';
+      var b0 = $('v532EndBadges'); if (b0) b0.innerHTML = '';
+      var c0 = $('v532EndCoin'); if (c0) c0.textContent = '';
+      return;
+    }
+    var tEl = $('v532EndTime'); if (tEl) tEl.textContent = fmt(res.ms);
+    var fEl = $('v532EndFalls');
+    if (fEl) {
+      fEl.textContent = res.falls <= 0 ? '무추락' : '추락 ' + res.falls + '회';
+      fEl.style.color = res.falls <= 0 ? '#86efac' : '#fca5a5';
+    }
+    var rEl = $('v532EndRec');
+    if (rEl) {
+      if (res.firstClear) rEl.innerHTML = '🏆 <b>첫 완주 기록!</b> 이 맵 최고 기록으로 저장했어요';
+      else if (res.isNewRecord) {
+        var dSec = (res.prevBestMs - res.ms) / 1000;
+        rEl.innerHTML = '🏆 <b>NEW RECORD!</b> 이전 최고 ' + fmt(res.prevBestMs) + ' → <b style="color:#fde68a">−' + Math.abs(dSec).toFixed(1) + '초</b>';
+      } else rEl.innerHTML = '최고 기록 <b style="color:#fde68a">' + fmt(res.bestTimeMs) + '</b> · 이번 판은 ' + fmt(res.ms);
+    }
+    var bEl = $('v532EndBadges');
+    if (bEl) {
+      bEl.innerHTML = BADGES.map(function (b) {
+        var on = !!res.flags[b.k];
+        var extra = b.k === 'speedrun' ? '목표 ' + fmt(res.targetSec * 1000) + (on ? ' 달성' : '') : '';
+        return badgeChip(b, on, extra);
+      }).join('');
+    }
+    var cEl = $('v532EndCoin');
+    if (cEl) {
+      if (res.newFlags.length && res.coins > 0) {
+        var names = res.newFlags.map(function (k) { var b = null; BADGES.forEach(function (x) { if (x.k === k) b = x; }); return b ? b.ic + ' ' + b.nm : ''; }).join(' · ');
+        cEl.innerHTML = '🎁 처음 달성 보상 <b style="color:#fde68a">+' + res.coins + ' 펫 코인</b>' +
+          (res.paid ? '' : ' <span style="color:#fca5a5">(코인 저장소를 찾지 못해 지급 실패)</span>') +
+          '<br><span style="color:#93a4c4;font-size:9.5px;">' + names + '</span>';
+        beep(880, 0.08, 0.1, 'square', 1320);
+        try { setTimeout(function () { beep(1320, 0.09, 0.09, 'square', 1760); }, 90); } catch (e) {}
+      } else {
+        var tg = targetSec(res.mapId);
+        cEl.innerHTML = '<span style="color:#93a4c4;">' + (res.falls > 0 ? '🛡️ 노폴은 추락 0회에서 · ' : '') +
+          '⏱️ 스피드런 목표 ' + fmt(tg * 1000) + '</span>';
+      }
+    }
+  }
+
+  /* ==========================================================================
+     7. 타이틀 연동 — 맵 선택 목록 / 45맵 체크판 / '지금 고른 맵' 카드
+     ========================================================================== */
+  function badgeMarks(e, size) {
+    var on = e || {};
+    var html = '';
+    BADGES.forEach(function (b) {
+      var got = !!on[b.k];
+      html += '<span title="' + esc(b.nm + (got ? ' 달성' : ' 미획득')) + '" style="opacity:' + (got ? '1' : '.24') + ';font-size:' + (size || 9) + 'px;line-height:1;' +
+        (got ? '' : 'filter:grayscale(1);') + '">' + b.ic + '</span>';
+    });
+    return html;
+  }
+
+  function tileHTML(id, overlay) {
+    var e = ST.m[id];
+    if (!e || !e.bestTimeMs) return '';
+    if (overlay) {
+      return '<b style="font-weight:900;color:#bae6fd;">⏱ ' + fmt(e.bestTimeMs) + '</b>' +
+        '<span style="display:inline-flex;gap:1px;">' + badgeMarks(e, 8) + '</span>';
+    }
+    return '<b style="font-weight:900;color:#7dd3fc;">⏱️ ' + fmt(e.bestTimeMs) + '</b>' +
+      '<span style="display:inline-flex;gap:2px;margin-left:4px;">' + badgeMarks(e) + '</span>';
+  }
+
+  /* overlay=1 : 45맵 체크판처럼 칸 높이가 고정(overflow:hidden)인 타일은 아래에 줄을 붙이면 잘린다.
+     그때는 사진 위에 얇은 띠로 덮어 그린다. */
+  function decorateTiles(sel, attr, line, overlay) {
+    var box = doc.querySelector(sel);
+    if (!box) return;
+    var list = box.querySelectorAll('[' + attr + ']');
+    for (var i = 0; i < list.length; i++) {
+      var b = list[i];
+      var id = b.getAttribute(attr);
+      if (!id) continue;
+      var html = line(id, overlay);
+      var el = b.querySelector('.v532m');
+      if (!html) { if (el) el.style.display = 'none'; continue; }
+      if (!el) {
+        el = doc.createElement('span');
+        el.className = 'v532m';
+        el.style.cssText = overlay
+          ? 'position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:3px;' +
+            'background:linear-gradient(180deg,rgba(4,8,18,0),rgba(4,8,18,.88) 45%);color:#e0f2fe;' +
+            'font-size:8.5px;font-weight:900;line-height:1.5;padding:5px 2px 1px;white-space:nowrap;overflow:hidden;'
+          : 'display:block;font-size:9px;font-weight:900;padding:0 6px 2px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+        b.appendChild(el);
+      }
+      el.style.display = overlay ? 'flex' : 'block';
+      if (el.__s !== html) { el.__s = html; el.innerHTML = html; }
+    }
+  }
+
+  function decorateSide() {
+    var side = $('v43SideArt');
+    if (!side || side.offsetParent === null) return;
+    var card = side.querySelector('.sa-card');
+    if (!card) return;
+    var box = $('v532Side');
+    if (!box) {
+      box = doc.createElement('div');
+      box.id = 'v532Side';
+      box.style.cssText = 'margin-top:8px;padding:5px 8px;background:#0b1222;border:2px solid #1e3a5f;font-size:10px;font-weight:900;color:#cbd5e1;line-height:1.5;';
+      var rec = card.querySelector('.sa-rec');
+      if (rec && rec.parentNode) rec.parentNode.insertBefore(box, rec.nextSibling);
+      else card.appendChild(box);
+    }
+    var id = (root.JWMap && root.JWMap.current) || 'default';
+    var e = ST.m[id];
+    var html;
+    if (e && e.bestTimeMs) {
+      html = '<span style="color:#7dd3fc;">⏱️ 최고</span> <b style="color:#fff;">' + fmt(e.bestTimeMs) + '</b>' +
+        '<span style="display:inline-flex;gap:3px;margin-left:5px;">' + badgeMarks(e, 10) + '</span>' +
+        '<div style="font-size:9px;color:#93a4c4;font-weight:700;margin-top:1px;">스피드런 목표 ' + fmt(targetSec(id) * 1000) + '</div>';
+    } else {
+      html = '<span style="color:#7dd3fc;">⏱️ 이 맵 기록 없음</span>' +
+        '<div style="font-size:9px;color:#93a4c4;font-weight:700;margin-top:1px;">완주하면 🏅🛡️⏱️ · 스피드런 목표 ' + fmt(targetSec(id) * 1000) + '</div>';
+    }
+    if (box.__s !== html) { box.__s = html; box.innerHTML = html; }
+  }
+
+  function decorate() {
+    try { if ($('v53MapGrid')) decorateTiles('#v53MapGrid', 'data-map', tileHTML); } catch (e) {}
+    try { if ($('v51Board')) decorateTiles('#v51Board', 'data-v51map', tileHTML, 1); } catch (e) {}
+    try { decorateSide(); } catch (e) {}
+  }
+
+  /* ==========================================================================
+     8. 설치
+     ========================================================================== */
+  var installed = false;
+  function install() {
+    if (installed) return true;
+    var jw = root.JWG;
+    if (!jw || !root.__jwg || !root.JWMode || !root.JWMode.solo) return false;
+    installed = true;
+    /* 8-1. 프레임 훅 — v42Tick 이 끝난 뒤에 돈다 */
+    if (typeof jw.tick === 'function' && !jw.tick.__v532) {
+      var origTick = jw.tick;
+      var wrapped = function () {
+        var r = origTick.apply(this, arguments);
+        try { tickRun(); } catch (e) {}
+        return r;
+      };
+      wrapped.__v532 = true;
+      jw.tick = wrapped;
+    }
+    /* 8-2. 결과창 훅 — endSolo('clear') 직후에 결과 카드 채우기 */
+    if (root.JWMode && typeof root.JWMode.endSolo === 'function' && !root.JWMode.endSolo.__v532) {
+      var origEnd = root.JWMode.endSolo;
+      var endWrap = function () {
+        var r = origEnd.apply(this, arguments);
+        try { paintEnd(); } catch (e) {}
+        return r;
+      };
+      endWrap.__v532 = true;
+      root.JWMode.endSolo = endWrap;
+    }
+    window.addEventListener('resize', function () { try { hudPlace(); } catch (e) {} }, { passive: true });
+    window.addEventListener('orientationchange', function () { try { setTimeout(hudPlace, 220); } catch (e) {} }, { passive: true });
+    /* 8-3. 타이틀(맵 목록·체크판·지금 고른 맵) 갱신 — 화면에 보일 때만 */
+    setInterval(function () {
+      try {
+        var t = $('titleScreen');
+        if (t && t.offsetParent === null) return;
+        decorate();
+      } catch (e) {}
+    }, 1200);
+    /* 타이틀·결과화면에서는 update() 가 일찌 return 해 JWG.tick 이 안 돈다 → 배지만 딱 숨긴다 */
+    setInterval(function () { try { if (!hudOnScreen()) hudHide(); } catch (e) {} }, 600);
+    try { console.log('[v532] speedrun timer + map mastery ready'); } catch (e) {}
+    return true;
+  }
+  (function boot(tries) {
+    if (install()) return;
+    if ((tries || 0) > 150) return;
+    setTimeout(function () { boot((tries || 0) + 1); }, 120);
+  })(0);
+
+  /* ==========================================================================
+     9. 공개 (검증·디버그용)
+     ========================================================================== */
+  root.JW532 = {
+    KEY: KEY,
+    fmt: fmt,
+    targetSec: targetSec,
+    get: get,
+    all: function () { return JSON.parse(JSON.stringify(ST.m)); },
+    clearAll: function () { ST = blank(); save(); decorate(); },
+    refresh: decorate,
+    install: install,
+    /* 검증용 클리어 시뮬레이션 — 실제 판을 끝까지 올라가지 않고 기록·배지·코인·결과창
+       경로를 그대로 태운다. (콘솔 테스트 훅. 일반 플레이 경로에서는 호출되지 않는다) */
+    simulateClear: function (sec, falls, mapId) {
+      try {
+        var g = root.__jwg && root.__jwg.game;
+        var map = mapId || (root.JWMap && root.JWMap.current) || 'default';
+        var ms = Math.round((Number(sec) || 38.4) * 1000);
+        var fl = Math.max(0, Math.round(Number(falls) || 0));
+        run.on = true;
+        run.t0 = 0;
+        run.falls0 = fallN() - fl;
+        run.mapId = map;
+        run.done = true;
+        run.res = applyClear(map, ms, fl);
+        var d = {
+          clear: true, mapId: map,
+          map: (root.JWMap && root.JWMap.byId && (root.JWMap.byId(map) || {}).name) || map,
+          mode: '일반', modeId: 'normal', time: ms / 1000,
+          meters: 800, origin: 0, worst: 0, reason: 'clear'
+        };
+        try { root.JWMode.lastSoloEnd = d; } catch (e) {}
+        var ov = $('soloEnd');
+        if (ov) {
+          ov.classList.remove('hidden');
+          var t = $('soloEndTitle'); if (t) t.textContent = '🏆 정상 등극!';
+          var s = $('soloEndSub'); if (s) s.textContent = '일반 · ' + d.map + ' · 800m · v5.32 검증 시뮬레이션';
+          var w = $('soloEndWorst'); if (w) w.textContent = '📍 마의 구간: 64층';
+        }
+        paintEnd();
+        return run.res;
+      } catch (e) { return { error: String((e && e.message) || e) }; }
+    }
+  };
 })(window);
