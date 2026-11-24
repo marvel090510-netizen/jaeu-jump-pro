@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.39 정식판 (화면 표시 버전은 아래 BUILD = 'v5.39')
+   muse-v5-9 game.js — v5.40 정식판 (화면 표시 버전은 아래 BUILD = 'v5.40')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -66622,7 +66622,7 @@ if (typeof module !== 'undefined' && module.exports) {
       '<button type="button" class="v51q gold wide" id="v51QRecent"><span class="ic">⚡</span><span><b id="v51QRecentT">최근 조합으로 출발</b><i id="v51QRecentS">—</i></span></button>' +
       '<button type="button" class="v51q" id="v51QRand"><span class="ic">🎲</span><span><b>랜덤 출격</b><i>오늘의 룰렛</i></span></button>' +
       '<button type="button" class="v51q" id="v51QBoard"><span class="ic">🗺️</span><span><b>45맵 체크판</b><i id="v51QBoardS">—</i></span></button>' +
-      '<button type="button" class="v51q" id="v51QStats"><span class="ic">📊</span><span><b>내 통계표</b><i>점프·시간·최애맵</i></span></button>' +
+      '<button type="button" class="v51q" id="v51QStats"><span class="ic">📊</span><span><b>내 통계표</b><i>점프·시간·🏆 업적</i></span></button>' +
       '<button type="button" class="v51q" id="v51QBackup"><span class="ic">💾</span><span><b>백업 코드</b><i>기록·스킨 내보내기</i></span></button>' +
       '<button type="button" class="v51q" id="v51QRank"><span class="ic">🏆</span><span><b>랭킹</b><i id="v51QRankS">명예의 전당 · 기록</i></span></button>';
     grid.parentElement.insertBefore(box, grid.nextSibling);
@@ -66776,7 +66776,7 @@ if (typeof module !== 'undefined' && module.exports) {
   }
 
   /* ---------------------------------------------------------------- 통계표 */
-  function openStats() {
+  function openStats(tab) {
     var m = modal('v51StatsM', '');
     var s = stats();
     var mp = s.maps || {};
@@ -66785,9 +66785,8 @@ if (typeof module !== 'undefined' && module.exports) {
     var hh = Math.floor(play / 3600), mm = Math.floor((play % 3600) / 60);
     var prof = {};
     try { prof = V.api().internals().prof || {}; } catch (e) {}
-    var html = '<div class="v51hd"><div style="flex:1"><b>📊 내 플레이 통계표</b><i>점프 · 시간 · 최애 맵 · 클리어</i></div>' +
-      '<button type="button" class="v51x" data-v51x="1">✕</button></div>' +
-      '<div class="v51st">' +
+    /* v5.40: 상단 [📊 내 통계] / [🏆 업적 (달성/12)] 두 탭. 업적 탭은 JW540 이 그린다. */
+    var bodyHtml = '<div class="v51st">' +
       row('🧗 총 점프', (s.jump || 0).toLocaleString() + '회') +
       row('⏱️ 플레이 시간', (hh ? hh + '시간 ' : '') + mm + '분') +
       row('🪂 총 낙하', (s.fallM || 0).toLocaleString() + 'm') +
@@ -66806,10 +66805,38 @@ if (typeof module !== 'undefined' && module.exports) {
         var parts = k.split(':');
         return row(mapName(parts[0]) + ' · ' + modeName(parts[1]), (prof.bestT[k] || 0).toFixed(1) + 'm');
       }).join('') + '</div>';
-    m.querySelector('.v51card').innerHTML = html;
+    var onAch = (tab === 'ach');
+    m.querySelector('.v51card').innerHTML =
+      '<div class="v51hd"><div style="flex:1"><b>📊 기록 · 업적</b><i>점프 · 시간 · 최애 맵 · 🏆 업적 12종</i></div>' +
+      '<button type="button" class="v51x" data-v51x="1">✕</button></div>' +
+      '<div class="v540tabs" role="tablist">' +
+      '<button type="button" class="v540tab' + (onAch ? '' : ' on') + '" data-v540t="stats" role="tab">📊 내 통계</button>' +
+      '<button type="button" class="v540tab' + (onAch ? ' on' : '') + '" data-v540t="ach" id="v540TabAch" role="tab">🏆 업적 (0/12)</button>' +
+      '</div>' +
+      '<div class="v540pane" id="v540PaneStats"' + (onAch ? ' style="display:none"' : '') + '>' + bodyHtml + '</div>' +
+      '<div class="v540pane" id="v540PaneAch"' + (onAch ? '' : ' style="display:none"') + '></div>';
     m.classList.remove('hide');
     closeOn(m);
+    var paneS = $('v540PaneStats'), paneA = $('v540PaneAch');
+    function showTab(t) {
+      var ach = (t === 'ach');
+      if (paneS) paneS.style.display = ach ? 'none' : '';
+      if (paneA) paneA.style.display = ach ? '' : 'none';
+      Array.prototype.forEach.call(m.querySelectorAll('[data-v540t]'), function (b) {
+        b.classList.toggle('on', b.getAttribute('data-v540t') === t);
+      });
+      if (ach) { try { root.JW540.render(paneA); } catch (e) { if (paneA) paneA.innerHTML = '<div class="v51empty">업적을 불러오지 못했어요</div>'; } }
+      else { try { root.JW540.refresh(); } catch (e) {} }
+    }
+    Array.prototype.forEach.call(m.querySelectorAll('[data-v540t]'), function (b) {
+      b.addEventListener('click', function () {
+        try { C.beep(720, 0.05, 0.05, 'square', 900); } catch (e) {}
+        showTab(b.getAttribute('data-v540t'));
+      });
+    });
+    showTab(onAch ? 'ach' : 'stats');
   }
+  try { root.__JW540_openStats = openStats; } catch (e) {}
   function row(k, v) { return '<div class="v51str"><b>' + k + '</b><span>' + v + '</span></div>'; }
 
   /* ---------------------------------------------------------------- 업적(진행도·필터) */
@@ -69284,7 +69311,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.39';
+  var BUILD = 'v5.40';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -86045,4 +86072,486 @@ if (typeof module !== 'undefined' && module.exports) {
   };
 
   try { console.log('[v539] 7-day check-in ready', (ST && ST.last) || '-'); } catch (e) {}
+})(window);
+
+/* ===== v540 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.40 : 🏆 통합 업적 12종 & 펫 코인 보상 (내 통계표 연동)
+   --------------------------------------------------------------------------
+   · 통계표(📊 내 통계표) 안에 [📊 내 통계] / [🏆 업적 (달성/12)] 두 탭을 둔다.
+     왼쪽 탭은 기존 통계표 그대로, 오른쪽 탭이 이 모듈이 그리는 업적 12종이다.
+   · 이미 게임이 쌓아 둔 진짜 저장소만 읽는다 (새로 세는 값을 만들지 않는다):
+       누적 점프·완등·최고콤보·낙하  →  'jw43_stats_v1' (V.LS.stats) + 'jw41_profile_v1'(prof)
+       노폴 배지                     →  'jw532_mastery'   m[map].noFall
+       최고 콤보(콤보 업데이트)      →  'jw537_best_combo' (number)
+       스토리 클리어                 →  'jw64_story_v1'   .cleared
+       미니게임 최고 기록            →  'jw48mg_best_v1'  (개방 3종: rhythm·meteor·coin)
+       펫 보유                       →  JW529.st().owned
+       테마 아이템 보유              →  'jw533_theme_v1'  .owned
+       총 출석 일수                  →  'jw539_checkin'   .totalDays
+   · 달성 여부는 저장하지 않고 매번 위 저장소에서 계산한다(기존 기록이 그대로 소급 적용).
+     저장은 'jw540_ach' = { v:1, claimed:{ achId:1 }, at:{ achId:ts }, total:코인 } 하나뿐 —
+     수령한 업적만 남는다. 그래서 처음 열어도 이미 달성한 업적은 바로 '받기'가 열려 있고,
+     같은 업적을 두 번 받을 수 없다(claimed 확인 → 코인 증가 확인 → 기록).
+   · 코인은 v5.29 펫 코인(JW529.addCoins) 하나로만 지급하고, 실제 잔액이 늘어난 것을 확인한
+     뒤에만 수령 완료로 기록한다. 지급에 실패하면 업적은 미수령으로 남는다.
+   · 타이틀 '📊 내 통계표' 버튼 우상단에 미수령 보상 개수(N) 배지를 띄운다 — 2.5초에 한 번,
+     가벼운 숫자 비교만 한다(게임 루프에 부담 없음). 수령하면 즉시 줄어든다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var V = root.JW43;
+  if (!V || root.JW540) return;
+
+  var doc = document;
+  var KEY = 'jw540_ach';
+  var $ = function (id) { try { return doc.getElementById(id); } catch (e) { return null; } };
+  function ls(k, d) { try { var v = V.lsGet(k, d); return (v === undefined ? d : v); } catch (e) { return d; } }
+  function num(v) { var n = Number(v); return isFinite(n) && n > 0 ? n : 0; }
+  function toast(t, k, s, ms) { try { V.toast(t, k || 'lucky', s || '', ms || 2400); } catch (e) {} }
+  function beep(f, d, v, t, f2) { try { V.beep(f, d || 0.07, v || 0.09, t || 'square', f2 || null); } catch (e) {} }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[<>&"]/g, function (c) {
+      return c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '&' ? '&amp;' : '&quot;';
+    });
+  }
+  function fmt(n) { try { return Math.round(Number(n) || 0).toLocaleString('ko-KR'); } catch (e) { return String(Math.round(Number(n) || 0)); } }
+
+  /* ================================================================
+     기존 기록 읽기 — 전부 실제 저장소에서
+     ================================================================ */
+  function stats() { return ls('jw43_stats_v1', {}) || {}; }
+  function prof() {
+    try { var i = (V.api && V.api().internals) ? V.api().internals() : null; return (i && i.prof) || {}; }
+    catch (e) { return {}; }
+  }
+  function jumpCount() { return Math.round(num(stats().jump)); }
+  function clearCount() {
+    var n = num(stats().clears);
+    var p = num(prof().clears || prof().clearCount);
+    var b = 0;
+    try {
+      var all = ls('jw43_best_v1', {}) || {};
+      b = Object.keys(all).filter(function (k) { return !!(all[k] && all[k].cleared); }).length;
+    } catch (e) { b = 0; }
+    return Math.max(n, p, b);
+  }
+  function bestCombo() {
+    var s = num(stats().maxCombo);
+    var c = num(ls('jw537_best_combo', 0));
+    return Math.max(s, c);
+  }
+  function noFallCount() {
+    var o = ls('jw532_mastery', null);
+    if (!o || !o.m || typeof o.m !== 'object') return 0;
+    var n = 0;
+    Object.keys(o.m).forEach(function (id) {
+      var e = o.m[id];
+      if (e && e.noFall) n++;
+    });
+    return n;
+  }
+  function storyCount() {
+    var s = ls('jw64_story_v1', null);
+    if (!s || !s.cleared || typeof s.cleared !== 'object') return 0;
+    return Object.keys(s.cleared).length;
+  }
+  var OPEN_MG = ['rhythm', 'meteor', 'coin'];   /* v5.30·v5.35·v5.38 개방 3종 */
+  function mgCount() {
+    var best = ls('jw48mg_best_v1', {}) || {};
+    try { if (!best || !Object.keys(best).length) { if (root.JW48MG && root.JW48MG.best) best = root.JW48MG.best; } } catch (e) {}
+    var n = 0;
+    OPEN_MG.forEach(function (id) {
+      var b = best[id];
+      if (!b || typeof b !== 'object') return;
+      if (typeof b.value === 'number' && isFinite(b.value)) n++;
+      else if (num(b.plays) > 0) n++;
+    });
+    return n;
+  }
+  function petCount() {
+    try {
+      var st = (root.JW529 && root.JW529.st) ? root.JW529.st() : null;
+      return (st && st.owned && typeof st.owned === 'object') ? Object.keys(st.owned).length : 0;
+    } catch (e) { return 0; }
+  }
+  function themeCount() {
+    var o = ls('jw533_theme_v1', null);
+    if (!o || !o.owned || typeof o.owned !== 'object') return 0;
+    return Object.keys(o.owned).length;
+  }
+  function checkinDays() {
+    var o = ls('jw539_checkin', null);
+    if (!o) return 0;
+    return Math.round(num(o.totalDays));
+  }
+
+  /* ================================================================
+     업적 12종 (카테고리: 등반 · 완등/기록 · 수집 · 습관)
+     ================================================================ */
+  var ACH = [
+    { id: 'j50',    cat: '등반', ic: '👣', name: '첫 발걸음',        desc: '누적 점프 50회',              goal: 50,   coin: 20, cur: jumpCount },
+    { id: 'j500',   cat: '등반', ic: '🤸', name: '점프 머신',        desc: '누적 점프 500회',             goal: 500,  coin: 40, cur: jumpCount },
+    { id: 'j2000',  cat: '등반', ic: '☁️', name: '하늘 정복자',      desc: '누적 점프 2,000회',           goal: 2000, coin: 80, cur: jumpCount },
+    { id: 'clear1', cat: '완등', ic: '🏁', name: '첫 정상 완등',      desc: '아무 맵 1회 완등',            goal: 1,    coin: 50, cur: clearCount },
+    { id: 'nofall', cat: '완등', ic: '🛡️', name: '노폴 마스터',      desc: '추락 없이 완등해 노폴 배지 1개', goal: 1,  coin: 70, cur: noFallCount },
+    { id: 'combo10',cat: '기록', ic: '🔥', name: '콤보 파이터',      desc: '최고 콤보 10 이상',           goal: 10,   coin: 40, cur: bestCombo },
+    { id: 'combo25',cat: '기록', ic: '💥', name: '피버 마스터',      desc: '최고 콤보 25 이상',           goal: 25,   coin: 80, cur: bestCombo },
+    { id: 'story1', cat: '기록', ic: '📖', name: '스토리 도전자',    desc: '스토리 1스테이지 클리어',      goal: 1,    coin: 50, cur: storyCount },
+    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 3종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
+    { id: 'pet3',   cat: '수집', ic: '🐾', name: '펫 친구',          desc: '펫 3종 이상 보유',            goal: 3,    coin: 50, cur: petCount },
+    { id: 'theme5', cat: '수집', ic: '🎨', name: '테마 컬렉터',      desc: '테마 아이템 5종 이상 보유',    goal: 5,    coin: 60, cur: themeCount },
+    { id: 'check1', cat: '습관', ic: '📅', name: '개근 시작',        desc: '총 출석 1일 이상',            goal: 1,    coin: 30, cur: checkinDays }
+  ];
+  var BY_ID = {};
+  ACH.forEach(function (a) { BY_ID[a.id] = a; });
+  var TOTAL = ACH.length;
+
+  /* ================================================================
+     저장 (수령 기록만)
+     ================================================================ */
+  var ST = null;
+  function blank() { return { v: 1, claimed: {}, at: {}, total: 0 }; }
+  function normalize(s) {
+    var o = blank();
+    if (!s || typeof s !== 'object') return o;
+    if (s.claimed && typeof s.claimed === 'object') {
+      Object.keys(s.claimed).forEach(function (id) {
+        if (BY_ID[id] && s.claimed[id]) o.claimed[id] = 1;
+      });
+    }
+    if (s.at && typeof s.at === 'object') {
+      Object.keys(s.at).forEach(function (id) {
+        if (BY_ID[id]) {
+          var t = Math.round(Number(s.at[id]) || 0);
+          if (t > 0) o.at[id] = t;
+        }
+      });
+    }
+    o.total = Math.max(0, Math.round(Number(s.total) || 0));
+    return o;
+  }
+  function ensure() {
+    if (!ST) {
+      var raw = null;
+      try { raw = V.lsGet(KEY, null); } catch (e) { raw = null; }
+      ST = normalize(raw);
+    }
+    return ST;
+  }
+  function save() { try { V.lsSet(KEY, ST); } catch (e) {} }
+  function isClaimed(id) { ensure(); return !!ST.claimed[id]; }
+  function curOf(a) { try { return Math.round(num(a.cur())); } catch (e) { return 0; } }
+  function isDone(a) { return curOf(a) >= a.goal; }
+  function isReady(a) { return !isClaimed(a.id) && isDone(a); }
+  function doneCount() { var n = 0; ACH.forEach(function (a) { if (isDone(a)) n++; }); return n; }
+  function readyList() { return ACH.filter(isReady); }
+
+  /* ================================================================
+     펫 코인 (v5.29 JW529) — 읽기 st(), 쓰기 addCoins 만
+     ================================================================ */
+  function coinNow() {
+    try {
+      var P = root.JW529;
+      if (!P || !P.st) return null;
+      var s = P.st();
+      return (s && typeof s.coins === 'number' && isFinite(s.coins)) ? s.coins : null;
+    } catch (e) { return null; }
+  }
+  function pay(n) {
+    n = Math.round(Number(n) || 0);
+    if (n <= 0) return false;
+    try {
+      var P = root.JW529;
+      if (!P) return false;
+      var before = coinNow();
+      if (before == null) return false;
+      if (P.addCoins) P.addCoins(n);
+      else if (P.coins) P.coins(before + n);
+      else return false;
+      var after = coinNow();
+      return after != null && after >= before + n;
+    } catch (e) { return false; }
+  }
+
+  /* ================================================================
+     수령
+     ================================================================ */
+  function claim(id, quiet) {
+    try {
+      ensure();
+      var a = BY_ID[id];
+      if (!a) return false;
+      if (ST.claimed[id]) return false;              /* 중복 수령 0건 */
+      if (!isDone(a)) return false;                  /* 아직 미달성 */
+      if (!pay(a.coin)) {
+        if (!quiet) toast('⚠️ 보상을 지급하지 못했어요', 'danger', '펫 코인 저장소를 확인해 주세요', 2600);
+        return false;
+      }
+      ST.claimed[id] = 1;
+      ST.at[id] = Date.now();
+      ST.total = (Number(ST.total) || 0) + a.coin;
+      save();
+      if (!quiet) {
+        toast('🏆 ' + a.name + ' 달성! +' + a.coin + ' 코인', 'lucky', a.desc + ' · 업적 ' + doneCount() + '/' + TOTAL, 2600);
+        beep(880, 0.07, 0.1, 'square', 1320);
+        try { setTimeout(function () { beep(1320, 0.08, 0.09, 'square', 1760); }, 90); } catch (e) {}
+      }
+      afterChange();
+      return true;
+    } catch (e) { return false; }
+  }
+  function claimAll() {
+    var list = readyList();
+    if (!list.length) return { n: 0, coins: 0 };
+    var n = 0, sum = 0;
+    list.forEach(function (a) {
+      if (claim(a.id, true)) { n++; sum += a.coin; }
+    });
+    if (n > 0) {
+      ensure();
+      toast('🎁 업적 보상 ' + n + '개 수령 · +' + sum + ' 코인', 'lucky', '남은 업적 ' + (TOTAL - doneCount()) + '종 · 통계표에서 계속 확인하세요', 3200);
+      [740, 988, 1245, 1480].forEach(function (f, i) {
+        try { setTimeout(function () { beep(f, 0.08, 0.1, 'square', f + 220); }, i * 80); } catch (e) {}
+      });
+      afterChange();
+    }
+    return { n: n, coins: sum };
+  }
+
+  /* ================================================================
+     CSS
+     ================================================================ */
+  function css() {
+    if ($('v540css')) return;
+    var s = doc.createElement('style');
+    s.id = 'v540css';
+    s.textContent = [
+      /* 통계표 안의 탭 */
+      '.v540tabs{display:flex;gap:4px;background:#070d19;border:2px solid #1f2b45;border-radius:11px;padding:3px;}',
+      '.v540tab{flex:1 1 0;min-width:0;font-family:"Galmuri11","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:900;font-size:11.5px;',
+      '  padding:8px 5px;border-radius:8px;border:0;background:transparent;color:#93a4c4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+      '.v540tab.on{background:linear-gradient(180deg,#3b82f6,#1d4ed8);color:#fff;box-shadow:inset 0 -2px 0 rgba(0,0,0,.35);}',
+      '.v540pane{display:flex;flex-direction:column;gap:7px;}',
+      /* 코인 줄 */
+      '.v540coin{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#0b1222;border:2px solid #2b3f6b;',
+      '  border-radius:10px;padding:6px 10px;font-size:11.5px;font-weight:900;color:#c7d5ec;}',
+      '.v540coin strong{font-size:14px;color:#fde047;font-family:"Galmuri11","Apple SD Gothic Neo",sans-serif;}',
+      '.v540sum{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10px;font-weight:900;color:#93a4c4;}',
+      '.v540sum b{color:#fde68a;}',
+      '.v540pb{height:6px;border-radius:4px;background:#1e293b;overflow:hidden;}',
+      '.v540pb i{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#a78bfa);transition:width .25s ease;}',
+      '.v540all{font-family:"Jua","Galmuri11",sans-serif;font-size:13px;padding:9px 10px;border-radius:10px;border:2px solid #7c4a06;',
+      '  background:linear-gradient(180deg,#fde047,#f59e0b);color:#2a1503;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);}',
+      '.v540all:active{transform:translateY(2px);}',
+      '.v540all[disabled]{filter:grayscale(.55) brightness(.72);box-shadow:none;}',
+      '.v540list{display:flex;flex-direction:column;gap:5px;}',
+      /* 업적 카드 */
+      '.v540a{display:flex;align-items:center;gap:7px;background:#0b1222;border:2px solid #1f2b45;border-radius:10px;padding:6px 8px;}',
+      '.v540a.ready{border-color:#fbbf24;background:#1a1507;box-shadow:0 0 12px rgba(251,191,36,.22);}',
+      '.v540a.done{border-color:#14532d;background:#08150f;}',
+      '.v540a .ic{flex:0 0 22px;text-align:center;font-size:15px;line-height:1;}',
+      '.v540a .tx{flex:1 1 auto;min-width:0;}',
+      '.v540a .tx b{display:block;font-size:11.5px;color:#e7eefb;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+      '.v540a .tx b em{font-style:normal;font-size:9.5px;color:#fde047;font-weight:900;}',
+      '.v540a .tx>i{font-style:normal;font-size:9px;color:#93a4c4;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}',
+      '.v540a .num{font-style:normal;font-size:9px;font-weight:900;color:#7d8faf;display:block;margin-top:3px;}',
+      '.v540a.ready .num{color:#fde68a;}',
+      '.v540a.done .num{color:#6ee7b7;}',
+      '.v540a .pb{margin-top:3px;}',
+      '.v540go{flex:0 0 auto;font-family:"Galmuri11","Apple SD Gothic Neo",sans-serif;font-weight:900;font-size:10.5px;padding:8px 8px;border-radius:8px;',
+      '  border:2px solid #7c4a06;background:linear-gradient(180deg,#fde047,#f59e0b);color:#2a1503;white-space:nowrap;}',
+      '.v540go:active{transform:translateY(1px);}',
+      '.v540got{flex:0 0 auto;font-size:9.5px;font-weight:900;color:#6ee7b7;padding:6px 3px;white-space:nowrap;}',
+      '.v540lock{flex:0 0 auto;font-size:9.5px;font-weight:900;color:#64748b;padding:6px 3px;white-space:nowrap;}',
+      /* 타이틀 통계 버튼 배지 */
+      '#v540Badge{display:none;position:absolute;right:2px;top:2px;z-index:4;min-width:18px;height:18px;padding:0 4px;',
+      '  border-radius:9px;border:2px solid #fff7d6;background:linear-gradient(180deg,#fb7185,#dc2626);color:#fff;',
+      '  font-family:"Galmuri11","Apple SD Gothic Neo",sans-serif;font-size:10px;font-weight:900;line-height:14px;text-align:center;',
+      '  box-shadow:0 0 9px rgba(248,113,113,.9);pointer-events:none;}',
+      '#v540Badge.on{display:block;animation:v540pop 1.15s ease-in-out infinite;}',
+      '@keyframes v540pop{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}',
+      '@media (prefers-reduced-motion: reduce){#v540Badge.on{animation:none;}}'
+    ].join('\n');
+    try { doc.head.appendChild(s); } catch (e) {}
+  }
+
+  /* ================================================================
+     타이틀 배지 (미수령 개수)
+     ================================================================ */
+  function inPlay() {
+    try { var j = root.__jwg; return !!(j && j.game && j.game.inPlay); } catch (e) { return false; }
+  }
+  function badgeEl() {
+    var btn = $('v51QStats');
+    if (!btn) return null;
+    try { if (!btn.__v540rel) { btn.style.position = 'relative'; btn.__v540rel = 1; } } catch (e) {}
+    var b = $('v540Badge');
+    if (!b) {
+      b = doc.createElement('span');
+      b.id = 'v540Badge';
+      b.setAttribute('aria-hidden', 'true');
+      try { btn.appendChild(b); } catch (e) { return null; }
+    }
+    return b;
+  }
+  function refreshBadge() {
+    try {
+      if (inPlay()) return 0;            /* 플레이 중엔 타이틀 배지를 계산하지 않는다 (렉 0) */
+      var n = readyList().length;
+      var b = badgeEl();
+      if (!b) return n;
+      var txt = String(n);
+      if (b.textContent !== txt) b.textContent = txt;
+      b.className = n > 0 ? 'on' : '';
+      return n;
+    } catch (e) { return 0; }
+  }
+
+  /* ================================================================
+     탭 라벨 · 코인 표시
+     ================================================================ */
+  function paintTab() {
+    try {
+      var t = $('v540TabAch');
+      if (t) t.textContent = '🏆 업적 (' + doneCount() + '/' + TOTAL + ')';
+    } catch (e) {}
+  }
+  function paintCoin() {
+    try {
+      var el = $('v540Coin');
+      if (!el) return;
+      var c = coinNow();
+      el.textContent = (c == null ? '—' : fmt(c));
+    } catch (e) {}
+  }
+  function afterChange() {
+    refreshBadge();
+    paintTab();
+    paintCoin();
+    var pane = $('v540PaneAch');
+    if (pane && pane.style.display !== 'none') render(pane);
+    else paintTab();
+  }
+
+  /* ================================================================
+     업적 탭 렌더
+     ================================================================ */
+  function card(a) {
+    var cur = Math.min(curOf(a), a.goal);
+    var done = isDone(a);
+    var claimed = isClaimed(a.id);
+    var ready = done && !claimed;
+    var pct = Math.max(2, Math.min(100, (a.goal ? (curOf(a) / a.goal) * 100 : 0)));
+    var cls = 'v540a' + (claimed ? ' done' : (ready ? ' ready' : ''));
+    var icon = claimed ? '✅' : (ready ? '🏆' : a.ic);
+    var right;
+    if (claimed) right = '<span class="v540got">수령 완료</span>';
+    else if (ready) right = '<button type="button" class="v540go" data-v540claim="' + esc(a.id) + '">받기</button>';
+    else right = '<span class="v540lock">' + Math.round(pct) + '%</span>';
+    return '<div class="' + cls + '">' +
+      '<span class="ic">' + icon + '</span>' +
+      '<span class="tx"><b>' + esc(a.name) + ' <em>+' + a.coin + '🪙</em></b>' +
+      '<i>' + esc(a.desc) + '</i>' +
+      '<div class="v540pb pb"><i style="width:' + pct + '%;' + (claimed ? 'background:linear-gradient(90deg,#34d399,#10b981);' : (ready ? 'background:linear-gradient(90deg,#fbbf24,#f97316);' : '')) + '"></i></div>' +
+      '<i class="num">' + fmt(cur) + ' / ' + fmt(a.goal) + (claimed ? ' · 받음' : '') + '</i>' +
+      '</span>' + right + '</div>';
+  }
+
+  function render(box) {
+    try {
+      ensure();
+      var el = box || $('v540PaneAch');
+      if (!el) return false;
+      var done = doneCount();
+      var ready = readyList();
+      var rc = ready.reduce(function (s, a) { return s + a.coin; }, 0);
+      var coin = coinNow();
+      var pctAll = Math.round((done / TOTAL) * 100);
+      el.innerHTML =
+        '<div class="v540coin"><span>🪙 보유 펫 코인</span><strong id="v540Coin">' + (coin == null ? '—' : fmt(coin)) + '</strong></div>' +
+        '<div class="v540sum"><span>달성 <b>' + done + '</b> / ' + TOTAL + ' · 달성률 <b>' + pctAll + '%</b></span>' +
+        '<span>받을 수 있는 보상 <b>' + rc + '</b>🪙</span></div>' +
+        '<div class="v540pb"><i style="width:' + Math.max(2, pctAll) + '%;"></i></div>' +
+        '<button type="button" class="v540all" id="v540All"' + (ready.length ? '' : ' disabled') + '>' +
+        (ready.length ? '🎁 모두 받기 · +' + rc + ' 코인 (' + ready.length + '개)' : '🎁 모두 받기 · 지금 받을 보상 없음') + '</button>' +
+        '<div class="v540list">' + ACH.map(card).join('') + '</div>' +
+        '<div class="v51sub" style="margin-top:2px">이미 쌓인 기록은 그대로 인정됩니다 — 조건을 채우면 카드가 금색으로 바뀌고 [받기]가 열려요.</div>';
+      if (!el.__v540b) {
+        el.__v540b = 1;
+        el.addEventListener('click', function (e) {
+          var t = e.target;
+          var b = null;
+          try { b = t && t.closest ? t.closest('[data-v540claim]') : null; } catch (er) { b = null; }
+          if (b) {
+            try { e.preventDefault(); } catch (er) {}
+            claim(b.getAttribute('data-v540claim'));
+            return;
+          }
+          var all = null;
+          try { all = t && t.closest ? t.closest('#v540All') : null; } catch (er) { all = null; }
+          if (all) {
+            try { e.preventDefault(); } catch (er) {}
+            var r = claimAll();
+            if (!r.n) { toast('🏆 지금 받을 보상이 없어요', 'chat', '조건을 채우면 [받기]가 열립니다', 2000); }
+          }
+        });
+      }
+      paintTab();
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* ================================================================
+     열기 (통계표 모달의 업적 탭으로)
+     ================================================================ */
+  function open() {
+    try {
+      if (root.__JW540_openStats) { root.__JW540_openStats('ach'); return true; }
+    } catch (e) {}
+    var b = $('v51QStats');
+    if (b) { b.click(); setTimeout(function () { var t = $('v540TabAch'); if (t) t.click(); }, 80); return true; }
+    return false;
+  }
+
+  /* ================================================================
+     배선 · 주기 갱신
+     ================================================================ */
+  function boot() {
+    try { css(); } catch (e) {}
+    try { ensure(); } catch (e) {}
+    try { refreshBadge(); } catch (e) {}
+    try { paintTab(); } catch (e) {}
+  }
+  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', boot);
+  else boot();
+  try { root.addEventListener('load', boot); } catch (e) {}
+  /* 타이틀 퀵 버튼은 다른 모듈이 나중에 만들 수 있다 — 2.5초마다 가벼운 숫자만 다시 계산 */
+  try { setInterval(function () { try { refreshBadge(); } catch (e) {} }, 2500); } catch (e) {}
+  try {
+    doc.addEventListener('visibilitychange', function () {
+      try { if (!doc.hidden) refreshBadge(); } catch (e) {}
+    });
+  } catch (e) {}
+
+  root.JW540 = {
+    version: 'v5.40',
+    KEY: KEY,
+    list: ACH,
+    open: open,
+    render: render,
+    claim: claim,
+    claimAll: claimAll,
+    refresh: function () { refreshBadge(); paintTab(); paintCoin(); },
+    ready: function () { return readyList().map(function (a) { return a.id; }); },
+    done: doneCount,
+    total: TOTAL,
+    coins: coinNow,
+    state: function () { ensure(); return JSON.parse(JSON.stringify(ST)); },
+    /* 검증용 — 수령 기록만 손댄다 (기록 통계는 건드리지 않는다) */
+    _set: function (o) { ST = normalize(o); save(); afterChange(); return JSON.parse(JSON.stringify(ST)); }
+  };
+
+  try { console.log('[v540] 12 achievements ready · done', doneCount() + '/' + TOTAL); } catch (e) {}
 })(window);
