@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.36 정식판 (화면 표시 버전은 아래 BUILD = 'v5.36')
+   muse-v5-9 game.js — v5.37 정식판 (화면 표시 버전은 아래 BUILD = 'v5.37')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -2439,8 +2439,10 @@ window.__jwRainbowGrad = function (ctx, nameW) {
 
         document.getElementById('titleBestHeight').textContent = (recordMeters()).toFixed(1) + ' m';
         document.getElementById('titleBestPlat').textContent = String(recordPlat()).padStart(3, '0') + ' / ' + String((window.JW43 && JW43.mapTotal) ? JW43.mapTotal() : 88).padStart(3, '0');
-        document.getElementById('titleOriginCount').textContent = stats.originCount + '회';
-        document.getElementById('titleClearCount').textContent = stats.clearCount + '회';
+        /* v5.37: 4.3 프로필 배너가 이 두 칩을 지우는 경우가 있어(노드 없음) 타이틀 복귀가
+           TypeError 로 끊겼다 — 있을 때만 쓴다. */
+        var _v537TOC = document.getElementById('titleOriginCount'); if (_v537TOC) _v537TOC.textContent = stats.originCount + '회';
+        var _v537TCC = document.getElementById('titleClearCount'); if (_v537TCC) _v537TCC.textContent = stats.clearCount + '회';
         /* v5.31: 타이틀에 돌아올 때 오늘의 미션 버튼(진행도·보상 점) 갱신 */
         try { if (window.JW531 && window.JW531.refresh) window.JW531.refresh(); } catch (e) {}
       }
@@ -9602,11 +9604,16 @@ extends CanvasLayer
       if (V.fever.combo > V.fever.best) V.fever.best = V.fever.combo;
       if (V.fever.combo >= FEVER_NEED && !V.fever.on) {
         V.fever.on = true; V.fever.t = 9.5; V.fever.flash = 1;
-        toast('🔥 피버 타임!', 'lucky', V.fever.combo + '연속 착지 · 충전 1.8배', 2600);
         parts(p.x + 14, p.y + 16, '#fbbf24', 26, 220);
-        text(p.x + 14, p.y - 26, '🔥 FEVER!', '#fde047');
-        beep(880, 0.1, 0.14, 'square', 1320);
-        setTimeout(() => beep(1180, 0.12, 0.14, 'square', 1560), 110);
+        /* v5.37: 콤보·피버 연출(팝업·오라·스파크·소리)은 v5.37 모듈이 맡는다 —
+           같은 순간 같은 말을 두 번 하지 않게 여기서는 상태와 파티클만 건드린다.
+           (충전 속도 보너스는 아래 chargeRate 훅에서 그대로 살아 있다) */
+        if (!window.JW537) {
+          toast('🔥 피버 타임!', 'lucky', V.fever.combo + '연속 착지 · 충전 1.8배', 2600);
+          text(p.x + 14, p.y - 26, '🔥 FEVER!', '#fde047');
+          beep(880, 0.1, 0.14, 'square', 1320);
+          setTimeout(() => beep(1180, 0.12, 0.14, 'square', 1560), 110);
+        }
       } else if (V.fever.on) {
         V.fever.t = Math.min(14, V.fever.t + 1.4);
       }
@@ -9626,6 +9633,7 @@ extends CanvasLayer
     if (V.fever.flash > 0) V.fever.flash = Math.max(0, V.fever.flash - dt * 2.4);
   }
   function feverDraw(ctx, camY) {
+    if (window.JW537) return;   /* v5.37: 작은 xN 숫자는 v5.37 콤보 팝업과 겹친다 — 그리지 않는다 */
     const p = J().player;
     const sx = p.x + 14, sy = p.y + 17 - camY;
     const t = now() / 90;
@@ -12200,7 +12208,7 @@ extends CanvasLayer
   const QOL = Object.assign({}, QOL_DEF, lsGet(LS.qol, {}));
   function saveQol() { lsSet(LS.qol, QOL); }
 
-  const VERSION = '4.8';      /* 멀티 프로토콜 호환 번호 (화면 표시는 BUILD = 'v5.36') — 바꿔선 안 됨 */
+  const VERSION = '4.8';      /* 멀티 프로토콜 호환 번호 (화면 표시는 BUILD = 'v5.37') — 바꿔선 안 됨 */
   /* ================================================================
      구간 도달 보정 (모든 맵 88층 보장)
      - 생성된 발판을 실제 점프 물리로 검사해, 닿지 않는 구간만 조금씩 당긴다.
@@ -37978,7 +37986,10 @@ extends CanvasLayer
       ST.combo = (ST.combo || 0) + 1;
       var c = comboColor(ST.combo);
       try {
-        if (ST.combo === 5) { V.toast('🔥 5 콤보!', 'lucky', '발판 테두리가 노랗게 빛납니다', 1300); V.beep(880, 0.07, 0.09, 'square', 1180); }
+        /* v5.37: 콤보 알림은 v5.37 연속 등반 콤보(팝업·피버)가 맡는다 — 발판 테두리 빛만 남기고
+           여기서는 같은 순간 두 번 알리지 않는다 (두 콤보는 세는 규칙이 달라 숫자가 어긋난다). */
+        if (root.JW537) { /* 조용히 */ }
+        else if (ST.combo === 5) { V.toast('🔥 5 콤보!', 'lucky', '발판 테두리가 노랗게 빛납니다', 1300); V.beep(880, 0.07, 0.09, 'square', 1180); }
         else if (ST.combo === 10) { V.toast('⚡ 10 콤보!', 'lucky', '파란 빛으로 진화', 1300); V.beep(1046, 0.08, 0.1, 'square', 1400); }
         else if (ST.combo === 15) { V.toast('🌈 15 콤보!', 'lucky', '무지개 빛 발판!', 1500); V.beep(1318, 0.1, 0.11, 'square', 1760); }
       } catch (e) {}
@@ -69260,7 +69271,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.36';
+  var BUILD = 'v5.37';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81464,7 +81475,7 @@ if (typeof module !== 'undefined' && module.exports) {
   try { root.addEventListener('load', function () { try { wire(); } catch (e) {} }); } catch (e) {}
 
   root.JW531 = {
-    version: 'v5.36',
+    version: 'v5.37',
     KEY: KEY,
     ev: ev,
     refresh: function () { ensure(); refreshBtn(); },
@@ -83028,7 +83039,7 @@ if (typeof module !== 'undefined' && module.exports) {
   root.JW533 = {
     themes: THEMES, items: ITEMS, skins: SKINS, pets: PETS33, trails: TRAILS33, frames: FRAMES33, titles: TITLES33,
     st: function () { return S; }, owned: owned, pull: doPull, equip: equipItem, open: open, close: close,
-    art: art, tier: TIER, version: 'v5.36',
+    art: art, tier: TIER, version: 'v5.37',
     /* v5.36: 도감·단계 보상 (검증용 포함) */
     milestones: function () { return msLoad(); }, msClaimed: msClaimed, gotOf: gotOf,
     msClaim: msClaimNow, codexOn: function () { return codexOn; },
@@ -84021,4 +84032,490 @@ if (typeof module !== 'undefined' && module.exports) {
   } catch (e) {}
 
   try { console.log('[v535] ☄️ 메테오 스텝 등록 · order', (MG.order || []).length); } catch (e) {}
+})(window);
+
+
+/* ===== v537 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.37 : 🔥 연속 등반 콤보 & 피버 이펙트
+   --------------------------------------------------------------------------
+   · 새 발판에 "더 높이" 착지할 때마다 콤보 +1 (발판 끝 CLUTCH! 착지는 +2)
+       - 같은 발판 재착지 · 제자리 점프 : 유지 (증가/리셋 없음)
+       - 아래 발판으로 떨어짐 / 심연 추락 : 0으로 리셋 (직전 최고 착지도 그 발판으로)
+   · 2콤보부터 캐릭터 머리 위에 짧은 팝업 (2 COMBO! … 🔥 5 COMBO FEVER!)
+   · 5콤보 = 피버 : 캐릭터 뒤 은은한 황금·불꽃 오라 + 위로 떠오르는 스파크
+       - 오라는 방사형 그라데이션 1장을 캐시해 재사용, 스파크는 12칸 고정 풀
+         (프레임마다 new/배열 생성 없음 — 60fps 부하 없음)
+       - 저사양(⚙️ 편리성 → 저사양)에서는 오라·스파크를 줄인다
+   · 소리 : 콤보가 오를 때마다 피치가 살짝 올라가는 짧은 딩 (효과음 음량·음소거 설정 존중)
+   · 기록 : localStorage 'jw537_best_combo' = 개인 최고 콤보
+   · 코인 : 혼자 하기 한 판에서 10콤보 +5 · 20콤보 +10 · 30콤보 +15 (판당 최대 +30,
+     JW529.addCoins 로만 지급하고 잔액 증가를 확인한 뒤에만 보상 기록)
+   · 결과창(클리어·게임오버)과 타이틀·인게임 결과 카드에 🔥 최고 콤보 표시
+   · 본편 등반 모드에만 붙는다 — 미니게임은 별도 캔버스라 onLand 자체가 오지 않는다.
+     점프 물리 · 발판 배치 · 난이도는 건드리지 않는다 (표시·기록·보너스만).
+   --------------------------------------------------------------------------
+   v5.37 : 4.2 "연속 착지 피버"의 작은 xN 표시·시작 토스트는 이 모듈이 대신한다
+     (같은 순간 같은 말을 두 번 하지 않게). 충전 속도 보너스는 그대로 살아 있다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var V = root.JW43;
+  if (!V || root.JW537) return;
+
+  var doc = document;
+  var KEY = 'jw537_best_combo';
+  var FEVER = 5;
+  var MILESTONES = [{ n: 10, coin: 5 }, { n: 20, coin: 10 }, { n: 30, coin: 15 }];
+  var MAX_SPARKS = 12;
+
+  function $(id) { try { return doc.getElementById(id); } catch (e) { return null; } }
+  function P() { try { return root.__jwg && root.__jwg.player; } catch (e) { return null; } }
+  function G() { try { return root.__jwg && root.__jwg.game; } catch (e) { return null; } }
+  function playing() { var g = G(); return !!(g && g.inPlay && !g.paused && !g.victory); }
+  function soloOn() { try { return !!(root.JWMode && root.JWMode.solo && root.JWMode.solo.active); } catch (e) { return false; } }
+  function now() { try { return performance.now(); } catch (e) { return Date.now(); } }
+  function beep(f, d, v, t, f2) { try { V.beep(f, d, v, t, f2); } catch (e) {} }
+  function lowSpec() { try { return !!(V.QOL && V.QOL.lowSpec); } catch (e) { return false; } }
+
+  /* ==========================================================================
+     1. 개인 최고 콤보 (localStorage 'jw537_best_combo')
+     ========================================================================== */
+  var best = 0;
+  try { best = Math.max(0, Math.round(Number(V.lsGet(KEY, 0)) || 0)); } catch (e) { best = 0; }
+  function saveBest() { try { V.lsSet(KEY, best); } catch (e) {} }
+
+  /* ==========================================================================
+     2. 판 상태
+     ========================================================================== */
+  var combo = 0;        /* 지금 콤보 */
+  var topIdx = 0;       /* 이번 연속 등반에서 가장 높이 착지한 발판 index */
+  var runBest = 0;      /* 이번 판 최고 콤보 */
+  var run = { active: false, paid: {}, coins: 0, best: 0 };
+  var last = { best: 0, coins: 0 };   /* 방금 끝난 판 (결과창용) */
+  var lastClutchAt = 0;
+  var pausedBefore = false, lastTime = 0;
+
+  function startRun() {
+    run.active = true; run.paid = {}; run.coins = 0; run.best = 0;
+    combo = 0; topIdx = 0; runBest = 0; sparks.length = 0; pops.length = 0;
+  }
+  function finishRunState() {
+    last = { best: Math.max(run.best || 0, combo || 0), coins: run.coins || 0 };
+    run.active = false;
+    combo = 0; topIdx = 0; sparks.length = 0; pops.length = 0;
+  }
+
+  /* ==========================================================================
+     3. 코인 (v5.29 JW529) — addCoins 로만, 잔액 증가 확인
+     ========================================================================== */
+  function coinNow() {
+    try { var P5 = root.JW529; if (!P5 || !P5.st) return null; var s = P5.st(); return (s && typeof s.coins === 'number') ? s.coins : null; } catch (e) { return null; }
+  }
+  function addCoins(n) {
+    try {
+      var P5 = root.JW529;
+      if (!P5 || !P5.st) return false;
+      var before = coinNow();
+      if (before == null) return false;
+      if (P5.addCoins) P5.addCoins(n);
+      else if (P5.coins) P5.coins(before + n);
+      else return false;
+      var after = coinNow();
+      return after != null && after > before;
+    } catch (e) { return false; }
+  }
+  function checkMilestone(n) {
+    if (!soloOn()) return;               /* 코인 보너스는 혼자 하기(싱글·스토리·스피드런) 판만 */
+    for (var i = 0; i < MILESTONES.length; i++) {
+      var m = MILESTONES[i];
+      if (n < m.n || run.paid[m.n]) continue;
+      run.paid[m.n] = 1;
+      if (addCoins(m.coin)) {
+        run.coins += m.coin;
+        try { V.toast('🔥 ' + m.n + ' 콤보 돌파!', 'lucky', '+' + m.coin + ' 펫 코인 · 이번 판 +' + run.coins + ' (최대 +30)', 1500); } catch (e) {}
+      } else {
+        try { V.toast('🔥 ' + m.n + ' 콤보 돌파!', 'danger', '펫 코인을 지급하지 못했어요', 2200); } catch (e) {}
+      }
+    }
+  }
+
+  /* ==========================================================================
+     4. 착지 판정
+     ========================================================================== */
+  function isClutch(p, pl) {
+    try {
+      if (!p || !pl || p.type === 'abyss_floor') return false;
+      if (!p.w || p.w < 48) return false;
+      var overL = (pl.x + pl.w) - (p.x + 3);
+      var overR = (p.x + p.w - 3) - pl.x;
+      var over = overL < overR ? overL : overR;
+      if (over < 0 || over > 7) return false;
+      var t = now();
+      if (t - lastClutchAt < 700) return false;   /* 연속 착지 도배 방지 (v5.28 CLUTCH! 과 같은 간격) */
+      lastClutchAt = t;
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* 캐릭터 머리 위 이름표(DOM)에 가리지 않도록, 콤보 팝업은 엔진의 떠오르는 글자가 아니라
+     내가 직접 그리는 짧은 글자로 띄운다 (월드 좌표 고정 · 위로 3px만 · 어둡게 테두리). */
+  var pops = [];
+  function popup(p, n, fever) {
+    var txt = fever ? ('🔥 ' + n + ' COMBO FEVER!') : (n + ' COMBO!');
+    var life = fever ? 1.15 : 0.9;
+    pops.push({
+      txt: txt, x: p.x + (p.w || 100) / 2, y: p.y - 88,
+      t: life, max: life, big: !!fever,
+      col: fever ? '#fb923c' : (n >= FEVER ? '#fbbf24' : '#fde047')
+    });
+    if (pops.length > 3) pops.shift();
+  }
+  function popTick(dt) {
+    for (var i = pops.length - 1; i >= 0; i--) {
+      pops[i].t -= dt;
+      if (pops[i].t <= 0) pops.splice(i, 1);
+    }
+  }
+
+  function sound(n) {
+    var f = 600 + Math.min(14, n) * 52;
+    beep(f, 0.055, 0.07, 'square', f * 1.4);
+    if (n === FEVER) {
+      setTimeout(function () { try { beep(1046, 0.08, 0.075, 'square', 1568); } catch (e) {} }, 70);
+      setTimeout(function () { try { beep(1318, 0.1, 0.07, 'square', 1976); } catch (e) {} }, 150);
+    }
+  }
+
+  var sparks = [];
+  function sparkBurst(p, n) {
+    if (lowSpec()) n = Math.min(3, n);
+    for (var i = 0; i < n && sparks.length < MAX_SPARKS; i++) {
+      sparks.push({
+        x: p.x + (p.w || 100) / 2 + (Math.random() * 30 - 15),
+        y: p.y - 8 + Math.random() * 10,
+        vy: -(50 + Math.random() * 45), life: 0.7, max: 0.7, sz: 2 + ((Math.random() * 2) | 0)
+      });
+    }
+  }
+
+  function onLandCombo(p, impact, force) {
+    if (!p) return;
+    if (!force && !playing()) return;
+    if (!run.active) startRun();
+    var pl = P();
+    var idx = p.index | 0;
+    if (p.type === 'abyss_floor' || idx <= 0) { combo = 0; sparks.length = 0; pops.length = 0; return; }   /* 바닥·심연 추락 */
+    if (idx > topIdx) {
+      var clutch = pl ? isClutch(p, pl) : false;
+      combo += clutch ? 2 : 1;
+      topIdx = idx;
+      if (combo > runBest) runBest = combo;
+      run.best = runBest;
+      if (runBest > best) { best = runBest; saveBest(); refreshTitle(); }
+      var fever = combo >= FEVER && (combo === FEVER || combo % 10 === 0);
+      popup(p, combo, fever);
+      sound(combo);
+      if (clutch) sparkBurst(p, 4);
+      if (combo === FEVER) sparkBurst(p, 7);
+      checkMilestone(combo);
+    } else if (idx < topIdx) {
+      combo = 0;                                                            /* 아래 발판으로 떨어짐 */
+      topIdx = idx;
+      sparks.length = 0;
+      pops.length = 0;
+    }
+    /* idx === topIdx : 같은 발판 재착지·제자리 점프 — 콤보 유지 (증가/리셋 없음) */
+  }
+
+  /* ==========================================================================
+     5. 프레임 훅 — 일시정지 해제·새 판 감지·스파크
+     ========================================================================== */
+  function tickCombo(dt) {
+    var g = G(), pl = P();
+    if (!g || !pl) return;
+    /* 일시정지·탭 전환 중에는 엔진 update 가 일찍 끝나 이 훅도 멈춘다.
+       그래서 '멈춰 있던 시간'으로 알아채고, 다시 돌아오면 콤보를 깔끔히 초기화한다. */
+    var tn = now();
+    if (lastHookAt && tn - lastHookAt > 700 && run.active) { combo = 0; sparks.length = 0; pops.length = 0; }
+    lastHookAt = tn;
+    if (!g.inPlay) { if (run.active) finishRunState(); pausedBefore = false; return; }
+    if (g.paused || g.victory) { pausedBefore = true; return; }
+    if (pausedBefore) {               /* 일시정지 해제: 콤보 상태를 깔끔히 초기화 */
+      pausedBefore = false;
+      combo = 0; sparks.length = 0; pops.length = 0;
+    }
+    var t = Number(g.time) || 0;
+    if (t + 0.001 < lastTime || !run.active) startRun();   /* 새 판(타이머 되감김) */
+    lastTime = t;
+    popTick(dt);
+    if (combo >= FEVER && !lowSpec()) {
+      sparkT += dt;
+      if (sparkT > 0.11 && sparks.length < MAX_SPARKS) {
+        sparkT = 0;
+        sparks.push({
+          x: pl.x + 14 + (Math.random() * 26 - 13),
+          y: pl.y + 24 + Math.random() * 8,
+          vy: -(46 + Math.random() * 40), life: 0.75, max: 0.75, sz: 2 + ((Math.random() * 2) | 0)
+        });
+      }
+    }
+    for (var i = sparks.length - 1; i >= 0; i--) {
+      var s = sparks[i];
+      s.y += s.vy * dt; s.life -= dt;
+      if (s.life <= 0) sparks.splice(i, 1);
+    }
+  }
+  var sparkT = 0, lastHookAt = 0;
+
+  /* ==========================================================================
+     6. 피버 오라 · 스파크 그리기 (캐릭터 뒤 = JWG.drawWorld 는 캐릭터보다 먼저 불린다)
+     ========================================================================== */
+  var auraGrad = null, auraCtx = null;
+  function drawPops(ctx, camY) {
+    if (!pops.length) return;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    var big = false;
+    ctx.font = 'bold 13px "Galmuri11", monospace';
+    for (var i = 0; i < pops.length; i++) {
+      var o = pops[i];
+      var k = (o.max - o.t) / o.max;                 /* 0 → 1 */
+      var a = k < 0.18 ? (k / 0.18) : Math.min(1, o.t / (o.max * 0.45));
+      if (!!o.big !== big) { big = !!o.big; ctx.font = big ? 'bold 17px "Galmuri11", monospace' : 'bold 13px "Galmuri11", monospace'; }
+      var yy = (o.y - camY - Math.min(4, k * 8)) | 0;
+      var xx = o.x | 0;
+      ctx.globalAlpha = Math.max(0, Math.min(1, a)) * 0.96;
+      ctx.fillStyle = '#080510';
+      ctx.fillText(o.txt, xx + 2, yy + 2);
+      ctx.fillStyle = o.col;
+      ctx.fillText(o.txt, xx, yy);
+    }
+    ctx.restore();
+  }
+  function drawCombo(ctx, camY) {
+    if (!ctx) return;
+    var g0 = G();
+    if (!g0 || !g0.inPlay) return;
+    drawPops(ctx, camY);                      /* 2콤보부터의 짧은 팝업은 피버와 무관하게 그린다 */
+    if (!playing() || combo < FEVER) return;
+    var pl = P(); if (!pl) return;
+    var sx = pl.x + 14, sy = pl.y + 17 - camY;
+    var t = now() / 300;
+    if (!lowSpec()) {
+      if (auraCtx !== ctx) { auraCtx = ctx; auraGrad = null; }
+      if (!auraGrad) {
+        auraGrad = ctx.createRadialGradient(0, 0, 3, 0, 0, 46);
+        auraGrad.addColorStop(0, 'rgba(253,224,71,.55)');
+        auraGrad.addColorStop(0.45, 'rgba(251,146,60,.24)');
+        auraGrad.addColorStop(1, 'rgba(251,146,60,0)');
+      }
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = 0.55 + 0.2 * Math.sin(t);
+      ctx.translate(sx, sy);
+      ctx.fillStyle = auraGrad;
+      ctx.fillRect(-46, -46, 92, 92);
+      ctx.restore();
+    }
+    if (sparks.length) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      for (var i = 0; i < sparks.length; i++) {
+        var s = sparks[i];
+        ctx.globalAlpha = Math.max(0, s.life / s.max) * 0.9;
+        ctx.fillStyle = (i % 2) ? '#fde047' : '#fb923c';
+        ctx.fillRect(s.x | 0, (s.y - camY) | 0, s.sz, s.sz);
+      }
+      ctx.restore();
+    }
+  }
+
+  /* ==========================================================================
+     7. 결과창 · 타이틀 표시
+     ========================================================================== */
+  function refreshTitle() {
+    var s = best > 0 ? String(best) : '-';
+    /* 타이틀 기록 카드는 4.3 프로필 배너(#v97PB)가 다시 그린다.
+       그 카드의 '최고 도달' 줄 아래에 🔥 최고 콤보 한 줄을 붙인다 (다시 그려져도 2초 안에 복구). */
+    try {
+      var pb = $('v97PB');
+      if (!pb) return;
+      var main = pb.querySelector('.main');
+      if (!main) return;
+      var row = $('v537TitleCombo');
+      if (!row) {
+        row = doc.createElement('div');
+        row.id = 'v537TitleCombo';
+        row.className = 'rec';
+        row.innerHTML = '<span class="lbl">🔥 최고 콤보</span>' +
+          '<b id="v537TitleComboV" style="font-size:13px;font-weight:900;color:#fdba74;">-</b>';
+        var rec = main.querySelector('.rec');
+        if (rec && rec.nextSibling) main.insertBefore(row, rec.nextSibling);
+        else main.appendChild(row);
+      }
+      var v = $('v537TitleComboV');
+      if (v && v.textContent !== s) v.textContent = s;
+    } catch (e) {}
+  }
+
+  function comboLine(b, coins) {
+    var h = '🔥 이번 판 최고 콤보 <b style="color:#fde68a">' + b + '</b>';
+    if (best > b) h += ' <span style="color:#a89464">· 내 최고 ' + best + '</span>';
+    if (coins > 0) h += '<br>🎁 콤보 보너스 <b style="color:#86efac">+' + coins + ' 펫 코인</b>';
+    return h;
+  }
+
+  function paintResult() {
+    try {
+      var m = $('soloEnd'); if (!m || m.classList.contains('hidden')) return;
+      var card = m.querySelector('.m41-card'); if (!card) return;
+      var b = Math.max(run.best || 0, last.best || 0, combo || 0);
+      var coins = Math.max(run.coins || 0, last.coins || 0);
+      var box = $('v537End');
+      if (!box) {
+        box = doc.createElement('div');
+        box.id = 'v537End';
+        box.style.cssText = 'margin:4px 0 2px;padding:5px 8px;background:#160f04;border:2px solid #a16207;' +
+          'color:#fde68a;font-size:10.5px;font-weight:900;line-height:1.5;text-align:left;';
+        var w = $('soloEndWorst');
+        if (w && w.parentNode === card) card.insertBefore(box, w.nextSibling);
+        else card.appendChild(box);
+      }
+      box.style.display = b >= 2 ? 'block' : 'none';
+      if (b >= 2) {
+        var html = comboLine(b, coins);
+        if (box.__s !== html) { box.__s = html; box.innerHTML = html; }
+      }
+      refreshTitle();
+    } catch (e) {}
+  }
+
+  function paintVictory() {
+    try {
+      var m = $('victoryModal');
+      if (!m || m.classList.contains('hidden')) return;
+      var grid = m.querySelector('.grid');
+      if (!grid) return;
+      var el = $('v537Vic');
+      if (!el) {
+        el = doc.createElement('div');
+        el.id = 'v537Vic';
+        el.style.cssText = 'margin-top:6px;padding:5px 8px;background:#160f04;border:2px solid #a16207;' +
+          'color:#fde68a;font-size:11px;font-weight:900;line-height:1.5;';
+        grid.parentNode.insertBefore(el, grid.nextSibling);
+      }
+      var b = Math.max(run.best || 0, combo || 0);
+      el.style.display = b >= 2 ? 'block' : 'none';
+      if (b >= 2) {
+        var html = comboLine(b, Math.max(run.coins || 0, 0));
+        if (el.__s !== html) { el.__s = html; el.innerHTML = html; }
+      }
+    } catch (e) {}
+  }
+
+  /* ==========================================================================
+     8. 일시정지 감지 — pause 창이 열리고 닫힐 때 콤보를 청소한다
+     ========================================================================== */
+  function clearCombo() { combo = 0; sparks.length = 0; pops.length = 0; }
+  function watchPause() {
+    try {
+      var pm = $('pauseModal');
+      if (!pm || pm.__v537w) return;
+      pm.__v537w = true;
+      var wasHidden = pm.classList.contains('hidden');
+      var mo = new MutationObserver(function () {
+        var hidden = pm.classList.contains('hidden');
+        if (hidden !== wasHidden) {
+          wasHidden = hidden;
+          clearCombo();            /* 일시정지 열기·닫기 모두 — 해제 직후 깔끔한 상태로 */
+        }
+      });
+      mo.observe(pm, { attributes: true, attributeFilter: ['class'] });
+    } catch (e) {}
+  }
+
+  /* ==========================================================================
+     9. 설치
+     ========================================================================== */
+  var installed = false;
+  function install() {
+    if (installed) return true;
+    var jw = root.JWG;
+    if (!jw || !root.__jwg || !root.JWMode) return false;
+    installed = true;
+
+    if (typeof jw.onLand === 'function') {
+      var ol = jw.onLand;
+      jw.onLand = function (p, impact) {
+        try { onLandCombo(p, impact); } catch (e) {}
+        return ol.apply(this, arguments);
+      };
+    }
+    if (typeof jw.tick === 'function') {
+      var ot = jw.tick;
+      jw.tick = function (dt) {
+        var r = ot.apply(this, arguments);
+        try { tickCombo((typeof dt === 'number' && dt > 0) ? dt : 0.0166); } catch (e) {}
+        return r;
+      };
+    }
+    if (typeof jw.drawWorld === 'function') {
+      var od = jw.drawWorld;
+      jw.drawWorld = function (ctx, camY) {
+        var r = od.apply(this, arguments);
+        try { drawCombo(ctx, camY); } catch (e) {}
+        return r;
+      };
+    }
+    if (typeof jw.onReachVictory === 'function') {
+      var ov = jw.onReachVictory;
+      jw.onReachVictory = function () {
+        var r = ov.apply(this, arguments);
+        try { paintVictory(); } catch (e) {}
+        return r;
+      };
+    }
+    if (root.JWMode && typeof root.JWMode.endSolo === 'function') {
+      var oe = root.JWMode.endSolo;
+      root.JWMode.endSolo = function () {
+        var r = oe.apply(this, arguments);
+        try { paintResult(); } catch (e) {}
+        return r;
+      };
+    }
+    watchPause();
+    refreshTitle();
+    setInterval(function () { try { refreshTitle(); } catch (e) {} }, 2000);
+    try { console.log('[v537] 🔥 연속 등반 콤보 + 피버 이펙트 ready'); } catch (e) {}
+    return true;
+  }
+
+  if (!install()) {
+    var t0 = setInterval(function () { try { if (install()) clearInterval(t0); } catch (e) {} }, 400);
+    setTimeout(function () { try { clearInterval(t0); } catch (e) {} }, 30000);
+  }
+
+  /* ==========================================================================
+     9. 공개 (검증용)
+     ========================================================================== */
+  root.JW537 = {
+    version: 'v5.37',
+    key: KEY,
+    state: function () {
+      return {
+        combo: combo, best: best, runBest: runBest, topIdx: topIdx,
+        coins: run.coins, paid: Object.keys(run.paid), fever: combo >= FEVER,
+        sparks: sparks.length, pops: pops.length, run: !!run.active
+      };
+    },
+    _land: function (idx, w, x, type) {
+      onLandCombo({ index: idx, w: w || 120, x: x || 100, y: 0, type: type || 'normal' }, 100, true);
+      return combo;
+    },
+    _reset: function () { combo = 0; topIdx = 0; runBest = 0; sparks.length = 0; },
+    _paint: function () { try { paintResult(); } catch (e) {} }
+  };
 })(window);
