@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.38 정식판 (화면 표시 버전은 아래 BUILD = 'v5.38')
+   muse-v5-9 game.js — v5.39 정식판 (화면 표시 버전은 아래 BUILD = 'v5.39')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -2445,6 +2445,8 @@ window.__jwRainbowGrad = function (ctx, nameW) {
         var _v537TCC = document.getElementById('titleClearCount'); if (_v537TCC) _v537TCC.textContent = stats.clearCount + '회';
         /* v5.31: 타이틀에 돌아올 때 오늘의 미션 버튼(진행도·보상 점) 갱신 */
         try { if (window.JW531 && window.JW531.refresh) window.JW531.refresh(); } catch (e) {}
+        /* v5.39: 타이틀 복귀 시 7일 연속 출석 버튼(진행도·수령 점) 갱신 */
+        try { if (window.JW539 && window.JW539.refresh) window.JW539.refresh(); } catch (e) {}
       }
 
       const GDSCRIPTS = {
@@ -12208,7 +12210,7 @@ extends CanvasLayer
   const QOL = Object.assign({}, QOL_DEF, lsGet(LS.qol, {}));
   function saveQol() { lsSet(LS.qol, QOL); }
 
-  const VERSION = '4.8';      /* 멀티 프로토콜 호환 번호 (화면 표시는 BUILD = 'v5.38') — 바꿔선 안 됨 */
+  const VERSION = '4.8';      /* 멀티 프로토콜 호환 번호 (화면 표시는 BUILD = 'v5.39') — 바꿔선 안 됨 */
   /* ================================================================
      구간 도달 보정 (모든 맵 88층 보장)
      - 생성된 발판을 실제 점프 물리로 검사해, 닿지 않는 구간만 조금씩 당긴다.
@@ -69282,7 +69284,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.38';
+  var BUILD = 'v5.39';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -85719,4 +85721,328 @@ if (typeof module !== 'undefined' && module.exports) {
   } catch (e) {}
 
   try { console.log('[v538] 🪙 골드 러시 등록 · order', (MG.order || []).length); } catch (e) {}
+})(window);
+
+
+/* ===== v539 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.39 : 🎁 7일 연속 출석 보너스 캘린더
+   --------------------------------------------------------------------------
+   · 저장은 localStorage 'jw539_checkin' 한 곳뿐이다:
+       { v:1, last:'YYYY-MM-DD', day:1..7, lastDay:0..7, round:0, totalDays:0, badge:0 }
+       last    = 마지막으로 보상을 받은 날 (기기 로컬 날짜)
+       day     = 오늘 받을 칸(1..7). 7일차를 받으면 1로 돌아가고 round++
+       lastDay = 마지막으로 받은 칸 — 모달 7칸·타이틀 버튼의 N/7 표시용
+       round   = 완주한 7일 회차, totalDays = 총 출석 일수, badge = 🏅 개근 도전자 보유
+   · 하루 이상 끊기면(마지막 수령일이 어제가 아니면) 연속이 끊겨 1일차부터 다시 시작한다.
+     totalDays·round·badge 는 그대로 남는다.
+   · 보상: 1일 +30 · 2일 +40 · 3일 +50 · 4일 +60 · 5일 +80 · 6일 +100 · 7일 +150
+     7일차 추가 보상: 🏅 '개근 도전자' 배지(첫 회차) — 이미 가진 회차는 +50 코인으로 대신한다.
+   · 코인은 v5.29 펫 코인(JW529.addCoins) 하나로만 지급하고, 실제 잔액이 늘어난 것을 확인한
+     뒤에만 출석 완료를 기록한다. 같은 날 두 번 받을 수 없다(last === 오늘 이면 버튼 잠금).
+   · 자동 팝업 없음 — 타이틀의 🎁 출석 버튼을 눌렀을 때만 모달이 열린다(삼성 패드 터치 정책).
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var V = root.JW43;
+  if (!V) return;
+  if (root.JW539) return;
+
+  var doc = document;
+  var KEY = 'jw539_checkin';
+  var REWARDS = [30, 40, 50, 60, 80, 100, 150];   /* 1~7일차 펫 코인 */
+  var ROUND_BONUS = 50;                            /* 배지를 이미 가진 회차의 7일차 추가 코인 */
+  var $ = function (id) { try { return doc.getElementById(id); } catch (e) { return null; } };
+  function toast(t, k, s, ms) { try { V.toast(t, k || 'lucky', s || '', ms || 2400); } catch (e) {} }
+  function beep(f, d, v, t, f2) { try { V.beep(f, d || 0.06, v || 0.09, t || 'square', f2 || null); } catch (e) {} }
+
+  /* ---------------------------------------------------------------- 날짜 */
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function keyOf(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function todayKey() { return keyOf(new Date()); }
+  function parseKey(k) {
+    var p = String(k || '').split('-');
+    if (p.length !== 3) return null;
+    var y = Number(p[0]), m = Number(p[1]), d = Number(p[2]);
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d, 12, 0, 0, 0);
+  }
+  function shiftKey(k, delta) {
+    var d = parseKey(k);
+    if (!d) return '';
+    d.setDate(d.getDate() + (delta || 0));
+    return keyOf(d);
+  }
+  function isYesterday(k, today) { return !!k && shiftKey(today, -1) === k; }
+  function clampInt(v, lo, hi, dflt) {
+    var n = Math.round(Number(v));
+    if (!isFinite(n)) return dflt;
+    if (n < lo) n = lo;
+    if (n > hi) n = hi;
+    return n;
+  }
+
+  /* ---------------------------------------------------------------- 상태 */
+  var ST = null;
+  var lastSeenDay = '';
+  function blank() { return { v: 1, last: '', day: 1, lastDay: 0, round: 0, totalDays: 0, badge: 0 }; }
+  function normalize(s) {
+    var o = blank();
+    if (!s || typeof s !== 'object') return o;
+    if (typeof s.last === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s.last)) o.last = s.last;
+    o.day = clampInt(s.day, 1, 7, 1);
+    o.lastDay = clampInt(s.lastDay, 0, 7, 0);
+    o.round = Math.max(0, Math.round(Number(s.round) || 0));
+    o.totalDays = Math.max(0, Math.round(Number(s.totalDays) || 0));
+    o.badge = s.badge ? 1 : 0;
+    return o;
+  }
+  function save() { try { V.lsSet(KEY, ST); } catch (e) {} }
+  /* 끊긴 연속 정리 — 마지막 수령일이 오늘도 어제도 아니면 1일차부터 */
+  function rollover() {
+    var t = todayKey();
+    if (!ST.last || ST.last === t) return false;
+    if (isYesterday(ST.last, t)) return false;
+    if (ST.day === 1 && ST.lastDay === 0) return false;
+    ST.day = 1;
+    ST.lastDay = 0;
+    return true;
+  }
+  function ensure() {
+    if (!ST) {
+      var loaded = null;
+      try { loaded = V.lsGet(KEY, null); } catch (e) { loaded = null; }
+      ST = normalize(loaded);
+    }
+    if (rollover()) save();
+    lastSeenDay = todayKey();
+    return ST;
+  }
+  function claimedToday() { ensure(); return ST.last === todayKey(); }
+  function doneInRound() {
+    ensure();
+    if (claimedToday()) return clampInt(ST.lastDay, 0, 7, 0);
+    return clampInt(ST.day, 1, 7, 1) - 1;
+  }
+
+  /* ------------------------------------------------------- 펫 코인 (JW529) */
+  function coinNow() {
+    try {
+      var P = root.JW529;
+      if (!P || !P.st) return null;
+      var s = P.st();
+      return (s && typeof s.coins === 'number' && isFinite(s.coins)) ? s.coins : null;
+    } catch (e) { return null; }
+  }
+  function addCoins(n) {
+    try {
+      var P = root.JW529;
+      if (!P) return false;
+      var before = coinNow();
+      if (before == null) return false;
+      if (P.addCoins) P.addCoins(n);
+      else if (P.coins) P.coins(before + n);
+      else return false;
+      var after = coinNow();
+      return after != null && after > before;
+    } catch (e) { return false; }
+  }
+
+  /* ---------------------------------------------------------------- 수령 */
+  function claim() {
+    try {
+      ensure();
+      if (claimedToday()) return false;
+      var day = clampInt(ST.day, 1, 7, 1);
+      var base = REWARDS[day - 1] || 0;
+      var extra = (day === 7 && ST.badge) ? ROUND_BONUS : 0;
+      var pay = base + extra;
+      if (!addCoins(pay)) {
+        toast('⚠️ 보상을 지급하지 못했어요', 'danger', '펫 코인 저장소를 찾지 못했습니다', 2600);
+        return false;
+      }
+      var firstBadge = (day === 7 && !ST.badge);
+      ST.last = todayKey();
+      ST.lastDay = day;
+      ST.totalDays = (Number(ST.totalDays) || 0) + 1;
+      if (day === 7) {
+        ST.badge = 1;
+        ST.round = (Number(ST.round) || 0) + 1;
+        ST.day = 1;
+      } else {
+        ST.day = day + 1;
+      }
+      save();
+
+      if (day === 7) {
+        toast('🏅 7일 개근! +' + pay + ' 코인', 'lucky',
+          firstBadge ? '개근 도전자 배지 획득 · 다음 회차 7일차는 +' + ROUND_BONUS + ' 더!' : '개근 도전자 보너스 +' + ROUND_BONUS + ' 포함', 3200);
+        [740, 988, 1245, 1480, 1760].forEach(function (f, i) {
+          try { setTimeout(function () { beep(f, 0.09, 0.1, 'square', f + 220); }, i * 85); } catch (e) {}
+        });
+      } else {
+        toast('🎁 ' + day + '일차 출석 보상 +' + pay + ' 코인', 'lucky',
+          '연속 ' + day + '일째 · 내일 오면 ' + (day + 1) + '일차 +' + REWARDS[day] + ' 코인', 2600);
+        beep(880, 0.07, 0.1, 'square', 1320);
+        try { setTimeout(function () { beep(1320, 0.08, 0.09, 'square', 1760); }, 90); } catch (e) {}
+      }
+      afterChange();
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function afterChange() { refresh(); render(); }
+
+  /* ------------------------------------------------------------------ UI */
+  function isOpen() { var el = $('v539CheckinModal'); return !!(el && !el.classList.contains('hidden')); }
+
+  function refresh() {
+    try {
+      ensure();
+      var btn = $('v539CheckinBtn'), pr = $('v539Prog'), dot = $('v539CkDot');
+      if (!btn) return;
+      var claimed = claimedToday(), n = doneInRound();
+      var sig = n + '/' + (claimed ? 'c' : 'x');
+      if (btn.__v539sig === sig) return;
+      btn.__v539sig = sig;
+      if (pr) pr.textContent = n + '/7';
+      btn.className = claimed ? '' : 'claim';
+      if (dot) dot.className = claimed ? '' : 'on';
+    } catch (e) {}
+  }
+
+  function rewardCell(i, done, isToday) {
+    var cls = 'v539-c' + (done ? ' done' : '') + (isToday ? ' today' : '') + (i === 7 ? ' big' : '');
+    return '<div class="' + cls + '">' +
+      (done ? '<span class="chk">✅</span>' : '') +
+      '<div class="d">' + i + '일차</div>' +
+      '<div class="i">' + (i === 7 ? '🏅' : '🪙') + '</div>' +
+      '<div class="p">+' + REWARDS[i - 1] + '</div>' +
+      '</div>';
+  }
+
+  function render() {
+    try {
+      ensure();
+      var grid = $('v539Grid');
+      if (!grid) return;
+      var claimed = claimedToday();
+      var day = clampInt(ST.day, 1, 7, 1);
+      var upto = claimed ? clampInt(ST.lastDay, 0, 7, 0) : (day - 1);
+
+      var html = '';
+      for (var i = 1; i <= 7; i++) html += rewardCell(i, i <= upto, (!claimed && i === day));
+      grid.innerHTML = html;
+
+      var cv = $('v539CoinVal');
+      if (cv) { var c = coinNow(); cv.textContent = (c == null ? '—' : c.toLocaleString()); }
+
+      var meta = $('v539Meta');
+      if (meta) {
+        var m = '<span>이번 회차 <b>' + upto + '/7</b></span>' +
+          '<span>총 출석 <b>' + (Number(ST.totalDays) || 0) + '일</b></span>' +
+          '<span>완주 <b>' + (Number(ST.round) || 0) + '회</b></span>';
+        if (ST.badge) m += '<span class="v539-badge">🏅 개근 도전자</span>';
+        meta.innerHTML = m;
+      }
+
+      var sub = $('v539Sub');
+      if (sub) {
+        sub.textContent = claimed
+          ? '오늘은 ' + (upto || 7) + '일차까지 완료! 자정이 지나면 다음 칸이 열려요.'
+          : '오늘은 ' + day + '일차 — 받으면 ' + (day === 7 ? '7일 개근 완주!' : (day + 1) + '일차로 이어져요.');
+      }
+
+      var btn = $('v539ClaimBtn');
+      if (btn) {
+        if (claimed) {
+          btn.className = 'v539-claim done';
+          btn.disabled = true;
+          btn.textContent = '오늘 출석 완료 ✓ · 내일 또 만나요';
+        } else {
+          var base = REWARDS[day - 1] || 0;
+          var extra = (day === 7 && ST.badge) ? ROUND_BONUS : 0;
+          btn.className = 'v539-claim can';
+          btn.disabled = false;
+          btn.textContent = '오늘 보상 받기 · 🪙 +' + (base + extra);
+        }
+      }
+    } catch (e) {}
+  }
+
+  function open() {
+    try {
+      ensure();
+      var el = $('v539CheckinModal');
+      if (!el) return false;
+      render();
+      el.classList.remove('hidden');
+      beep(680, 0.06, 0.08, 'square', 940);
+      return true;
+    } catch (e) { return false; }
+  }
+  function close() {
+    try { var el = $('v539CheckinModal'); if (el) el.classList.add('hidden'); refresh(); } catch (e) {}
+  }
+
+  /* ---------------------------------------------------------------- 배선 */
+  function wire() {
+    var btn = $('v539CheckinBtn');
+    if (btn && !btn.__v539w) {
+      btn.__v539w = 1;
+      btn.addEventListener('click', function (e) { try { e.preventDefault(); } catch (er) {} open(); });
+    }
+    var cl = $('v539ClaimBtn');
+    if (cl && !cl.__v539w) {
+      cl.__v539w = 1;
+      cl.addEventListener('click', function (e) { try { e.preventDefault(); } catch (er) {} claim(); });
+    }
+    var modal = $('v539CheckinModal');
+    if (modal && !modal.__v539w) {
+      modal.__v539w = 1;
+      modal.addEventListener('click', function (e) {
+        var t = e.target, hit = null;
+        try { hit = t && t.closest ? t.closest('[data-v42close="v539CheckinModal"]') : null; } catch (er) { hit = null; }
+        if (hit) setTimeout(refresh, 0);
+      });
+    }
+    refresh();
+  }
+
+  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', wire);
+  else wire();
+  try { root.addEventListener('load', function () { try { wire(); } catch (e) {} }); } catch (e) {}
+
+  /* 자정이 지나면(날짜가 바뀌면) 다시 읽어 1일차/새 칸을 즉시 반영 — 30초에 한 번, 가벼운 문자열 비교만 */
+  try {
+    setInterval(function () {
+      try {
+        if (lastSeenDay && lastSeenDay !== todayKey()) {
+          ST = null;
+          ensure();
+          refresh();
+          if (isOpen()) render();
+        }
+      } catch (e) {}
+    }, 30000);
+  } catch (e) {}
+
+  root.JW539 = {
+    version: 'v5.39',
+    KEY: KEY,
+    rewards: REWARDS,
+    open: open,
+    close: close,
+    refresh: refresh,
+    render: render,
+    claim: claim,
+    today: todayKey,
+    state: function () { ensure(); return JSON.parse(JSON.stringify(ST)); },
+    /* 테스트/검증용 */
+    _set: function (o) { ST = normalize(o); save(); lastSeenDay = todayKey(); refresh(); render(); return JSON.parse(JSON.stringify(ST)); },
+    _claim: claim
+  };
+
+  try { console.log('[v539] 7-day check-in ready', (ST && ST.last) || '-'); } catch (e) {}
 })(window);
