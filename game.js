@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.35 정식판 (화면 표시 버전은 아래 BUILD = 'v5.35')
+   muse-v5-9 game.js — v5.36 정식판 (화면 표시 버전은 아래 BUILD = 'v5.36')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -12200,7 +12200,7 @@ extends CanvasLayer
   const QOL = Object.assign({}, QOL_DEF, lsGet(LS.qol, {}));
   function saveQol() { lsSet(LS.qol, QOL); }
 
-  const VERSION = '4.8';      /* 멀티 프로토콜 호환 번호 (화면 표시는 BUILD = 'v5.35') — 바꿔선 안 됨 */
+  const VERSION = '4.8';      /* 멀티 프로토콜 호환 번호 (화면 표시는 BUILD = 'v5.36') — 바꿔선 안 됨 */
   /* ================================================================
      구간 도달 보정 (모든 맵 88층 보장)
      - 생성된 발판을 실제 점프 물리로 검사해, 닿지 않는 구간만 조금씩 당긴다.
@@ -46806,12 +46806,19 @@ extends CanvasLayer
     } catch (e) {}
     c.over = true;
     c.result = res;
-    /* v5.31: 오늘의 미션 — 미니게임 판 종료 (점수·PERFECT 수). 60fps 루프 밖 1회만 */
+    /* v5.31 → v5.36: 오늘의 미션 — 미니게임 판 종료. 어느 게임인지(id)·점수·PERFECT 수·생존 시간을 넘긴다.
+       (미션 진행도는 ev 안에서 미션의 mg 값과 id를 맞춰 그 미션만 올린다) 60fps 루프 밖 1회만 */
     try {
-      if (window.JW531 && window.JW531.ev && c.id === 'rhythm') {
+      if (window.JW531 && window.JW531.ev) {
         var _v531s = null;
         try { _v531s = (c.inst && c.inst.state) ? c.inst.state() : null; } catch (e) {}
-        window.JW531.ev('mg_end', { score: raw || 0, perfect: (_v531s && _v531s.perfect) || 0, win: !!win });
+        window.JW531.ev('mg_end', {
+          id: c.id,
+          score: raw || 0,
+          perfect: (_v531s && _v531s.perfect) || 0,
+          sec: (_v531s && typeof _v531s.time === 'number') ? _v531s.time : 0,
+          win: !!win
+        });
       }
     } catch (e) {}
     try { if (c.inst && c.inst.over) c.inst.over(res); } catch (e) {}
@@ -68932,6 +68939,9 @@ if (typeof module !== 'undefined' && module.exports) {
       '  -webkit-backdrop-filter:none !important;backdrop-filter:none !important;}',
       '#v523FsPrompt>.v42-card{pointer-events:auto !important;margin:0 auto !important;max-width:min(94vw,26rem) !important;',
       '  box-shadow:0 14px 40px rgba(0,0,0,.55) !important;}',
+      /* v5.36: 위 규칙이 ID 선택자 + !important 라 .v42-modal.hidden(display:none)을 이겨서,
+         '전체화면 하시겠습니까?'에 답한 뒤에도 카드가 화면 위에 계속 떠 있었다. 답하면 확실히 사라진다. */
+      '#v523FsPrompt.hidden{display:none !important;}',
       '#v523FsPass{display:block;margin-top:6px;font-size:11px;font-weight:700;color:#93c5fd;opacity:.9;}'
     ].join('\n');
     doc.head.appendChild(s);
@@ -69250,7 +69260,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.35';
+  var BUILD = 'v5.36';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81078,6 +81088,7 @@ if (typeof module !== 'undefined' && module.exports) {
    · 날짜(YYYY-MM-DD, 로컬 시간) 시드로 매일 3개 미션을 '결정적으로' 뽑는다.
      같은 날 새로고침해도 그대로, 자정을 넘기면 새로 뽑힌다.
    · 카테고리 3종을 하나씩 균형 배치: 등반(climb) · 스토리/도전(story) · 미니게임(mg).
+     v5.36부터 미니게임 후보 5종 — ⚡ 차징 점프 3종 + ☄️ 메테오 스텝 2종(1판 · 15초 생존).
    · 진행도는 이벤트 시점(등반 종료/완등, CLUTCH!, 스토리 시작/클리어, 미니게임 종료)에만
      갱신한다 → 인게임 60fps 루프에는 아무 부하도 없다.
    · 보상은 v5.29 펫 코인(JW529)에 그대로 합산한다. 코인 저장은 JW529.coins()만 거친다
@@ -81121,9 +81132,12 @@ if (typeof module !== 'undefined' && module.exports) {
       { id: 's_clear2', icon: '⭐', title: '스토리 2스테이지 클리어', desc: '두 스테이지를 돌파', need: 2, coin: 80, unit: '개' }
     ],
     mg: [
-      { id: 'm_play1', icon: '⚡', title: '차징 점프 1판', desc: '⚡ 차징 점프: 하늘 탑 한 판', need: 1, coin: 50, unit: '판' },
-      { id: 'm_score200', icon: '🎯', title: '차징 점프 200점', desc: '한 판에서 200점 이상', need: 1, coin: 70, unit: '점' },
-      { id: 'm_perfect2', icon: '💫', title: 'PERFECT 2회', desc: '발판 정중앙 착지 2번', need: 2, coin: 60, unit: '회' }
+      { id: 'm_play1', icon: '⚡', title: '차징 점프 1판', desc: '⚡ 차징 점프: 하늘 탑 한 판', need: 1, coin: 50, unit: '판', mg: 'rhythm' },
+      { id: 'm_score200', icon: '🎯', title: '차징 점프 200점', desc: '한 판에서 200점 이상', need: 1, coin: 70, unit: '점', mg: 'rhythm' },
+      { id: 'm_perfect2', icon: '💫', title: 'PERFECT 2회', desc: '발판 정중앙 착지 2번', need: 2, coin: 60, unit: '회', mg: 'rhythm' },
+      /* v5.36: ☄️ 메테오 스텝 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
+      { id: 'm_meteor1', icon: '☄️', title: '메테오 스텝 1판', desc: '☄️ 메테오 스텝 한 판 플레이', need: 1, coin: 50, unit: '판', mg: 'meteor' },
+      { id: 'm_meteor15', icon: '💨', title: '메테오 스텝 15초 생존', desc: '한 판에서 15초 이상 버티기', need: 15, coin: 70, unit: '초', mg: 'meteor' }
     ]
   };
   var BY_ID = {};
@@ -81268,9 +81282,15 @@ if (typeof module !== 'undefined' && module.exports) {
         changed = bump('s_clear1', 1);
         changed = bump('s_clear2', 1) || changed;
       } else if (type === 'mg_end') {
-        changed = bump('m_play1', 1);
-        if ((Number(data.score) || 0) >= 200) changed = bump('m_score200', 1) || changed;
-        if ((Number(data.perfect) || 0) > 0) changed = bump('m_perfect2', Math.round(data.perfect)) || changed;
+        /* v5.36: 어느 미니게임의 판인지(data.id)와 미션의 mg 값을 맞춰서 그 미션만 올린다.
+           예) '차징 점프 1판' 미션이 떴으면 rhythm 판만, '메테오 스텝 1판' 미션이 떴으면 meteor 판만. */
+        var gid = String(data.id || '');
+        var mine = function (mid) { return !!(BY_ID[mid] && BY_ID[mid].mg === gid); };
+        if (mine('m_play1')) changed = bump('m_play1', 1) || changed;
+        if (mine('m_score200') && (Number(data.score) || 0) >= 200) changed = bump('m_score200', 1) || changed;
+        if (mine('m_perfect2') && (Number(data.perfect) || 0) > 0) changed = bump('m_perfect2', Math.round(data.perfect)) || changed;
+        if (mine('m_meteor1')) changed = bump('m_meteor1', 1) || changed;
+        if (mine('m_meteor15') && (Number(data.sec) || 0) > 0) changed = bump('m_meteor15', Math.floor(Number(data.sec))) || changed;
       }
       if (changed) {
         save();
@@ -81444,7 +81464,7 @@ if (typeof module !== 'undefined' && module.exports) {
   try { root.addEventListener('load', function () { try { wire(); } catch (e) {} }); } catch (e) {}
 
   root.JW531 = {
-    version: 'v5.31',
+    version: 'v5.36',
     KEY: KEY,
     ev: ev,
     refresh: function () { ensure(); refreshBtn(); },
@@ -82034,6 +82054,13 @@ if (typeof module !== 'undefined' && module.exports) {
 
 
 /* ==========================================================================
+   v5.36 : 📚 테마 도감 · 단계별 수집 보상 (5/10/15종) + 도감 보기 토글
+   --------------------------------------------------------------------------
+   · 테마 배너마다 수집 진행 바, 고른 테마 상단에 N / 15 · 퍼센트 · 진행 바
+   · 단계별 수집 보상: 5종 +50 · 10종 +100 · 15종 +200 코인 (테마별 1회, 'jw536_theme_milestones')
+   · 도감: 15종을 스킨 8 · 펫 3 · 잔상 2 · 테두리 1 · 칭호 1로 묶어 이름·등급·보유 여부 표시
+   · 코인은 JW529.addCoins로만 지급, 잔액 증가를 확인한 뒤에만 수령 완료 기록
+   --------------------------------------------------------------------------
    v5.34 : 🎰 테마 뽑기 5종 — 🏴‍☠️ 심해 해적단 · 🧁 달콤 디저트 왕국 · ⚔️ 왕국 기사단 추가 (테마당 15종 · 총 75종)
    --------------------------------------------------------------------------
    · 테마 3 🏴‍☠️ 심해 해적단 / 테마 4 🧁 달콤 디저트 왕국 / 테마 5 ⚔️ 왕국 기사단
@@ -82386,6 +82413,65 @@ if (typeof module !== 'undefined' && module.exports) {
   }
 
   /* ================================================================
+     v5.36 : 📚 테마 도감 — 단계별 수집 보상 (5종 +50 · 10종 +100 · 15종 +200)
+     ----------------------------------------------------------------
+     · 보유 수는 기존 테마 세이브(S.owned)에서 그대로 센다. 추가 저장은 보상 수령 여부만.
+     · 저장: localStorage 'jw536_theme_milestones' → { v:1, t:{ neon:{ 5:1, 10:0, 15:0 }, ... } }
+     · 코인은 펫 코인(JW529.addCoins)으로만 지급하고, 실제 잔액이 늘어난 것을 확인한 뒤에만
+       수령 완료로 기록한다(지급 실패를 완료로 남기지 않는다).
+     ================================================================ */
+  var MS = [5, 10, 15];
+  var MS_COIN = { 5: 50, 10: 100, 15: 200 };
+  var MKEY = 'jw536_theme_milestones';
+  var MSST = null;
+  var codexOn = false;
+  function msLoad() {
+    if (MSST) return MSST;
+    var s = null;
+    try { s = V.lsGet(MKEY, null); } catch (e) {}
+    if (!s || typeof s !== 'object') s = { v: 1, t: {} };
+    if (!s.t || typeof s.t !== 'object') s.t = {};
+    THEMES.forEach(function (th) {
+      var o = s.t[th.id];
+      if (!o || typeof o !== 'object') o = {};
+      MS.forEach(function (n) { o[n] = o[n] ? 1 : 0; });
+      s.t[th.id] = o;
+    });
+    MSST = s;
+    return MSST;
+  }
+  function msSave() { try { V.lsSet(MKEY, MSST); } catch (e) {} }
+  function msClaimed(th, n) { var s = msLoad(); return !!(s.t[th] && s.t[th][n]); }
+  function gotOf(thId) { return (ITEMS[thId] || []).filter(function (i) { return owned(i.id); }).length; }
+  function msCan(th, n) { return gotOf(th) >= n && !msClaimed(th, n); }
+  function msReady(th) { for (var i = 0; i < MS.length; i++) if (msCan(th, MS[i])) return true; return false; }
+  function msClaimNow(th, n) {
+    try {
+      msLoad();
+      if (!msCan(th, n)) return false;
+      var pay = MS_COIN[n] || 0;
+      var before = coins();
+      try {
+        if (root.JW529 && root.JW529.addCoins) root.JW529.addCoins(pay);
+        else if (root.JW529 && root.JW529.coins) root.JW529.coins(before + pay);
+        else return false;
+      } catch (e) { return false; }
+      if (coins() < before + pay) {
+        try { V.toast('⚠️ 보상을 지급하지 못했어요', 'danger', '펫 코인 저장소를 확인해 주세요', 2400); } catch (e) {}
+        return false;
+      }
+      MSST.t[th][n] = 1;
+      msSave();
+      var tt = themeOf(th);
+      try { V.toast('🎁 ' + (n === 15 ? '도감 올클리어! +' : n + '종 수집 달성! +') + pay + ' 코인', 'lucky', tt.emoji + ' ' + tt.name, 2600); } catch (e) {}
+      beep(960, 0.06);
+      try { setTimeout(function () { beep(1320, 0.07); }, 90); } catch (e) {}
+      paint();
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* ================================================================
      코인 (기존 펫 코인 그대로)
      ================================================================ */
   function coins() { try { var st = root.JW529 && root.JW529.st ? root.JW529.st() : null; return st ? (Number(st.coins) || 0) : 0; } catch (e) { return 0; } }
@@ -82524,7 +82610,7 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v533G .bn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 9px;border-radius:13px;border:2px solid #26344e;background:#0c1524;color:#a8bad5;text-align:left;box-shadow:0 3px 0 #070c16;min-height:52px;}',
       '#v533G .bn i{font-style:normal;font-size:9px;font-weight:900;letter-spacing:.6px;opacity:.75;}',
       '#v533G .bn b{font-family:"Jua",sans-serif;font-size:13.5px;color:#e6f0ff;line-height:1.15;white-space:nowrap;}',
-      '#v533G .bn s{text-decoration:none;font-size:10px;font-weight:900;color:#93a8c8;}',
+      '#v533G .bn s{text-decoration:none;font-size:10px;font-weight:900;color:#93a8c8;white-space:nowrap;}',
       '#v533G .bn.on{border-color:#fbbf24;box-shadow:0 3px 0 #6b4405,0 0 0 2px rgba(251,191,36,.25) inset;}',
       '#v533G .bn.on b{color:#fff;}',
       '#v533G .body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:9px 12px 14px;display:flex;flex-direction:column;gap:8px;}',
@@ -82570,6 +82656,32 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v533G .odds b{color:#fde047;}',
       '#v533G .odds .t{color:#7dd3fc;}',
       '#v533G .note{font-size:11px;font-weight:800;color:#8fa3c4;line-height:1.45;}',
+      /* v5.36: 수집 진행도·도감·단계 보상 */
+      '#v533G .v536p{display:flex;flex-direction:column;gap:6px;padding:8px 9px;border-radius:13px;background:linear-gradient(180deg,#111d33,#0a1424);border:2px solid #2a3d5e;}',
+      '#v533G .v536p .hd2{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:900;color:#c7d6ee;min-width:0;}',
+      '#v533G .v536p .hd2 b{flex:1 1 auto;min-width:0;font-family:"Jua",sans-serif;font-size:12.5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+      '#v533G .v536p .hd2 s{text-decoration:none;flex:0 0 auto;font-size:10.5px;font-weight:900;color:#fde047;}',
+      '#v533G .pbar{display:block;height:8px;background:#050a14;border:1px solid #334155;border-radius:5px;overflow:hidden;}',
+      '#v533G .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#38bdf8,#a78bfa);transition:width .25s ease;}',
+      '#v533G .v536ms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;}',
+      '#v533G .v536ms button{min-width:0;min-height:34px;padding:0 2px;border-radius:10px;border:2px solid #2a3b58;background:#111c2e;color:#8fa3c4;font-size:10px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+      '#v533G .v536ms button.can{border-color:#fde047;background:linear-gradient(180deg,#fde68a,#f59e0b 60%,#b45309);color:#3b1e00;box-shadow:0 2px 0 #6b4405;}',
+      '#v533G .v536ms button.got{border-color:#34d399;background:#065f46;color:#d1fae5;}',
+      '#v533G .v536cdx{display:flex;flex-direction:column;gap:7px;padding:8px 9px;border-radius:13px;background:#070e1b;border:2px solid #26344e;}',
+      '#v533G .v536cdx .grp{display:flex;flex-direction:column;gap:3px;min-width:0;}',
+      '#v533G .v536cdx .gh{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:900;color:#7dd3fc;}',
+      '#v533G .v536cdx .gh s{text-decoration:none;margin-left:auto;color:#93a8c8;}',
+      '#v533G .v536cdx .rw{display:flex;align-items:center;gap:5px;min-width:0;padding:4px 6px;border-radius:8px;background:#0d1728;border:1px solid #22304a;font-size:10.5px;font-weight:800;color:#dbe7f8;}',
+      '#v533G .v536cdx .rw b{flex:1 1 auto;min-width:0;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+      '#v533G .v536cdx .rw em{font-style:normal;flex:0 0 auto;font-size:9px;font-weight:900;opacity:.9;}',
+      '#v533G .v536cdx .rw u{text-decoration:none;flex:0 0 auto;font-size:9px;font-weight:900;color:#34d399;}',
+      '#v533G .v536cdx .rw.lock{opacity:.55;}',
+      '#v533G .v536cdx .rw.lock b{color:#9fb0c8;}',
+      '#v533G .v536cdx .rw.lock u{color:#f87171;}',
+      '#v533G .bn .pbar{margin-top:3px;height:5px;}',
+      '#v533G .bn.wide .pbar{width:72px;flex:0 0 72px;margin-top:0;margin-left:2px;}',
+      /* 폰 폭에서는 5번째 테마(전폭 배너)의 영문 부제를 숨겨 '보유 N / 15'와 진행 바가 한 줄에 들어간다 */
+      '@media (max-width:420px){#v533G .bn b{font-size:12px !important;}#v533G .bn i{font-size:8.5px !important;}#v533G .bn s{font-size:9px !important;}#v533G .bn.wide i{display:none !important;}#v533G .bn.wide .pbar{width:56px !important;flex:0 0 56px !important;}}',
       '#v57Prof .v533ban{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:12px;background:linear-gradient(135deg,#16233d,#0d1728 60%,#1b2b52);border:2px solid #2a3d5e;}',
       '#v57Prof .v533ban .tx{flex:1 1 auto;min-width:0;}',
       '#v57Prof .v533ban b{display:block;font-family:"Jua",sans-serif;font-size:13px;color:#fff;}',
@@ -82666,12 +82778,15 @@ if (typeof module !== 'undefined' && module.exports) {
       if (t.closest('[data-v533x]')) { close(); return; }
       var th = t.closest('[data-v533th]');
       if (th) { S.theme = th.getAttribute('data-v533th'); save(); paint(); beep(760, 0.04); return; }
+      var msel = t.closest('[data-v533ms]');
+      if (msel) { var _msn = Number(msel.getAttribute('data-v533ms')) || 0; if (_msn) msClaimNow(S.theme, _msn); return; }
       var a = t.closest('[data-v533act]');
       if (a) {
         var act = a.getAttribute('data-v533act');
         if (act === 'pull1') doPull(1);
         else if (act === 'pull5') doPull(5);
         else if (act === 'odds') { S.odds = !S.odds; save(); paint(); }
+        else if (act === 'codex') { codexOn = !codexOn; }
         paint();
         return;
       }
@@ -82685,13 +82800,35 @@ if (typeof module !== 'undefined' && module.exports) {
     return THEMES.map(function (th, idx) {
       var list = ITEMS[th.id] || [];
       var got = list.filter(function (i) { return owned(i.id); }).length;
+      var pct = list.length ? Math.round((got / list.length) * 100) : 0;
       var wide = (THEMES.length % 2 === 1 && idx === THEMES.length - 1) ? ' wide' : '';
       return '<button type="button" class="bn' + (S.theme === th.id ? ' on' : '') + wide + '" data-v533th="' + th.id + '"' +
         ' style="background:' + (S.theme === th.id ? th.grad : '#0c1524') + '">' +
         '<b>' + th.emoji + ' ' + esc(th.name) + '</b>' +
         '<i>' + esc(th.sub) + '</i>' +
-        '<s>보유 ' + got + ' / ' + list.length + '</s></button>';
+        '<s>보유 ' + got + ' / ' + list.length + (msReady(th.id) ? ' 🎁' : '') + '</s>' +
+        '<span class="pbar"><i style="width:' + pct + '%"></i></span>' +
+        '</button>';
     }).join('');
+  }
+
+  /* v5.36: 도감 — 15종을 종류별로 묶어 이름·등급·보유 여부를 한눈에 */
+  function codexHtml(list) {
+    var GROUPS = [['skin', '🎭 스킨'], ['pet', '🐾 펫'], ['trail', '✨ 꼬리 잔상'], ['frame', '🖼 테두리'], ['title', '🏅 칭호']];
+    return '<div class="v536cdx">' + GROUPS.map(function (g) {
+      var items = list.filter(function (i) { return i.type === g[0]; });
+      if (!items.length) return '';
+      var own = items.filter(function (i) { return owned(i.id); }).length;
+      return '<div class="grp"><div class="gh">' + g[1] + '<s>' + own + ' / ' + items.length + '</s></div>' +
+        items.map(function (it) {
+          var has = owned(it.id);
+          var T2 = TIER[it.tier] || {};
+          return '<div class="rw' + (has ? '' : ' lock') + '">' +
+            '<b>' + esc(it.name) + '</b>' +
+            '<em style="color:' + (T2.col || '#93a8c8') + '">' + (T2.name || '') + '</em>' +
+            '<u>' + (has ? '보유 ✓' : '🔒 미보유') + '</u></div>';
+        }).join('') + '</div>';
+    }).join('') + '</div>';
   }
 
   function previewOf(it, size) {
@@ -82720,6 +82857,22 @@ if (typeof module !== 'undefined' && module.exports) {
       '<button type="button" class="btn pri" data-v533act="pull1">🎲 1회 · ' + PULL1 + '</button>' +
       '<button type="button" class="btn pri" data-v533act="pull5">🎲 5회 · ' + PULL5 + '</button>' +
       '<button type="button" class="btn" data-v533act="odds">📊 확률표</button></div>';
+
+    /* v5.36: 수집 진행도 + 단계별 보상 + 도감 토글 */
+    var _pct = list.length ? Math.round((got / list.length) * 100) : 0;
+    h += '<div class="v536p">' +
+      '<div class="hd2"><b>' + th.emoji + ' ' + esc(th.name) + ' 도감</b><s>' + got + ' / ' + list.length + '종 · ' + _pct + '%</s></div>' +
+      '<span class="pbar"><i style="width:' + _pct + '%"></i></span>' +
+      '<div class="v536ms">' + MS.map(function (n) {
+        var cl = msClaimed(th.id, n);
+        var can = !cl && got >= n;
+        return '<button type="button" class="' + (cl ? 'got' : (can ? 'can' : '')) + '" data-v533ms="' + n + '"' +
+          (can ? '' : ' disabled') + '>' + (cl ? n + '종 ✓' : n + '종 +' + MS_COIN[n]) + '</button>';
+      }).join('') + '</div>' +
+      '<button type="button" class="btn' + (codexOn ? ' mid' : '') + '" data-v533act="codex" style="min-height:36px">' +
+        (codexOn ? '📕 도감 접기' : '📖 도감 보기') + '</button>' +
+      (codexOn ? codexHtml(list) : '') +
+      '</div>';
 
     h += '<div class="pity">' + th.emoji + ' <b>' + esc(th.name) + '</b> ' + got + ' / ' + list.length + '종 보유 · ' +
       '천장 <b>' + Math.max(1, 10 - p.r) + '회</b> 뒤 희귀 이상 · <b>' + Math.max(1, 30 - p.h) + '회</b> 뒤 영웅 이상 · ' +
@@ -82875,7 +83028,11 @@ if (typeof module !== 'undefined' && module.exports) {
   root.JW533 = {
     themes: THEMES, items: ITEMS, skins: SKINS, pets: PETS33, trails: TRAILS33, frames: FRAMES33, titles: TITLES33,
     st: function () { return S; }, owned: owned, pull: doPull, equip: equipItem, open: open, close: close,
-    art: art, tier: TIER, version: 'v5.34'
+    art: art, tier: TIER, version: 'v5.36',
+    /* v5.36: 도감·단계 보상 (검증용 포함) */
+    milestones: function () { return msLoad(); }, msClaimed: msClaimed, gotOf: gotOf,
+    msClaim: msClaimNow, codexOn: function () { return codexOn; },
+    _msKey: MKEY, _paint: function () { paint(); }
   };
   try { console.log('[JW533] theme gacha ready — ' + THEMES.length + ' themes / ' + Object.keys(ALL).length + ' items'); } catch (e) {}
 })(window);
