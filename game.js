@@ -85914,10 +85914,10 @@ if (typeof module !== 'undefined' && module.exports) {
 
   function rewardCell(i, done, isToday) {
     var cls = 'v539-c' + (done ? ' done' : '') + (isToday ? ' today' : '') + (i === 7 ? ' big' : '');
+    /* 받은 칸은 아이콘 자체를 ✅ 로 바꾼다 — 모서리 겹침 없이 한눈에 완료 표시 */
     return '<div class="' + cls + '">' +
-      (done ? '<span class="chk">✅</span>' : '') +
       '<div class="d">' + i + '일차</div>' +
-      '<div class="i">' + (i === 7 ? '🏅' : '🪙') + '</div>' +
+      '<div class="i">' + (done ? '✅' : (i === 7 ? '🏅' : '🪙')) + '</div>' +
       '<div class="p">+' + REWARDS[i - 1] + '</div>' +
       '</div>';
   }
