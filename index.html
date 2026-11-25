@@ -121,8 +121,8 @@
   })();
   </script>
   <title>성공하고싶은 재우 - 한 번 더, 정상까지!</title>
-    <link rel="stylesheet" href="tw.css?v=542tw1">
-  <script src="game.js?v=542tw1" defer></script>
+    <link rel="stylesheet" href="tw.css?v=543tw1">
+  <script src="game.js?v=543tw1" defer></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
   <style>
     * {
@@ -964,6 +964,15 @@ html.v531-phone #titleScreen #v43SideArt { display: none !important; }
         <div>태초 귀환 확률: <strong class="text-fuchsia-300">매 점프 3%</strong></div>
       </div>
 
+      <!-- v5.43: 👻 내 최고 기록 고스트 리플레이 ON/OFF (터치·점프 영역과 겹치지 않게 여기에만) -->
+      <div class="v543-grow">
+        <div class="v543-grow-txt">
+          <span class="text-xs sm:text-sm font-bold text-slate-100">👻 고스트 리플레이</span>
+          <span id="v543GhostInfo" class="block text-[10px] font-bold text-slate-400 leading-snug">이 맵 기록 없음 · 1판 달리면 고스트가 생겨요</span>
+        </div>
+        <button id="btnGhostToggle" type="button" class="v543-tg on" aria-pressed="true">ON</button>
+      </div>
+
       <div class="flex flex-col gap-2.5 pt-2">
         <button id="btnResume" type="button" class="pixel-btn-gold w-full py-3 font-black text-slate-950">
           계속 등반하기
@@ -1594,6 +1603,12 @@ html.v531-phone #titleScreen #v43SideArt { display: none !important; }
   .m41-h { display:flex; align-items:center; justify-content:space-between; gap:8px; border-bottom:2px solid #1e293b; padding-bottom:6px; }
   .m41-t { font-size:15px; font-weight:900; color:#fff; }
   .m41-sub { font-size:10.5px; font-weight:700; color:#94a3b8; line-height:1.35; }
+  /* v5.43: 👻 고스트 리플레이 토글 (일시정지 카드 안) */
+  .v543-grow { display:flex; align-items:center; justify-content:space-between; gap:8px; background:#070a14; border:2px solid #1e293b; padding:7px 9px; text-align:left; }
+  .v543-grow-txt { min-width:0; }
+  .v543-tg { flex:0 0 auto; min-width:54px; padding:6px 10px; font-size:11.5px; font-weight:900; letter-spacing:.04em;
+    color:#94a3b8; background:#0f172a; border:2px solid #334155; cursor:pointer; touch-action:manipulation; }
+  .v543-tg.on { color:#04212a; background:#22d3ee; border-color:#a5f3fc; box-shadow:0 0 10px rgba(34,211,238,.45); }
   .m41-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; }
   .m41-list { display:flex; flex-direction:column; gap:4px; max-height:48vh; overflow-y:auto; }
   .m41-row { display:flex; align-items:center; gap:6px; background:#0b1222; border:2px solid #1e293b; padding:6px 7px; font-size:11.5px; font-weight:800; color:#e2e8f0; }
@@ -1741,6 +1756,8 @@ html.v531-phone #titleScreen #v43SideArt { display: none !important; }
     <div class="m41-sub" id="soloEndSub" style="text-align:center"></div>
     <canvas id="soloEndGraph"></canvas>
     <div class="m41-sub" id="soloEndWorst" style="color:#fca5a5"></div>
+    <!-- v5.43: 👻 내 최고 고스트 대비 결과 한 줄 -->
+    <div id="v543GhostLine" style="display:none;font-size:10.5px;font-weight:900;color:#67e8f9;text-align:center;line-height:1.35"></div>
     <!-- v5.28: 스토리 결과창 원터치 버튼 (스토리 판에서만 스토리 코드가 채운다) -->
     <div id="storyEndBtns" style="display:none;flex-direction:column;gap:6px;margin:4px 0 2px"></div>
     <div class="m41-btnrow">

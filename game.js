@@ -69399,7 +69399,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.42';
+  var BUILD = 'v5.43';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -88909,4 +88909,397 @@ if (typeof module !== 'undefined' && module.exports) {
   } catch (e) {}
 
   try { console.log('[v542] 🧩 블록 블라스트 등록 · order', (MG.order || []).length); } catch (e) {}
+})(window);
+
+/* ===== v543 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.43 : 👻 내 최고 기록 고스트 리플레이 (본편 혼자 하기)
+   --------------------------------------------------------------------------
+   · 본편 혼자 하기(멀티 방·스토리 스테이지·미니게임 제외)에서 플레이어가
+     움직이는 동안 0.1초(100ms) 간격으로 (x, y, facing)을 정수로 샘플링한다.
+     샘플은 맵별로 1개, 최대 2,400개(=4분)까지만 — localStorage 용량 보호.
+     오래된 맵은 LRU로 최대 12맵까지만 남긴다 (키 'jw543_ghost_{mapId}').
+   · 갱신 규칙
+       ① 완주했을 때  : 완주 고스트가 없거나 이번 완주가 더 빠르면 새로 저장
+       ② 완주 전 실패 : 이미 완주 고스트가 있는 맵이면 건드리지 않고,
+                        없는 맵에서 최고 도달 높이를 더 높였으면 '최고 도달 고스트'로 저장
+   · 렌더링 : 저장된 고스트가 있는 맵을 혼자 하기로 시작하면, 현재 플레이 시간
+     (일시정지 시간 제외 = game.time)에 맞춰 두 샘플을 선형 보간한 반투명 네온
+     시안(최고 도달)/골드(완주) 실루엣 + 머리 위 '👻 BEST' 라벨을 캔버스에 그린다.
+   · 토글 : 일시정지 메뉴의 '👻 고스트 리플레이 ON/OFF' (기본 ON, 'jw543_ghost_on').
+     터치·점프 버튼 영역과 겹치지 않도록 일시정지 카드 안에만 둔다.
+   · 피드백 : 완주 결과창에 '👻 내 최고 고스트보다 N.N초 빨랐어요!' 등 한 줄.
+   · 기존 v4.2 멀티 고스트(jw43_ghosts_v1 · CFG.ghost)는 손대지 않는다 — 이 블록은
+     싱글 전용으로 완전히 분리되어 있어 멀티 레이스 규칙에 영향이 없다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+
+  var MD = function () { return root.JWMode; };
+  var JG = function () { return root.__jwg; };
+  var V43 = function () { return root.JW43; };
+
+  var KEY_ON = 'jw543_ghost_on';
+  var KEY_MAPS = 'jw543_ghost_maps';
+  var KP = 'jw543_ghost_';
+  var STEP = 0.1;           /* 100ms */
+  var MAXN = 2400;          /* 최대 샘플 수 (4분) */
+  var MAXMAP = 12;          /* LRU 최대 맵 수 */
+  var MIN_SAMPLES = 12;     /* 이보다 짧은 판은 저장하지 않는다 (약 1.1초) */
+
+  /* ---------------------------------------------------------------- 저장 */
+  function lsGet(k, d) {
+    try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; }
+  }
+  function lsSet(k, v) {
+    try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; }
+  }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  function enabled() {
+    var v = lsGet(KEY_ON, true);
+    return v !== false && v !== 0;
+  }
+  function setEnabled(on) {
+    lsSet(KEY_ON, !!on);
+    syncToggleUI();
+    try { if (root.JW43 && root.JW43.toast) root.JW43.toast(on ? '👻 고스트 ON' : '👻 고스트 OFF', on ? 'lucky' : 'danger', on ? '내 최고 기록과 함께 달려요' : '고스트를 잠시 숨깁니다', 1500); } catch (e) {}
+  }
+  function mapList() {
+    var l = lsGet(KEY_MAPS, []);
+    return Array.isArray(l) ? l.filter(function (x) { return typeof x === 'string' && x; }) : [];
+  }
+  function touchMap(map) {
+    var l = mapList().filter(function (x) { return x !== map; });
+    l.unshift(map);
+    while (l.length > MAXMAP) {
+      var drop = l.pop();
+      if (drop) lsDel(KP + drop);
+    }
+    lsSet(KEY_MAPS, l);
+  }
+  function loadGhost(map) {
+    if (!map) return null;
+    var g = lsGet(KP + map, null);
+    if (!g || typeof g !== 'object' || !Array.isArray(g.pts) || g.pts.length < 12) return null;
+    return g;
+  }
+  function saveGhost(map, rec) {
+    if (!map) return false;
+    touchMap(map);
+    var ok = lsSet(KP + map, rec);
+    if (!ok) {
+      /* 용량이 꽉 찼다면 오래된 맵을 절반으로 줄이고 한 번만 다시 시도 */
+      var l = mapList();
+      while (l.length > 4) { var d = l.pop(); lsDel(KP + d); }
+      lsSet(KEY_MAPS, l);
+      ok = lsSet(KP + map, rec);
+    }
+    return ok;
+  }
+
+  /* ---------------------------------------------------------------- 상태 */
+  var Run = {
+    on: false, map: '', pts: [], maxH: 0, lastT: -1,
+    ghost: null, prev: null, clear: false
+  };
+  var LastMsg = '';
+
+  function inRoom() {
+    try { var st = V43() && V43().st && V43().st(); return !!(st && st.room); } catch (e) { return false; }
+  }
+  function inStory() {
+    try { var sr = V43() && V43().storyRun; return !!(sr && !sr.done); } catch (e) { return false; }
+  }
+  function curMap(solo) {
+    var m = (solo && solo.map) || null;
+    if (!m) { try { m = root.JWMap && root.JWMap.current; } catch (e) { m = null; } }
+    return m || 'default';
+  }
+  function soloAlive(solo) {
+    return !!(solo && solo.active && !solo.ended) && !inRoom() && !inStory();
+  }
+
+  /* ---------------------------------------------------------------- 녹화 */
+  function startRun(map) {
+    Run.on = true;
+    Run.map = map || 'default';
+    Run.pts = [];
+    Run.maxH = 0;
+    Run.lastT = -1;
+    Run.clear = false;
+    Run.prev = loadGhost(Run.map);
+    Run.ghost = Run.prev;
+    LastMsg = '';
+    var el = document.getElementById('v543GhostLine');
+    if (el) { el.textContent = ''; el.style.display = 'none'; }
+    refreshInfo();
+  }
+
+  function sample(jw) {
+    var p = jw.player, g = jw.game;
+    if (!p || !g) return;
+    var h = Math.max(0, -p.y / 13.4);
+    if (h > Run.maxH) Run.maxH = h;
+    var t = Math.round((g.time || 0) * 10) / 10;
+    Run.lastT = t;
+    if (Run.pts.length >= MAXN * 4) return;       /* 샘플 상한 (4분) */
+    var lastSec = Run.pts.length >= 4 ? Run.pts[Run.pts.length - 4] / 10 : -1;
+    if (lastSec >= 0 && t - lastSec < STEP - 0.0001) return;
+    Run.pts.push(Math.round(t * 10), Math.round(p.x), Math.round(p.y), (p.facing || 1) < 0 ? -1 : 1);
+  }
+
+  function finishRun(why) {
+    if (!Run.on) return;
+    Run.on = false;
+    var jw = JG();
+    var md = MD();
+    var le = md && md.lastSoloEnd;
+    var clear = !!(le && le.clear && (!le.mapId || le.mapId === Run.map));
+    var endT = (le && typeof le.time === 'number' && isFinite(le.time)) ? le.time : Run.lastT;
+    if (!(endT > 0)) { try { endT = (jw && jw.game && jw.game.time) || 0; } catch (e) { endT = 0; } }
+    var map = Run.map;
+    var pts = Run.pts;
+    var maxH = Run.maxH;
+    var prev = Run.prev || loadGhost(map);
+
+    if (pts.length < MIN_SAMPLES * 4 || endT < 1.0) { refreshInfo(); return; }
+
+    var rec = null, faster = null, first = false, best = false;
+    var h10 = Math.round(maxH * 10) / 10;
+
+    if (clear) {
+      if (!prev || !prev.clear || (endT < (prev.time || 1e9) - 0.05)) {
+        if (prev && prev.clear) faster = Math.max(0, (prev.time || 0) - endT);
+        first = !(prev && prev.clear);
+        rec = { v: 1, map: map, clear: true, time: Math.round(endT * 10) / 10, h: h10, pts: pts, ts: Date.now() };
+      }
+    } else if (!prev || !prev.clear) {
+      if (!prev || h10 > (prev.h || 0) + 0.2) {
+        best = !!prev;
+        rec = { v: 1, map: map, clear: false, time: Math.round(endT * 10) / 10, h: h10, pts: pts, ts: Date.now() };
+      }
+    }
+
+    if (rec) {
+      saveGhost(map, rec);
+      Run.ghost = rec;
+    }
+
+    /* 결과창 한 줄 피드백 */
+    var msg = '';
+    if (clear && faster !== null) msg = '👻 내 최고 고스트보다 ' + faster.toFixed(1) + '초 빨랐어요!';
+    else if (clear && first) msg = '👻 첫 완주 고스트를 저장했어요 — 다음 판부터 함께 달려요';
+    else if (clear && rec) msg = '👻 새 완주 고스트를 저장했어요 (' + fmtT(rec.time) + ')';
+    else if (!clear && rec && best) msg = '👻 최고 도달 ' + h10.toFixed(1) + 'm 고스트를 저장했어요';
+    else if (!clear && rec) msg = '👻 최고 도달 고스트를 저장했어요 (' + h10.toFixed(1) + 'm)';
+    LastMsg = msg;
+    showLine(msg);
+    refreshInfo();
+  }
+
+  function fmtT(t) {
+    t = Math.max(0, Number(t) || 0);
+    return Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0') + '.' + Math.floor((t * 10) % 10);
+  }
+
+  function showLine(msg) {
+    var el = document.getElementById('v543GhostLine');
+    if (!el) return;
+    if (!msg) { el.textContent = ''; el.style.display = 'none'; return; }
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  /* ---------------------------------------------------------------- 렌더 */
+  var tintCache = { c: {}, g: {} };
+  var tintSeq = 0;
+  function tintSprite(sp, gold) {
+    if (!sp) return null;
+    var bag = gold ? tintCache.g : tintCache.c;
+    var key = (sp.__jw543id || (sp.__jw543id = 's' + (++tintSeq)));
+    if (bag[key]) return bag[key];
+    try {
+      var cv = document.createElement('canvas');
+      cv.width = sp.width || 32; cv.height = sp.height || 36;
+      var cx = cv.getContext('2d');
+      cx.imageSmoothingEnabled = false;
+      cx.drawImage(sp, 0, 0);
+      cx.globalCompositeOperation = 'source-atop';
+      cx.globalAlpha = 0.92;
+      cx.fillStyle = gold ? '#fbbf24' : '#22d3ee';
+      cx.fillRect(0, 0, cv.width, cv.height);
+      cx.globalAlpha = 1;
+      cx.globalCompositeOperation = 'source-over';
+      bag[key] = cv;
+      return cv;
+    } catch (e) { return sp; }
+  }
+
+  function drawGhost(ctx, camY, logicalH) {
+    if (!enabled() || !Run.on) return;
+    var G = Run.ghost;
+    if (!G || !Array.isArray(G.pts)) return;
+    var jw = JG();
+    if (!jw || !jw.game) return;
+    var pts = G.pts, n = (pts.length / 4) | 0;
+    if (n < 3) return;
+    var t = (jw.game.time || 0);
+    var t0 = pts[0] / 10, t1 = pts[(n - 1) * 4] / 10;
+    if (t < t0 - 0.15 || t > t1 + 0.9) return;
+
+    /* 마지막 샘플 찾기 (이진 탐색) */
+    var lo = 0, hi = n - 1;
+    while (lo < hi) {
+      var mid = (lo + hi + 1) >> 1;
+      if (pts[mid * 4] / 10 <= t) lo = mid; else hi = mid - 1;
+    }
+    var a = lo, b = Math.min(n - 1, lo + 1);
+    var ta = pts[a * 4] / 10, tb = pts[b * 4] / 10;
+    var k = (tb > ta) ? Math.min(1, Math.max(0, (t - ta) / (tb - ta))) : 0;
+    var x = pts[a * 4 + 1] + (pts[b * 4 + 1] - pts[a * 4 + 1]) * k;
+    var y = pts[a * 4 + 2] + (pts[b * 4 + 2] - pts[a * 4 + 2]) * k;
+    var f = (pts[b * 4 + 3] || 1) < 0 ? -1 : 1;
+
+    /* 포즈 — 0.3초 전과 비교해 상승/하강/대기를 고른다 */
+    var back = Math.max(0, a - 3);
+    var dy = y - pts[back * 4 + 2];
+    var pose = dy < -3 ? 'jump' : dy > 3 ? 'fall' : ((((t * 4) | 0) % 2) ? 'idle2' : 'idle1');
+
+    var endK = Math.min(1, Math.max(0, (t1 + 0.9 - t) / 0.55));
+    var startK = Math.min(1, Math.max(0, (t - (t0 - 0.15)) / 0.25));
+    var alpha = 0.46 * endK * startK;
+    if (alpha <= 0.02) return;
+
+    /* v5.43: 월드 y → 화면 y (다른 드로잉과 같은 방식으로 camY 를 뺀다) */
+    var gx = Math.round(x) + 14, gy = Math.round(y - (camY || 0)) + 17;
+    if (gy < -60 || gy > (logicalH || 900) + 60) return;
+    var gold = !!G.clear;
+    var sp = null;
+    try { sp = (root.JWG && root.JWG.localSprite) ? tintSprite(root.JWG.localSprite(pose), gold) : null; } catch (e) { sp = null; }
+
+    ctx.save();
+    if (sp) {
+      ctx.globalAlpha = alpha;
+      ctx.translate(gx, gy);
+      if (f < 0) ctx.scale(-1, 1);
+      ctx.shadowColor = gold ? 'rgba(251,191,36,.92)' : 'rgba(34,211,238,.92)';
+      ctx.shadowBlur = 9;
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(sp, -16, -18, 32, 36);
+      ctx.shadowBlur = 0;
+      ctx.translate(-gx, -gy);
+    }
+    ctx.globalAlpha = Math.min(0.95, alpha * 1.9);
+    ctx.font = 'bold 10px "Galmuri11", monospace';
+    ctx.textAlign = 'center';
+    var label = '👻 BEST';
+    var lw = 44;
+    try { lw = Math.max(34, ctx.measureText(label).width + 8); } catch (e) {}
+    ctx.fillStyle = 'rgba(4,10,20,.66)';
+    ctx.fillRect(Math.round(gx - lw / 2), Math.round(gy - 38), Math.round(lw), 13);
+    ctx.fillStyle = gold ? '#fde047' : '#67e8f9';
+    ctx.fillText(label, gx, Math.round(gy - 27));
+    ctx.restore();
+  }
+
+  /* ---------------------------------------------------------------- tick */
+  function tick() {
+    var jw = JG();
+    if (!jw || !jw.game) return;
+    var md = MD();
+    var solo = md && md.solo;
+    var alive = soloAlive(solo);
+    if (Run.on) {
+      var map = curMap(solo);
+      if (!alive || (map && map !== Run.map)) finishRun(alive ? 'switch' : 'end');
+    }
+    if (!Run.on && alive) {
+      var st = jw.game;
+      if (st.inPlay && !st.victory) startRun(curMap(solo));
+    }
+    if (Run.on) {
+      if (jw.game.inPlay && !jw.game.paused && !jw.game.victory) sample(jw);
+    }
+  }
+
+  /* ---------------------------------------------------------------- UI */
+  function refreshInfo() {
+    var el = document.getElementById('v543GhostInfo');
+    if (!el) return;
+    var map = 'default';
+    try { map = (MD() && MD().solo && MD().solo.map) || (root.JWMap && root.JWMap.current) || 'default'; } catch (e) {}
+    var g = loadGhost(map);
+    if (!g) { el.textContent = '이 맵 기록 없음 · 1판 달리면 고스트가 생겨요'; return; }
+    if (g.clear) el.textContent = '👑 이 맵 완주 고스트 ' + fmtT(g.time) + ' · 최고 ' + Number(g.h || 0).toFixed(1) + 'm';
+    else el.textContent = '📏 최고 도달 고스트 ' + Number(g.h || 0).toFixed(1) + 'm';
+  }
+  function syncToggleUI() {
+    var b = document.getElementById('btnGhostToggle');
+    if (!b) return;
+    var on = enabled();
+    b.textContent = on ? 'ON' : 'OFF';
+    b.className = 'v543-tg' + (on ? ' on' : '');
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+
+  function init() {
+    syncToggleUI();
+    refreshInfo();
+    var b = document.getElementById('btnGhostToggle');
+    if (b) b.addEventListener('click', function () { setEnabled(!enabled()); });
+    /* 일시정지 메뉴를 열 때마다 현재 맵 고스트 정보를 새로 보여준다 */
+    var p = document.getElementById('btnPauseHud');
+    if (p) p.addEventListener('click', function () { setTimeout(refreshInfo, 30); });
+    var r = document.getElementById('btnResume');
+    if (r) r.addEventListener('click', function () { setTimeout(refreshInfo, 30); });
+    /* 결과창의 고스트 한 줄은 새 판이 시작되면 지운다 */
+    var again = document.getElementById('soloEndAgain');
+    if (again) again.addEventListener('click', function () { setTimeout(function () { showLine(''); }, 30); });
+  }
+
+  /* ---------------------------------------------------------------- 연결 */
+  try {
+    var prevAfter = root.__jwgAfter;
+    root.__jwgAfter = function () {
+      try { tick(); } catch (e) {}
+      if (typeof prevAfter === 'function') { try { prevAfter(); } catch (e) {} }
+    };
+  } catch (e) {}
+
+  try {
+    if (root.JWG && root.JWG.drawWorld) {
+      var prevDW = root.JWG.drawWorld;
+      root.JWG.drawWorld = function (ctx, camY, logicalH) {
+        var r = prevDW.apply(this, arguments);
+        try { drawGhost(ctx, camY, logicalH); } catch (e) {}
+        return r;
+      };
+    }
+  } catch (e) {}
+
+  /* 테스트/검증용 공개 훅 */
+  root.JW543 = {
+    on: enabled,
+    setOn: setEnabled,
+    ghost: function (m) { return loadGhost(m || 'default'); },
+    maps: mapList,
+    run: function () {
+      return { on: Run.on, map: Run.map, n: (Run.pts.length / 4) | 0, maxH: Math.round(Run.maxH * 10) / 10, t: Run.lastT,
+        has: !!Run.ghost, msg: LastMsg };
+    },
+    last: function () { return LastMsg; },
+    save: saveGhost,           /* 검증용 — 맵별 고스트를 직접 저장 (LRU 포함) */
+    remove: function (m) { if (m) lsDel(KP + m); },
+    enabled: enabled,
+    draw: function (ctx, camY, lh) { drawGhost(ctx, camY, lh || 800); }
+  };
+
+  try {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  } catch (e) {}
+
+  try { console.log('[v543] 👻 내 최고 기록 고스트 리플레이 준비'); } catch (e) {}
 })(window);
