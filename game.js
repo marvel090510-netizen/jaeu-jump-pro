@@ -89290,6 +89290,21 @@ if (typeof module !== 'undefined' && module.exports) {
     }
   } catch (e) {}
 
+  /* v5.43: 예전 v4.2 고스트(멀티 레이스용)는 본편 싱글에서 그리지 않는다.
+     방(멀티)에서는 예전 규칙 그대로 — 방 설정이 켠 경우에만 그린다.
+     (싱글에서는 v5.43 고스트 하나만 보이게 해서 두 고스트가 겹치는 일을 막는다) */
+  try {
+    if (root.JW43 && typeof root.JW43.ghostBlocked === 'function' && !root.JW43.ghostBlocked.__v543) {
+      var __oldBlocked = root.JW43.ghostBlocked;
+      var __blocked = function () {
+        try { if (!inRoom()) return true; } catch (e) {}
+        return __oldBlocked.apply(this, arguments);
+      };
+      __blocked.__v543 = 1;
+      root.JW43.ghostBlocked = __blocked;
+    }
+  } catch (e) {}
+
   /* 테스트/검증용 공개 훅 */
   root.JW543 = {
     on: enabled,
