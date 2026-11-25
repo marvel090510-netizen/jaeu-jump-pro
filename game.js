@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.46 정식판 (화면 표시 버전은 아래 BUILD = 'v5.46')
+   muse-v5-9 game.js — v5.47 정식판 (화면 표시 버전은 아래 BUILD = 'v5.47')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -62661,7 +62661,8 @@ if (typeof module !== 'undefined' && module.exports) {
    - v5.42: 개방 5종으로 확장 — 🧩 블록 블라스트(blockblast) 추가. 나머지 20종은 '🔒 준비 중'.
    - v5.45: 개방 6종으로 확장 — 🐍 네온 지렁이(snake) 추가. 나머지 19종은 '🔒 준비 중'.
    - v5.46: 개방 7종으로 확장 — 🔢 2048 스피드전(g2048) 추가. 나머지 18종은 '🔒 준비 중'.
-   - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 7종은 목록 맨 앞에
+   - v5.47: 개방 8종으로 확장 — 💣 스피드 지뢰찾기(mines) 추가. 나머지 17종은 '🔒 준비 중'.
+   - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 8종은 목록 맨 앞에
      ✨ NEW · PLAYABLE 강조 카드로 배치한다.
    ========================================================================== */
 (function (root) {
@@ -62677,7 +62678,8 @@ if (typeof module !== 'undefined' && module.exports) {
   var OPEN5 = 'blockblast';       /* 개방 5호 (🧩 블록 블라스트 · v5.42 신작) */
   var OPEN6 = 'snake';            /* 개방 6호 (🐍 네온 지렁이 · v5.45 신작) */
   var OPEN7 = 'g2048';            /* 개방 7호 (🔢 2048 스피드전 · v5.46 신작) */
-  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1 };
+  var OPEN8 = 'mines';            /* 개방 8호 (💣 스피드 지뢰찾기 · v5.47 신작) */
+  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1, mines: 1 };
   root.JW530MGLOCK = true;
   root.JW530MG_OPEN = OPEN;
   root.JW530MG_OPEN2 = OPEN2;
@@ -62686,12 +62688,13 @@ if (typeof module !== 'undefined' && module.exports) {
   root.JW530MG_OPEN5 = OPEN5;
   root.JW530MG_OPEN6 = OPEN6;
   root.JW530MG_OPEN7 = OPEN7;
+  root.JW530MG_OPEN8 = OPEN8;
   root.JW530MG_OPENS = OPENS;
 
   var doc = document;
   var $ = function (id) { return doc.getElementById(id); };
   var LOCK_MSG = '🔒 이 미니게임은 준비 중이에요';
-  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 7종이 열려 있어요';
+  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 8종이 열려 있어요';
 
   function MG() { return root.JW48MG; }
   function isLocked(id) { return !!id && !OPENS[id]; }
@@ -62766,15 +62769,20 @@ if (typeof module !== 'undefined' && module.exports) {
       '.v530new.v530new7::after{content:"🔢 NEW · PLAYABLE";',
       '  background:linear-gradient(180deg,#e3d6ff,#a78bfa);border-color:#5b21b6;color:#1e0a3c;}',
       '.v530new.v530new7{box-shadow:inset 0 0 0 2px rgba(167,139,250,.58),0 0 16px rgba(167,139,250,.36),0 3px 0 #05030a !important;}',
-      /* 일곱 개방 카드의 줄서기: 1호 → 2호 → 3호 → 4호 → 5호 → 6호 → 7호 → 잠금 18종 */
-      '#v48mgCards .v530new.v530new1{order:-7 !important;}',
-      '#v48mgCards .v530new.v530new2{order:-6 !important;}',
-      '#v48mgCards .v530new.v530new3{order:-5 !important;}',
-      '#v48mgCards .v530new.v530new4{order:-4 !important;}',
-      '#v48mgCards .v530new.v530new5{order:-3 !important;}',
-      '#v48mgCards .v530new.v530new6{order:-2 !important;}',
-      '#v48mgCards .v530new.v530new7{order:-1 !important;}',
-      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag,.v530new.v530new6 .tag,.v530new.v530new7 .tag{display:none !important;}',
+      /* 8호 개방 카드 (💣 스피드 지뢰찾기 · v5.47) */
+      '.v530new.v530new8::after{content:"💣 NEW · PLAYABLE";',
+      '  background:linear-gradient(180deg,#ffd0d0,#f87171);border-color:#991b1b;color:#3b0505;}',
+      '.v530new.v530new8{box-shadow:inset 0 0 0 2px rgba(248,113,113,.58),0 0 16px rgba(248,113,113,.38),0 3px 0 #05030a !important;}',
+      /* 여덟 개방 카드의 줄서기: 1호 → … → 8호 → 잠금 17종 */
+      '#v48mgCards .v530new.v530new1{order:-8 !important;}',
+      '#v48mgCards .v530new.v530new2{order:-7 !important;}',
+      '#v48mgCards .v530new.v530new3{order:-6 !important;}',
+      '#v48mgCards .v530new.v530new4{order:-5 !important;}',
+      '#v48mgCards .v530new.v530new5{order:-4 !important;}',
+      '#v48mgCards .v530new.v530new6{order:-3 !important;}',
+      '#v48mgCards .v530new.v530new7{order:-2 !important;}',
+      '#v48mgCards .v530new.v530new8{order:-1 !important;}',
+      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag,.v530new.v530new6 .tag,.v530new.v530new7 .tag,.v530new.v530new8 .tag{display:none !important;}',
       /* 잠금 안내 띠 */
       /* v5.41: flex 로 두면 글자 마디마다 칸이 생겨 세로로 쪼개진다 — block 으로 바꿔 줄바꿈만 되게 */
       '#v530MgNote{display:block;padding:6px 8px;margin:0 0 6px;border-radius:9px;',
@@ -62814,7 +62822,7 @@ if (typeof module !== 'undefined' && module.exports) {
       if (!id) return;
       if (isLocked(id)) {
         if (!el.__v530l) { el.__v530l = 1; el.classList.add('v530lock'); el.setAttribute('aria-disabled', 'true'); }
-        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); }
+        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); el.classList.remove('v530new8'); }
       } else {
         if (!el.__v530n) { el.__v530n = 1; el.classList.add('v530new'); el.removeAttribute('aria-disabled'); }
         if (id === OPEN && !el.classList.contains('v530new1')) el.classList.add('v530new1');
@@ -62831,6 +62839,8 @@ if (typeof module !== 'undefined' && module.exports) {
         else if (el.classList.contains('v530new6')) el.classList.remove('v530new6');
         if (id === OPEN7) { if (!el.classList.contains('v530new7')) el.classList.add('v530new7'); }
         else if (el.classList.contains('v530new7')) el.classList.remove('v530new7');
+        if (id === OPEN8) { if (!el.classList.contains('v530new8')) el.classList.add('v530new8'); }
+        else if (el.classList.contains('v530new8')) el.classList.remove('v530new8');
         if (el.__v530l) { el.__v530l = 0; el.classList.remove('v530lock'); }
       }
     });
@@ -62843,7 +62853,7 @@ if (typeof module !== 'undefined' && module.exports) {
     var sub = $('v48mgSub');
     var m = MG();
     if (sub && m && m.order) {
-      var want = '7종 플레이 가능 · ' + Math.max(0, m.order.length - 7) + '종 준비 중';
+      var want = '8종 플레이 가능 · ' + Math.max(0, m.order.length - 8) + '종 준비 중';
       if (sub.textContent !== want) sub.textContent = want;
     }
     /* 미니게임 목록 상단 안내 */
@@ -62851,7 +62861,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (hub && !$('v530MgNote')) {
       var n = doc.createElement('div');
       n.id = 'v530MgNote';
-      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> 7종을 지금 플레이할 수 있어요 · 나머지 18종은 다음 업데이트에서 순서대로 열려요';
+      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> · <b>💣 스피드 지뢰찾기</b> 8종을 지금 플레이할 수 있어요 · 나머지 17종은 다음 업데이트에서 순서대로 열려요';
       hub.insertBefore(n, hub.firstChild);
     }
     /* 멀티 방 설정 안내 문구 (25종 → 1종 개방) */
@@ -62859,7 +62869,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (sList) {
       var hint = sList.previousElementSibling;
       if (hint && String(hint.className || '').indexOf('v48mg-hint') >= 0) {
-        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 7종이 열려 있어요 · 나머지 18종은 준비 중';
+        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 8종이 열려 있어요 · 나머지 17종은 준비 중';
         if (hint.textContent !== want2) hint.textContent = want2;
       }
     }
@@ -62928,9 +62938,9 @@ if (typeof module !== 'undefined' && module.exports) {
   function reorder() {
     var m = MG();
     if (!m || !m.order || !m.order.length) return;
-    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7) return;
+    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7 && m.order[7] === OPEN8) return;
     var rest = m.order.filter(function (x) { return x && !OPENS[x]; });
-    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7].concat(rest);
+    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7, OPEN8].concat(rest);
   }
 
   /* 카드가 새로 그려지는 즉시 배지를 다시 칠한다 (innerHTML 재생성 대응) */
@@ -62949,7 +62959,7 @@ if (typeof module !== 'undefined' && module.exports) {
   setTimeout(paint, 600);
   setTimeout(paint, 1600);
   setInterval(function () { try { reorder(); paint(); } catch (e) {} }, 900);
-  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7);
+  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7 + ', ' + OPEN8);
 })(window);
 
 
@@ -69431,7 +69441,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.46';
+  var BUILD = 'v5.47';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81263,6 +81273,7 @@ if (typeof module !== 'undefined' && module.exports) {
      v5.38 미니게임 후보 7종 — + 🪙 골드 러시 2종(1판 · 600점).
      v5.41 미니게임 후보 9종 — + 🚀 부스터 로켓 2종(1판 · 900점).
      v5.42 미니게임 후보 11종 — + 🧩 블록 블라스트 2종(1판 · 300점).
+     v5.47 미니게임 후보 17종 — + 💣 스피드 지뢰찾기 2종(1판 · 클리어).
    · 진행도는 이벤트 시점(등반 종료/완등, CLUTCH!, 스토리 시작/클리어, 미니게임 종료)에만
      갱신한다 → 인게임 60fps 루프에는 아무 부하도 없다.
    · 보상은 v5.29 펫 코인(JW529)에 그대로 합산한다. 코인 저장은 JW529.coins()만 거친다
@@ -81326,7 +81337,10 @@ if (typeof module !== 'undefined' && module.exports) {
       { id: 'm_snake120', icon: '🎯', title: '네온 지렁이 120점', desc: '한 판에서 120점 이상', need: 1, coin: 70, unit: '점', mg: 'snake' },
       /* v5.46: 🔢 2048 스피드전 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
       { id: 'm_2048_1', icon: '🔢', title: '2048 스피드전 1판', desc: '🔢 2048 스피드전 한 판', need: 1, coin: 50, unit: '판', mg: 'g2048' },
-      { id: 'm_2048_1500', icon: '🎯', title: '2048 1500점', desc: '한 판에서 1500점 이상', need: 1, coin: 70, unit: '점', mg: 'g2048' }
+      { id: 'm_2048_1500', icon: '🎯', title: '2048 1500점', desc: '한 판에서 1500점 이상', need: 1, coin: 70, unit: '점', mg: 'g2048' },
+      /* v5.47: 💣 스피드 지뢰찾기 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
+      { id: 'm_mines1', icon: '💣', title: '지뢰찾기 1판', desc: '💣 스피드 지뢰찾기 한 판', need: 1, coin: 50, unit: '판', mg: 'mines' },
+      { id: 'm_mines_clear', icon: '🎯', title: '지뢰찾기 클리어', desc: '지뢰 10개를 피해 71칸 모두 열기', need: 1, coin: 70, unit: '회', mg: 'mines' }
     ]
   };
   var BY_ID = {};
@@ -81495,6 +81509,9 @@ if (typeof module !== 'undefined' && module.exports) {
         /* v5.46: 🔢 2048 스피드전 — 1판 / 1500점 */
         if (mine('m_2048_1')) changed = bump('m_2048_1', 1) || changed;
         if (mine('m_2048_1500') && (Number(data.score) || 0) >= 1500) changed = bump('m_2048_1500', 1) || changed;
+        /* v5.47: 💣 스피드 지뢰찾기 — 1판 / 클리어(win) */
+        if (mine('m_mines1')) changed = bump('m_mines1', 1) || changed;
+        if (mine('m_mines_clear') && data.win) changed = bump('m_mines_clear', 1) || changed;
       }
       if (changed) {
         save();
@@ -86232,7 +86249,7 @@ if (typeof module !== 'undefined' && module.exports) {
        노폴 배지                     →  'jw532_mastery'   m[map].noFall
        최고 콤보(콤보 업데이트)      →  'jw537_best_combo' (number)
        스토리 클리어                 →  'jw64_story_v1'   .cleared
-       미니게임 최고 기록            →  'jw48mg_best_v1'  (개방 7종: rhythm·meteor·coin·holefly·blockblast·snake·g2048)
+       미니게임 최고 기록            →  'jw48mg_best_v1'  (개방 8종: rhythm·meteor·coin·holefly·blockblast·snake·g2048·mines)
        펫 보유                       →  JW529.st().owned
        테마 아이템 보유              →  'jw533_theme_v1'  .owned
        총 출석 일수                  →  'jw539_checkin'   .totalDays
@@ -86303,7 +86320,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (!s || !s.cleared || typeof s.cleared !== 'object') return 0;
     return Object.keys(s.cleared).length;
   }
-  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46 개방 7종 */
+  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048', 'mines'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46·v5.47 개방 8종 */
   function mgCount() {
     var best = ls('jw48mg_best_v1', {}) || {};
     try { if (!best || !Object.keys(best).length) { if (root.JW48MG && root.JW48MG.best) best = root.JW48MG.best; } } catch (e) {}
@@ -86345,7 +86362,7 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'combo10',cat: '기록', ic: '🔥', name: '콤보 파이터',      desc: '최고 콤보 10 이상',           goal: 10,   coin: 40, cur: bestCombo },
     { id: 'combo25',cat: '기록', ic: '💥', name: '피버 마스터',      desc: '최고 콤보 25 이상',           goal: 25,   coin: 80, cur: bestCombo },
     { id: 'story1', cat: '기록', ic: '📖', name: '스토리 도전자',    desc: '스토리 1스테이지 클리어',      goal: 1,    coin: 50, cur: storyCount },
-    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 7종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
+    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 8종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
     { id: 'pet3',   cat: '수집', ic: '🐾', name: '펫 친구',          desc: '펫 3종 이상 보유',            goal: 3,    coin: 50, cur: petCount },
     { id: 'theme5', cat: '수집', ic: '🎨', name: '테마 컬렉터',      desc: '테마 아이템 5종 이상 보유',    goal: 5,    coin: 60, cur: themeCount },
     { id: 'check1', cat: '습관', ic: '📅', name: '개근 시작',        desc: '총 출석 1일 이상',            goal: 1,    coin: 30, cur: checkinDays }
@@ -91473,6 +91490,944 @@ if (typeof module !== 'undefined' && module.exports) {
     key: KEY,
     cap: DAILY_CAP,
     total: TOTAL,
+    tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
+    daily: function () { return loadDaily(); },
+    state: function () {
+      var c = MG.cur;
+      if (!c || c.id !== ID || !c.inst || !c.inst.state) return null;
+      return c.inst.state();
+    }
+  };
+})(window);
+
+/* ===== v547 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.47 : 💣 스피드 지뢰찾기 — 미니게임 8호 (여덟 번째 슬롯 'mines' 전면 개편)
+   --------------------------------------------------------------------------
+   · 9×9 네온 보드 · 지뢰 10개 · 안전 칸 71개. 첫 번째로 누른 칸과 그 주변 8칸에는
+     지뢰가 절대 생기지 않는다(첫 클릭 안전). 첫 칸이 0이면 BFS로 연쇄 오픈.
+   · 조작 — 폰·태블릿·데스크톱 모두에서 실수 없이.
+     ① 보드 아래 큼직한 2분할 토글 「⛏️ 칸 열기 | 🚩 깃발 꽂기」 (높이 52px).
+     ② 키보드 F 또는 Space 로 모드 전환. (셸의 keyName 이 Space 를 주고,
+        F 는 이 모듈이 직접 받는다 — __jwTypingTarget 가드·한글 IME 그대로 존중)
+     ③ 데스크톱은 마우스 우클릭으로 그 칸에 바로 깃발 토글.
+     ④ 이미 열린 숫자 칸을 다시 누르면 Chording — 주변 깃발 수가 숫자와 같으면
+        나머지 안 열린 칸을 한 번에 연다. (깃발이 모자라면 필요한 개수를 알려 준다)
+   · 점수 — 연 안전 칸 × 10 이 기본이고, 클리어하면
+     + 클리어 보너스 200 · + 스피드 보너스 (90 − 걸린 초) × 8 (최소 0)
+     + 깃발 보너스 (지뢰에 정확히 꽂은 깃발 × 10). 높을수록 고득점(기록 = 점수).
+     지뢰를 밟으면 그때까지 연 칸 비율만큼(연 칸 × 10) 점수가 되고 판이 끝난다.
+   · 연출 — 숫자별 네온 컬러(1 시안 · 2 그린 · 3 레드 · 4 퍼플 …), 지뢰를 밟으면
+     빨간 폭발 + 화면 흔들림 + 모든 지뢰 위치 공개 후 0.8초 뒤 결과 화면.
+     71칸을 다 열면 🎉 클리어 배너 + 폭죽, 0.9초 뒤 결과 화면.
+   · 펫 코인 +10 / +20 / +35 (하루 상한 60, 키 'jw547_mines', JW529.addCoins 경유).
+   · 🎯 오늘의 미션 '지뢰찾기 1판(+50)' · '지뢰찾기 클리어(+70)' 자동 연동
+     (셸 finish() → JW531.ev('mg_end', {id:'mines'})). 🏆 업적 '미니게임 올라운더'도
+     개방 8종 기준으로 센다(v5.47 OPEN_MG).
+   · 기존 'mines' 슬롯(v4.8 프로토타입)을 덮어쓴다 — 기록·봇 대전·방 대전 호환이
+     그대로 이어진다 (v5.45 snake · v5.46 g2048 과 같은 방식).
+   · 고정 배열과 경량 캔버스 드로잉만 써서 60fps 루프에 부담이 없고, 나가기·재시작은
+     셸의 MG.stopGame → inst.stop 으로 정리된다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var MG = root.JW48MG, V = root.JW43;
+  if (!MG || !V) return;
+
+  var ID = 'mines';
+  var W = 360, H = 600;
+  var N = 9, MINES = 10, SAFE = N * N - MINES;        /* 81칸 · 지뢰 10 · 안전 71 */
+  var CELL = 36, BX = 18, BY = 62;                    /* 보드 324×324 → 62~386 */
+  var SPEED_TARGET = 90;                              /* 스피드 보너스 기준 초 */
+  var DIE_T = 0.8;                                    /* 지뢰 폭발 → 결과 */
+  var WIN_T = 0.9;                                    /* 클리어 → 결과 */
+  var DAILY_CAP = 60;                                 /* 지뢰찾기 하루 펫 코인 상한 */
+  var KEY = 'jw547_mines';
+  var MB = { y: 410, h: 52, lx: 15, lw: 163, rx: 182, rw: 163 };   /* 모드 토글 2분할 */
+  var TIERS = [
+    { s: 1200, coin: 35, name: '🥇 GOLD', col: '#fde047' },
+    { s: 600, coin: 20, name: '🥈 SILVER', col: '#e2e8f0' },
+    { s: 0, coin: 10, name: '🥉 BRONZE', col: '#fdba74' }
+  ];
+  var NUMCOL = {
+    1: '#22d3ee', 2: '#4ade80', 3: '#f87171', 4: '#c084fc',
+    5: '#fbbf24', 6: '#2dd4bf', 7: '#f472b6', 8: '#e2e8f0'
+  };
+  var SKINCOL = {
+    jaeu: '#5eead4', cat: '#fb923c', frog: '#4ade80', robot: '#38bdf8', ghost: '#c4b5fd',
+    rabbit: '#f9a8d4', panda: '#e2e8f0', fox: '#fb923c', demon: '#f87171', alien: '#a3e635',
+    wizard: '#a78bfa', knight: '#fbbf24'
+  };
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function tone(f, d, v, t, f2) { try { V.beep(f, d || 0.06, v || 0.09, t || 'square', f2 || null); } catch (e) {} }
+  function seq(list, step, vol, dur) {
+    for (var i = 0; i < list.length; i++) (function (i) {
+      setTimeout(function () { tone(list[i], dur || 0.08, vol || 0.09, 'square', null); }, i * step);
+    })(i);
+  }
+  function hex2rgb(h) {
+    h = String(h || '#38bdf8').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return [parseInt(h.slice(0, 2), 16) || 0, parseInt(h.slice(2, 4), 16) || 0, parseInt(h.slice(4, 6), 16) || 0];
+  }
+  function rgba(h, a) { var c = hex2rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function mixHex(x, y, t) {
+    var a = hex2rgb(x), b = hex2rgb(y);
+    t = clamp(t == null ? 0.5 : t, 0, 1);
+    return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * t) + ',' + Math.round(a[1] + (b[1] - a[1]) * t) + ',' + Math.round(a[2] + (b[2] - a[2]) * t) + ')';
+  }
+
+  /* ---------------------------------------------------------------- 저장 */
+  function lsGet(k, d) { try { return V.lsGet(k, d); } catch (e) { return d; } }
+  function lsSet(k, v) { try { V.lsSet(k, v); } catch (e) {} }
+  function dayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function loadDaily() {
+    var s = lsGet(KEY, null);
+    if (!s || typeof s !== 'object') s = { d: '', c: 0 };
+    if (typeof s.c !== 'number' || !isFinite(s.c) || s.c < 0) s.c = 0;
+    return s;
+  }
+  /* 펫 코인 지급 — JW529 저장소를 그대로 거친다 (v5.35·v5.38·v5.41·v5.42·v5.45·v5.46 과 같은 방식) */
+  function addCoins(n) {
+    n = Math.round(Number(n) || 0);
+    if (n <= 0) return true;
+    try {
+      if (root.JW529 && root.JW529.addCoins) { root.JW529.addCoins(n); return true; }
+      if (root.JW529 && root.JW529.coins && root.JW529.st) {
+        root.JW529.coins((Number(root.JW529.st().coins) || 0) + n);
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  function tierOf(score) {
+    for (var i = 0; i < TIERS.length; i++) if (score >= TIERS[i].s) return TIERS[i];
+    return TIERS[TIERS.length - 1];
+  }
+  function grantCoins(score) {
+    var want = tierOf(score).coin;
+    var d = loadDaily();
+    var used = d.d === dayKey() ? d.c : 0;
+    var left = Math.max(0, DAILY_CAP - used);
+    var gain = Math.min(want, left);
+    var ok = true;
+    if (gain > 0) {
+      if (!addCoins(gain)) { gain = 0; ok = false; }
+      else lsSet(KEY, { d: dayKey(), c: used + gain });
+    }
+    return { gain: gain, want: want, used: used + gain, cap: DAILY_CAP, fail: !ok };
+  }
+
+  /* ---------------------------------------------------------------- 게임 본체 */
+  function create(a) {
+    var A = a.a;
+    var R = a.rng || Math.random;
+
+    var S = {
+      ready: true, over: false, done: false, started: false, dying: false,
+      t: 0, time: 0, b: [], open: [], flag: [],
+      opened: 0, flags: 0, flagMode: false,
+      boom: -1, endT: 0, win: false, score: 0, ghost: 0,
+      sparks: [], rings: [], shake: 0, flash: 0,
+      msg: '', msgSub: '', msgT: 0, msgCol: '#a7f3d0',
+      banner: '', bannerSub: '', bannerT: 0,
+      coinGain: 0, coinUsed: 0, coinTier: null,
+      cleared: false, correctFlags: 0, wrongFlags: 0,
+      hint: -1, hintT: 0, rcPress: false, accent: '#5eead4'
+    };
+
+    function skinColor() {
+      var id = '';
+      try { var st = V.st(); id = (st && st.me && st.me.skin) || ''; } catch (e) {}
+      return SKINCOL[id] || '#5eead4';
+    }
+    function cellX(x) { return BX + x * CELL; }
+    function cellY(y) { return BY + y * CELL; }
+    function cxOf(i) { return BX + (i % N) * CELL + CELL / 2; }
+    function cyOf(i) { return BY + Math.floor(i / N) * CELL + CELL / 2; }
+    function inb(x, y) { return x >= 0 && y >= 0 && x < N && y < N; }
+    function cellAt(px, py) {
+      var x = Math.floor((px - BX) / CELL), y = Math.floor((py - BY) / CELL);
+      return inb(x, y) ? { x: x, y: y } : null;
+    }
+    function nb(x, y, fn) {
+      for (var dy = -1; dy <= 1; dy++) for (var dx = -1; dx <= 1; dx++) {
+        if (!dx && !dy) continue;
+        var nx = x + dx, ny = y + dy;
+        if (inb(nx, ny)) fn(nx, ny);
+      }
+    }
+
+    /* -------------------------------------------------------------- 연출 */
+    function burst(x, y, n, col, spd) {
+      for (var i = 0; i < n; i++) {
+        if (S.sparks.length > 200) break;
+        var ang = Math.random() * 6.283;
+        var v = (spd || 170) * (0.28 + Math.random());
+        S.sparks.push({
+          x: x, y: y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v,
+          life: 0.3 + Math.random() * 0.5, max: 0.8, c: col, s: Math.random() < 0.3 ? 4 : 2
+        });
+      }
+    }
+    function say(t, sub, col) {
+      S.msg = t; S.msgSub = sub || ''; S.msgT = 1.1; S.msgCol = col || '#a7f3d0';
+    }
+
+    /* -------------------------------------------------------------- 보드 */
+    function resetBoard() {
+      S.b = []; S.open = []; S.flag = [];
+      for (var i = 0; i < N * N; i++) { S.b.push(0); S.open.push(false); S.flag.push(false); }
+      S.opened = 0; S.flags = 0; S.started = false; S.boom = -1;
+      S.cleared = false; S.correctFlags = 0; S.wrongFlags = 0;
+      S.hint = -1; S.hintT = 0;
+    }
+    /* 첫 클릭(sx,sy)과 그 주변 8칸에는 지뢰를 두지 않는다 */
+    function gen(sx, sy) {
+      var placed = 0, guard = 0;
+      while (placed < MINES && guard++ < 5000) {
+        var x = Math.floor(R() * N), y = Math.floor(R() * N);
+        if (Math.abs(x - sx) <= 1 && Math.abs(y - sy) <= 1) continue;
+        if (S.b[y * N + x] === -1) continue;
+        S.b[y * N + x] = -1; placed++;
+      }
+      countMines();
+      S.started = true;
+    }
+    function countMines() {
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) {
+        var i = y * N + x;
+        if (S.b[i] === -1) continue;
+        var c = 0;
+        nb(x, y, function (nx, ny) { if (S.b[ny * N + nx] === -1) c++; });
+        S.b[i] = c;
+      }
+    }
+    function countOpen() {
+      var n = 0;
+      for (var i = 0; i < N * N; i++) if (S.open[i] && S.b[i] !== -1) n++;
+      return n;
+    }
+    function countFlags() {
+      var n = 0, ok = 0, bad = 0;
+      for (var i = 0; i < N * N; i++) if (S.flag[i]) {
+        n++;
+        if (S.b[i] === -1) ok++; else bad++;
+      }
+      S.flags = n; S.correctFlags = ok; S.wrongFlags = bad;
+      return n;
+    }
+    function scoreNow() { return countOpen() * 10; }
+    function syncScore() {
+      S.score = scoreNow();
+      a.setScore(S.score);
+      return S.score;
+    }
+
+    /* 0칸이면 BFS 연쇄 오픈 */
+    function flood(start) {
+      var q = [start], seen = {}, opened = 0;
+      seen[start] = 1;
+      while (q.length) {
+        var i = q.shift();
+        if (S.open[i] || S.flag[i] || S.b[i] === -1) continue;
+        S.open[i] = true;
+        opened++;
+        if (S.b[i] === 0) {
+          var x = i % N, y = Math.floor(i / N);
+          nb(x, y, function (nx, ny) {
+            var j = ny * N + nx;
+            if (!seen[j] && !S.open[j] && !S.flag[j] && S.b[j] !== -1) { seen[j] = 1; q.push(j); }
+          });
+        }
+      }
+      return opened;
+    }
+    function afterOpen(gained) {
+      countFlags();
+      S.opened = countOpen();
+      S.score = scoreNow();
+      a.setScore(S.score);
+      if (S.opened >= SAFE) { winGame(); return true; }
+      return false;
+    }
+
+    /* -------------------------------------------------------------- 조작 */
+    function openCell(x, y) {
+      if (!inb(x, y)) return false;
+      var i = y * N + x;
+      if (S.open[i]) { chord(x, y); return false; }
+      /* 깃발 모드에서는 칸을 여는 대신 깃발을 꽂고 뺀다 (열린 숫자 칸은 위에서 코딩) */
+      if (S.flagMode) { toggleFlag(x, y); return false; }
+      if (S.flag[i]) { say('🚩 깃발을 먼저 빼 주세요', '', '#fca5a5'); tone(300, 0.06, 0.06, 'triangle', 240); return false; }
+      if (!S.started) { gen(x, y); S.time = 0; say('⛏️ 시작! 첫 칸은 안전해요', '', '#a7f3d0'); }
+      if (S.b[i] === -1) { boom(i); return false; }
+      var n = flood(i);
+      var done = afterOpen(n);
+      var v = S.b[i];
+      if (n >= 4 || v === 0) seq(v === 0 ? [520, 660, 780] : [520, 620, 720, 820, 920], 34, 0.06, 0.05);
+      else tone(520 + Math.min(8, v) * 55, 0.05, 0.07, 'square', null);
+      return done;
+    }
+    function toggleFlag(x, y) {
+      if (!inb(x, y)) return;
+      var i = y * N + x;
+      if (S.open[i]) { say('이미 열린 칸이에요', '', '#93a4c4'); return; }
+      if (!S.flag[i] && S.flags >= MINES) { say('🚩 깃발은 지뢰 수만큼(10개)', '', '#fca5a5'); tone(280, 0.07, 0.06, 'triangle', 220); return; }
+      S.flag[i] = !S.flag[i];
+      countFlags();
+      if (S.flag[i]) { tone(900, 0.05, 0.07, 'square', 1160); burst(cxOf(i), cyOf(i), 5, '#f87171', 70); }
+      else tone(520, 0.05, 0.06, 'square', 420);
+    }
+    /* Chording — 주변 깃발 수 = 숫자면 나머지 칸을 한 번에 연다 */
+    function chord(x, y) {
+      var i = y * N + x;
+      if (!S.open[i]) return false;
+      var v = S.b[i];
+      if (v <= 0) return false;
+      var fin = 0, hid = 0, hitMine = -1;
+      nb(x, y, function (nx, ny) {
+        var j = ny * N + nx;
+        if (S.flag[j]) fin++;
+        else if (!S.open[j]) { hid++; if (S.b[j] === -1) hitMine = j; }
+      });
+      if (fin !== v) {
+        S.hint = i; S.hintT = 0.9;
+        say('🚩 주변 깃발 ' + fin + '/' + v + '개', hid > 0 ? '깃발을 ' + v + '개 맞춰 주세요' : '', '#fde68a');
+        tone(360, 0.05, 0.05, 'triangle', 300);
+        return false;
+      }
+      if (!hid) return false;
+      if (hitMine >= 0) { boom(hitMine); return false; }
+      var total = 0;
+      nb(x, y, function (nx, ny) {
+        var j = ny * N + nx;
+        if (!S.open[j] && !S.flag[j] && S.b[j] !== -1) total += flood(j);
+      });
+      if (total > 0) {
+        seq([660, 820, 980, 1170], 30, 0.06, 0.05);
+        burst(cxOf(i), cyOf(i), 8, '#fde68a', 110);
+      }
+      var done = afterOpen(total);
+      if (S.opened >= SAFE) return true;
+      return done;
+    }
+
+    /* -------------------------------------------------------------- 시작 / 종료 */
+    function reset() {
+      S.ready = true; S.over = false; S.done = false; S.started = false; S.dying = false;
+      S.t = 0; S.time = 0; S.endT = 0; S.win = false; S.score = 0;
+      S.flagMode = false; S.rcPress = false;
+      S.sparks = []; S.rings = []; S.shake = 0; S.flash = 0;
+      S.msg = ''; S.msgSub = ''; S.msgT = 0;
+      S.banner = ''; S.bannerSub = ''; S.bannerT = 0;
+      S.coinGain = 0; S.coinUsed = 0; S.coinTier = null;
+      S.accent = skinColor();
+      resetBoard();
+      S.ghost = a.bot ? (28 + Math.floor(R() * 26)) : 0;
+      a.setScore(0);
+      a.setStatus('');
+      a.vsLine(a.bot ? '🤖 고스트 클리어 ' + S.ghost + '초' : '');
+    }
+    function begin() {
+      if (!S.ready) return;
+      S.ready = false; S.time = 0;
+      seq([523, 659, 784], 70, 0.09, 0.08);
+    }
+    function boom(i) {
+      if (S.dying || S.done) return;
+      S.boom = i;
+      S.open[i] = true;
+      for (var k = 0; k < N * N; k++) if (S.b[k] === -1) S.open[k] = true;
+      countFlags();
+      S.over = true; S.dying = true; S.endT = DIE_T;
+      S.shake = 16; S.flash = 1;
+      burst(cxOf(i), cyOf(i), 64, '#f87171', 300);
+      burst(cxOf(i), cyOf(i), 30, '#fde047', 210);
+      S.rings.push({ x: cxOf(i), y: cyOf(i), life: 0.8, max: 0.8, c: '#f87171' });
+      S.rings.push({ x: cxOf(i), y: cyOf(i), life: 0.55, max: 0.55, c: '#fde047' });
+      S.banner = '💥 지뢰를 밟았어요';
+      S.bannerSub = '모든 지뢰 위치를 공개합니다…';
+      S.bannerT = DIE_T + 0.2;
+      tone(150, 0.42, 0.15, 'sawtooth', 60);
+      seq([220, 180, 140], 70, 0.1, 0.12);
+    }
+    function winGame() {
+      if (S.dying || S.done) return;
+      S.cleared = true;
+      countFlags();
+      var speed = Math.max(0, Math.round(SPEED_TARGET - S.time)) * 8;
+      var flagBonus = S.correctFlags * 10;
+      S.score = countOpen() * 10 + 200 + speed + flagBonus;
+      S.speedBonus = speed; S.flagBonus = flagBonus;
+      a.setScore(S.score);
+      S.over = true; S.dying = true; S.endT = WIN_T; S.win = true;
+      S.flash = 0.8; S.shake = 8;
+      S.banner = '🎉 클리어!';
+      S.bannerSub = Math.round(S.time * 10) / 10 + '초 · +' + (200 + speed + flagBonus) + ' 보너스';
+      S.bannerT = WIN_T + 0.4;
+      for (var i = 0; i < N * N; i++) if (S.b[i] === -1) burst(cxOf(i), cyOf(i), 5, '#fde047', 120);
+      for (var j = 0; j < 8; j++) burst(40 + Math.random() * 290, 90 + Math.random() * 260, 14, ['#fde047', '#f472b6', '#22d3ee', '#4ade80'][j % 4], 190);
+      seq([784, 988, 1175, 1568, 1976], 80, 0.11, 0.12);
+    }
+    function finishNow() {
+      if (S.done) return;
+      S.done = true; S.dying = false;
+      var t = tierOf(S.score);
+      S.coinTier = t;
+      var g = grantCoins(S.score);
+      S.coinGain = g.gain; S.coinUsed = g.used;
+      var ang = countOpen();
+      var note = [];
+      if (S.cleared) {
+        note.push('🎉 클리어! ' + Math.round(S.time * 10) / 10 + '초 · 71칸 모두 열었어요');
+        note.push('열린 칸 +' + (ang * 10) + ' · 클리어 +200 · 스피드 +' + (S.speedBonus || 0) + ' · 깃발 +' + (S.flagBonus || 0));
+      } else {
+        note.push('💥 지뢰를 밟았어요 · 안전 칸 ' + ang + '/' + SAFE + ' (' + Math.round(ang / SAFE * 100) + '%)');
+        note.push('연 칸 비율 점수 ' + (ang * 10) + '점 · 남은 지뢰 ' + Math.max(0, MINES - S.correctFlags) + '개');
+      }
+      if (a.bot) note.push('🤖 고스트 ' + S.ghost + '초 · ' + (S.cleared ? '내 기록 ' + (Math.round(S.time * 10) / 10) + '초' : '이번엔 실패'));
+      if (g.fail) note.push('🪙 펫 코인 저장소를 찾지 못했어요');
+      else if (g.gain > 0) note.push(t.name + ' · 🪙 펫 코인 +' + g.gain + ' (오늘 ' + g.used + '/' + g.cap + ')');
+      else note.push(t.name + ' · 🪙 오늘 코인 상한(' + g.cap + ')을 다 받았어요');
+      a.setScore(S.score);
+      var win = S.cleared ? (a.bot ? (S.time <= S.ghost) : true) : false;
+      a.over(win, note.join('\n'));
+    }
+
+    /* -------------------------------------------------------------- 입력 */
+    function modeAt(px) {
+      if (px >= MB.lx && px <= MB.lx + MB.lw) return 'open';
+      if (px >= MB.rx && px <= MB.rx + MB.rw) return 'flag';
+      return '';
+    }
+    function setMode(m) {
+      var want = m === 'flag';
+      if (want === S.flagMode) return;
+      S.flagMode = want;
+      S.hint = -1;
+      tone(want ? 980 : 560, 0.06, 0.08, 'square', want ? 1240 : 720);
+    }
+
+    var api = {
+      start: reset,
+      stop: function () { S.done = true; S.dying = false; S.over = true; },
+      begin: begin,
+      update: function (dt) {
+        S.t += dt;
+        if (S.msgT > 0) S.msgT = Math.max(0, S.msgT - dt);
+        if (S.bannerT > 0) S.bannerT = Math.max(0, S.bannerT - dt);
+        if (S.hintT > 0) { S.hintT = Math.max(0, S.hintT - dt); if (S.hintT === 0) S.hint = -1; }
+        if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 30);
+        if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 2.2);
+        var i;
+        for (i = S.sparks.length - 1; i >= 0; i--) {
+          var s = S.sparks[i];
+          s.life -= dt;
+          if (s.life <= 0) { S.sparks.splice(i, 1); continue; }
+          s.vy += 320 * dt;
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+        }
+        for (i = S.rings.length - 1; i >= 0; i--) {
+          S.rings[i].life -= dt;
+          if (S.rings[i].life <= 0) S.rings.splice(i, 1);
+        }
+        if (S.started && !S.over && !S.dying) S.time += dt;
+        if (S.dying && S.endT > 0) {
+          S.endT -= dt;
+          if (S.endT <= 0) { S.endT = 0; finishNow(); }
+        }
+      },
+      pointer: function (e) {
+        if (!e) return;
+        if (e.type === 'down') {
+          if (e.button === 2) S.rcPress = true;
+          return;
+        }
+        if (e.type === 'up') {
+          if (S.rcPress) { S.rcPress = false; return; }
+          if (S.done || S.dying) return;
+          if (S.ready) { begin(); return; }
+          if (e.moved) return;
+          if (e.y >= MB.y - 8 && e.y <= MB.y + MB.h + 8) {
+            var m = modeAt(e.x);
+            if (m) { setMode(m); return; }
+            return;
+          }
+          var c = cellAt(e.x, e.y);
+          if (c) openCell(c.x, c.y);
+          return;
+        }
+        if (e.type === 'cancel') S.rcPress = false;
+      },
+      /* 데스크톱 우클릭 — 곧바로 깃발 토글 */
+      rightClick: function (px, py) {
+        if (S.done || S.dying) return false;
+        if (S.ready) { begin(); return false; }
+        var c = cellAt(px, py);
+        if (!c) return false;
+        toggleFlag(c.x, c.y);
+        return true;
+      },
+      rcDown: function () { S.rcPress = true; },
+      key: function (k, down) {
+        if (!down) return;
+        if (S.ready) {
+          if (k === 'space' || k === 'enter' || k === 'z') begin();
+          return;
+        }
+        if (S.done || S.dying) return;
+        if (k === 'space') setMode(S.flagMode ? 'open' : 'flag');
+        else if (k === 'z') setMode('open');
+        else if (k === 'x') setMode('flag');
+      },
+      /* F 키 (셸 keyName 에 없는 키라 이 모듈이 직접 받는다) */
+      toggleMode: function () {
+        if (S.ready) { begin(); return; }
+        if (S.done || S.dying) return;
+        setMode(S.flagMode ? 'open' : 'flag');
+      },
+
+      /* -------------------------------------------------------------- 그리기 */
+      draw: function (g) {
+        g.fillStyle = '#03060e';
+        g.fillRect(0, 0, W, H);
+        var bg = g.createLinearGradient(0, 44, 0, H);
+        bg.addColorStop(0, '#0b1220');
+        bg.addColorStop(0.55, '#060a14');
+        bg.addColorStop(1, '#03050b');
+        g.fillStyle = bg;
+        g.fillRect(0, 44, W, H - 44);
+        var gl = g.createRadialGradient(180, BY + 150, 20, 180, BY + 150, 330);
+        gl.addColorStop(0, 'rgba(248,113,113,.10)');
+        gl.addColorStop(1, 'rgba(248,113,113,0)');
+        g.fillStyle = gl;
+        g.fillRect(0, 44, W, H - 44);
+
+        var sh = S.shake;
+        if (sh > 0) {
+          g.save();
+          g.translate((Math.random() - 0.5) * sh, (Math.random() - 0.5) * sh * 0.7);
+        }
+        drawBoard(g);
+        drawSparks(g);
+        drawRings(g);
+        if (sh > 0) g.restore();
+
+        drawModeBar(g);
+        drawHud(g);
+        A.bar(g, 10, 47, 340, 5, S.ready || !S.started ? 0 : S.opened / SAFE, progressCol());
+        drawInfo(g);
+        drawTexts(g);
+        drawBanner(g);
+        if (S.flash > 0) {
+          g.fillStyle = 'rgba(248,113,113,' + (S.flash * 0.24) + ')';
+          g.fillRect(0, 0, W, H);
+        }
+        if (S.ready) drawReady(g);
+      },
+      /* 테스트/검증용 */
+      state: function () {
+        var mines = [], counts = [], op = [], fl = [];
+        for (var i = 0; i < N * N; i++) {
+          mines.push(S.b[i] === -1 ? 1 : 0);
+          counts.push(S.b[i]);
+          op.push(S.open[i] ? 1 : 0);
+          fl.push(S.flag[i] ? 1 : 0);
+        }
+        return {
+          ready: S.ready, over: S.over, done: S.done, started: S.started, dying: S.dying,
+          time: S.time, left: Math.max(0, SPEED_TARGET - S.time),
+          opened: countOpen(), flags: S.flags, mines: MINES, safe: SAFE,
+          score: S.score, flagMode: S.flagMode, boom: S.boom, cleared: S.cleared,
+          correctFlags: S.correctFlags, wrongFlags: S.wrongFlags,
+          coinGain: S.coinGain, coinUsed: S.coinUsed, ghost: a.bot ? S.ghost : 0,
+          banner: S.banner, msg: S.msg, grid: counts, mineMask: mines,
+          openMask: op, flagMask: fl, speedBonus: S.speedBonus || 0, flagBonus: S.flagBonus || 0
+        };
+      }
+    };
+
+    /* 검증용 훅 — QA(?qa=…)로 열었을 때만 붙는다 (일반 플레이에는 없음) */
+    try {
+      if (/(^|[?&])qa=/.test(String(location.search || ''))) {
+        api.__qa = {
+          setMines: function (list) {
+            resetBoard();
+            for (var i = 0; i < N * N; i++) S.b[i] = 0;
+            (list || []).forEach(function (p) {
+              var x = p[0], y = p[1];
+              if (inb(x, y)) S.b[y * N + x] = -1;
+            });
+            countMines();
+            S.started = true; S.ready = false; S.time = 0;
+            return 1;
+          },
+          mines: function () {
+            var out = [];
+            for (var i = 0; i < N * N; i++) if (S.b[i] === -1) out.push([i % N, Math.floor(i / N)]);
+            return out;
+          },
+          open: function (x, y) { openCell(Number(x) | 0, Number(y) | 0); return api.state(); },
+          flag: function (x, y) { toggleFlag(Number(x) | 0, Number(y) | 0); return api.state(); },
+          chord: function (x, y) { chord(Number(x) | 0, Number(y) | 0); return api.state(); },
+          mode: function (m) { setMode(m); return S.flagMode; },
+          openCells: function (list) {
+            (list || []).forEach(function (p) { openCell(p[0], p[1]); });
+            return api.state();
+          },
+          /* 안전 칸을 n개 남기고 모두 열기 (클리어 직전 상태 만들기) */
+          openAllBut: function (n) {
+            n = Math.max(0, Number(n) || 0);
+            var left = [], list = [];
+            for (var i = 0; i < N * N; i++) if (S.b[i] !== -1 && !S.open[i]) list.push(i);
+            left = list.slice(Math.max(0, list.length - n));
+            var keep = {};
+            left.forEach(function (i) { keep[i] = 1; });
+            list.forEach(function (i) { if (!keep[i]) openCell(i % N, Math.floor(i / N)); });
+            return api.state();
+          },
+          openAll: function () {
+            for (var i = 0; i < N * N; i++) if (S.b[i] !== -1 && !S.open[i]) openCell(i % N, Math.floor(i / N));
+            return api.state();
+          },
+          boom: function () {
+            for (var i = 0; i < N * N; i++) if (S.b[i] === -1) { boom(i); return api.state(); }
+            return api.state();
+          },
+          setTime: function (t) { S.time = Math.max(0, Number(t) || 0); return S.time; },
+          tick: function (dt) { api.update(dt == null ? 0.016 : dt); return api.state(); },
+          state: function () { return api.state(); },
+          cells: function () { return N; }
+        };
+      }
+    } catch (e) {}
+    return api;
+
+    /* -------------------------------------------------------------- 그리기 구현 */
+    function progressCol() { return S.opened >= SAFE ? '#fde047' : S.opened > SAFE * 0.6 ? '#4ade80' : '#38bdf8'; }
+    function drawHud(g) {
+      var mid = S.ready ? '⏱ 첫 칸은 안전' : (S.flagMode ? '🚩 깃발 모드' : '⛏️ 열기 모드');
+      var right = '';
+      if (a.bot) right = '🤖 ' + S.ghost + '초';
+      else {
+        var best = null;
+        try { best = a.best(); } catch (e) { best = null; }
+        right = best != null ? '최고 ' + Math.round(best) + '점' : '';
+      }
+      MG.hud(g, a, { label: 'SCORE', score: S.score, mid: mid, right: right });
+    }
+    function drawBoard(g) {
+      A.panel(g, BX - 8, BY - 8, N * CELL + 16, N * CELL + 16, {
+        r: 16, fill: 'rgba(6,11,22,.95)', stroke: 'rgba(248,113,113,.20)'
+      });
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) drawCell(g, x, y);
+      var pulse = 0.16 + 0.09 * Math.sin(S.t * 2.2);
+      g.strokeStyle = S.cleared ? rgba('#fde047', 0.6) : rgba('#f87171', pulse + 0.10);
+      g.lineWidth = 1.6;
+      A.rr(g, BX - 8, BY - 8, N * CELL + 16, N * CELL + 16, 16);
+      g.stroke();
+    }
+    function drawCell(g, x, y) {
+      var i = y * N + x;
+      var px = cellX(x), py = cellY(y);
+      var s = CELL - 4;
+      var isBoom = S.boom === i;
+      if (!S.open[i]) {
+        var gr = g.createLinearGradient(0, py, 0, py + s);
+        gr.addColorStop(0, isBoom ? '#7f1d1d' : '#243352');
+        gr.addColorStop(1, isBoom ? '#450a0a' : '#131c2f');
+        A.rr(g, px + 2, py + 2, s, s, 8);
+        g.fillStyle = gr;
+        g.fill();
+        g.save();
+        g.strokeStyle = isBoom ? 'rgba(248,113,113,.95)' : 'rgba(120,170,230,.22)';
+        g.lineWidth = 1;
+        if (isBoom) { g.shadowColor = '#f87171'; g.shadowBlur = 12; }
+        A.rr(g, px + 2, py + 2, s, s, 8);
+        g.stroke();
+        g.restore();
+        g.fillStyle = 'rgba(255,255,255,.10)';
+        A.rr(g, px + 5, py + 5, s - 6, 5, 3);
+        g.fill();
+        if (S.flag[i]) {
+          A.text(g, '🚩', px + CELL / 2, py + CELL / 2 + 7, { size: 17, align: 'center' });
+        } else if (S.done && S.b[i] === -1) {
+          /* 패배 후 공개된 지뢰 */
+          A.text(g, '💣', px + CELL / 2, py + CELL / 2 + 7, { size: 16, align: 'center' });
+        }
+        if (S.done && S.flag[i] && S.b[i] !== -1) {
+          A.text(g, '✖', px + CELL / 2, py + CELL / 2 + 6, { size: 16, color: '#f87171', align: 'center' });
+        }
+        return;
+      }
+      /* 열린 칸 */
+      A.rr(g, px + 2, py + 2, s, s, 8);
+      g.fillStyle = S.b[i] === -1 ? 'rgba(127,29,29,.85)' : 'rgba(12,20,36,.9)';
+      g.fill();
+      g.strokeStyle = S.b[i] === -1 ? 'rgba(248,113,113,.7)' : 'rgba(120,170,230,.12)';
+      g.lineWidth = 1;
+      g.stroke();
+      if (S.b[i] === -1) {
+        g.save();
+        g.shadowColor = '#f87171';
+        g.shadowBlur = isBoom ? 20 : 8;
+        A.text(g, '💣', px + CELL / 2, py + CELL / 2 + 7, { size: isBoom ? 18 : 15, align: 'center' });
+        g.restore();
+        return;
+      }
+      var v = S.b[i];
+      if (v > 0) {
+        var col = NUMCOL[v] || '#e2e8f0';
+        var hot = S.hint === i && S.hintT > 0;
+        /* 주변 깃발이 숫자와 같으면 은은한 테두리 (코딩 준비 완료) */
+        var fin = 0;
+        nb(x, y, function (nx, ny) { if (S.flag[ny * N + nx]) fin++; });
+        if (fin === v && !S.done) {
+          g.save();
+          g.strokeStyle = rgba(S.accent, 0.55 + 0.25 * Math.sin(S.t * 6));
+          g.lineWidth = 1.6;
+          A.rr(g, px + 2, py + 2, s, s, 8);
+          g.stroke();
+          g.restore();
+        }
+        if (hot) {
+          g.save();
+          g.strokeStyle = '#fde047';
+          g.lineWidth = 2;
+          A.rr(g, px + 2, py + 2, s, s, 8);
+          g.stroke();
+          g.restore();
+        }
+        g.save();
+        g.shadowColor = col;
+        g.shadowBlur = v >= 3 ? 9 : 5;
+        A.text(g, String(v), px + CELL / 2, py + CELL / 2 + 8, {
+          size: 19, color: col, align: 'center', font: '"Jua",sans-serif'
+        });
+        g.restore();
+      } else {
+        g.fillStyle = 'rgba(147,164,196,.35)';
+        g.beginPath();
+        g.arc(px + CELL / 2, py + CELL / 2, 2, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+    function drawSparks(g) {
+      for (var i = 0; i < S.sparks.length; i++) {
+        var s = S.sparks[i];
+        var al = Math.max(0, Math.min(1, s.life / s.max * 1.7));
+        g.globalAlpha = al;
+        g.fillStyle = s.c;
+        g.fillRect(s.x - s.s / 2, s.y - s.s / 2, s.s, s.s);
+      }
+      g.globalAlpha = 1;
+    }
+    function drawRings(g) {
+      for (var i = 0; i < S.rings.length; i++) {
+        var r = S.rings[i];
+        var k = 1 - Math.max(0, r.life / r.max);
+        g.globalAlpha = Math.max(0, 1 - k) * 0.9;
+        g.strokeStyle = r.c;
+        g.lineWidth = 3 * (1 - k) + 1;
+        g.beginPath();
+        g.arc(r.x, r.y, 8 + k * 78, 0, Math.PI * 2);
+        g.stroke();
+      }
+      g.globalAlpha = 1;
+    }
+    function seg(g, x, w, on, label, col) {
+      var y = MB.y, h = MB.h;
+      A.rr(g, x, y, w, h, 14);
+      if (on) {
+        var gr = g.createLinearGradient(0, y, 0, y + h);
+        gr.addColorStop(0, mixHex(col, '#ffffff', 0.10));
+        gr.addColorStop(1, mixHex(col, '#0a1020', 0.35));
+        g.fillStyle = gr;
+        g.fill();
+        g.save();
+        g.shadowColor = col;
+        g.shadowBlur = 14;
+        g.strokeStyle = rgba(col, 0.95);
+        g.lineWidth = 2;
+        A.rr(g, x, y, w, h, 14);
+        g.stroke();
+        g.restore();
+      } else {
+        g.fillStyle = 'rgba(15,25,42,.94)';
+        g.fill();
+        g.strokeStyle = 'rgba(140,190,255,.20)';
+        g.lineWidth = 1;
+        g.stroke();
+      }
+      A.text(g, label, x + w / 2, y + h / 2 + 6, {
+        size: 13.5, color: on ? '#06111f' : '#8fa3c4', align: 'center', font: '"Jua",sans-serif'
+      });
+    }
+    function drawModeBar(g) {
+      seg(g, MB.lx, MB.lw, !S.flagMode, '⛏️ 칸 열기', '#38bdf8');
+      seg(g, MB.rx, MB.rw, S.flagMode, '🚩 깃발 꽂기', '#f87171');
+    }
+    function drawInfo(g) {
+      A.text(g, '⛏️ ' + S.opened + '/' + SAFE, 18, 402, { size: 10, color: '#8fa3c4' });
+      A.text(g, '🚩 ' + S.flags + '/' + MINES, 180, 402, {
+        size: 10, color: S.wrongFlags > 0 ? '#fca5a5' : '#8fa3c4', align: 'center'
+      });
+      A.text(g, (S.started ? '⏱ ' + S.time.toFixed(1) : '⏱ 0.0') + 's', 342, 402, { size: 10, color: '#8fa3c4', align: 'right' });
+    }
+    function drawTexts(g) {
+      /* 안내 토스트는 보드가 아니라 보드 아래 안내 줄 위에 띄운다 — 숫자 칸을 가리지 않게 */
+      if (S.msgT > 0 && S.msg && S.bannerT <= 0) {
+        var al = Math.min(1, S.msgT * 2.2);
+        g.globalAlpha = al;
+        var tw = Math.min(330, S.msg.length * 8 + 44);
+        A.rr(g, 180 - tw / 2, 470, tw, S.msgSub ? 40 : 27, 13);
+        g.fillStyle = 'rgba(4,8,18,.94)';
+        g.fill();
+        g.strokeStyle = S.msgCol;
+        g.lineWidth = 1.5;
+        g.stroke();
+        A.text(g, S.msg, 180, 489, { size: 13.5, color: S.msgCol, align: 'center', font: '"Jua",sans-serif' });
+        if (S.msgSub) A.text(g, S.msgSub, 180, 504, { size: 9, color: '#fef3c7', align: 'center' });
+        g.globalAlpha = 1;
+      }
+      if (S.ready) return;
+      A.text(g, '숫자 = 주변 8칸의 지뢰 수 · 첫 칸은 안전해요', 180, 482, { size: 9.5, color: '#6b81a6', align: 'center' });
+      A.text(g, '숫자 칸을 다시 누르면 주변을 한 번에 열어요', 180, 498, { size: 9, color: '#5a6d8e', align: 'center' });
+      A.text(g, '🚩 우클릭으로 바로 깃발 · F/Space 로 모드 전환', 180, 514, { size: 9, color: '#5a6d8e', align: 'center' });
+      A.text(g, '빠를수록 스피드 보너스 · 71칸을 다 열면 클리어!', 180, 530, { size: 9, color: '#5a6d8e', align: 'center' });
+      A.text(g, '🪙 펫 코인 +10/+20/+35 (하루 60)', 180, 546, { size: 9, color: '#5a6d8e', align: 'center' });
+    }
+    function drawBanner(g) {
+      if (S.bannerT <= 0 || !S.banner) return;
+      var k = Math.min(1, S.bannerT / 0.4);
+      g.globalAlpha = k;
+      var x = 26, y = 464, w = 308, h = 78;
+      var col = S.cleared ? '#fde047' : '#f87171';
+      A.panel(g, x, y, w, h, { r: 16, fill: 'rgba(8,14,26,.96)', stroke: col });
+      g.save();
+      g.shadowColor = col;
+      g.shadowBlur = 18;
+      A.rr(g, x, y, w, h, 16);
+      g.strokeStyle = rgba(col, 0.9);
+      g.lineWidth = 2;
+      g.stroke();
+      g.restore();
+      A.text(g, S.banner, 180, y + 34, { size: 23, color: col, align: 'center', font: '"Jua",sans-serif' });
+      A.text(g, S.bannerSub, 180, y + 58, { size: 10, color: '#fef3c7', align: 'center' });
+      g.globalAlpha = 1;
+    }
+    function drawReady(g) {
+      g.fillStyle = 'rgba(3,6,12,.93)';
+      g.fillRect(0, 44, W, H - 44);
+      A.panel(g, 16, 56, 328, 502, { r: 18, fill: 'rgba(10,18,32,.98)', stroke: 'rgba(248,113,113,.40)' });
+      A.text(g, '💣 스피드 지뢰찾기', 180, 100, { size: 25, color: '#fca5a5', align: 'center', font: '"Jua",sans-serif' });
+      A.text(g, '9×9 · 지뢰 10개 · 첫 칸은 절대 안전', 180, 122, { size: 11, color: '#a8bdd8', align: 'center' });
+      A.text(g, '⛏️ 칸 열기 / 🚩 깃발 꽂기 — 아래 큰 버튼으로 전환', 180, 158, { size: 10.5, color: '#fde68a', align: 'center' });
+      A.text(g, '데스크톱은 우클릭으로 바로 깃발 · F / Space 전환', 180, 176, { size: 10, color: '#c7d6ef', align: 'center' });
+      A.text(g, '숫자 = 주변 8칸의 지뢰 수', 180, 206, { size: 10, color: '#c7d6ef', align: 'center' });
+      A.text(g, '숫자 칸을 다시 누르면 주변을 한 번에 열어요 (코딩)', 180, 224, { size: 10, color: '#c7d6ef', align: 'center' });
+      A.text(g, '🚩 지뢰에 맞춘 깃발 1개당 +10 (최대 +100)', 180, 254, { size: 10, color: '#fdba74', align: 'center' });
+      A.text(g, '⏱ 90초보다 빠를수록 스피드 보너스 최대 +720', 180, 272, { size: 10, color: '#fdba74', align: 'center' });
+      A.text(g, '71칸을 모두 열면 🎉 클리어 · 지뢰를 밟으면 끝', 180, 302, { size: 10, color: '#a5f3fc', align: 'center' });
+      A.text(g, '🪙 끝나면 펫 코인 +10 / +20 / +35 (하루 상한 60)', 180, 322, { size: 10, color: '#93a4c4', align: 'center' });
+      A.text(g, '💡 주변 깃발이 숫자와 맞으면 칸 테두리가 빛나요', 180, 356, { size: 9.5, color: '#a5f3fc', align: 'center' });
+      var best = null;
+      try { best = a.best(); } catch (e) { best = null; }
+      if (best != null) A.text(g, '🏅 최고 기록 ' + Math.round(best) + '점', 180, 384, { size: 11, color: '#fbbf24', align: 'center' });
+      g.globalAlpha = 0.62 + 0.38 * Math.sin(S.t * 4);
+      A.text(g, '▶ 탭해서 시작', 180, 420, { size: 17, color: '#fca5a5', align: 'center', font: '"Jua",sans-serif' });
+      g.globalAlpha = 1;
+      A.text(g, '⌨️ 스페이스·엔터로 시작 · F 로 깃발 모드', 180, 450, { size: 9, color: '#5b6f92', align: 'center' });
+      A.text(g, '터치: 칸을 짧게 누르면 열기 · 깃발 모드에서 누르면 깃발', 180, 470, { size: 9, color: '#5b6f92', align: 'center' });
+    }
+  }
+
+  /* ==========================================================================
+     등록 — 기존 'mines' 슬롯을 덮어쓴다 (기록·봇·방 대전 호환 유지)
+     ========================================================================== */
+  MG.def({
+    id: ID,
+    name: '스피드 지뢰찾기',
+    emoji: '💣',
+    tag: '두뇌',
+    desc: '9×9 네온 지뢰찾기 · 첫 칸 안전 · 깃발·코딩으로 스피드 클리어',
+    unit: '점',
+    record: {
+      type: 'high',
+      fmt: function (v) { return Math.round(v) + '점'; }
+    },
+    create: create
+  });
+
+  /* 목록 순서: 개방 8호로 맨 뒤(7호 다음)에 — v5.30 잠금 모듈의 reorder 가 앞으로 당긴다 */
+  try {
+    if (MG.order) {
+      var rest = MG.order.filter(function (x) { return x && x !== ID; });
+      var at = rest.indexOf('g2048');
+      if (at >= 0) rest.splice(at + 1, 0, ID);
+      else rest.push(ID);
+      MG.order = rest;
+    }
+  } catch (e) {}
+
+  /* 데스크톱 우클릭 → 그 칸에 바로 깃발 */
+  function bindRightClick() {
+    var cv = document.getElementById('v48mgCv');
+    if (!cv || cv.__v547rc) return false;
+    cv.__v547rc = true;
+    cv.addEventListener('pointerdown', function (e) {
+      var c = MG.cur;
+      if (!c || c.id !== ID) return;
+      if (e.button !== 2) return;
+      try { if (c.inst && c.inst.rcDown) c.inst.rcDown(); } catch (er) {}
+    }, true);
+    cv.addEventListener('contextmenu', function (e) {
+      var c = MG.cur;
+      if (!c || c.id !== ID) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var r = cv.getBoundingClientRect();
+      var px = (e.clientX - r.left) / (r.width || 1) * 360;
+      var py = (e.clientY - r.top) / (r.height || 1) * 600;
+      try { if (c.inst && c.inst.rightClick) c.inst.rightClick(px, py); } catch (er) {}
+    }, false);
+    return true;
+  }
+  if (!bindRightClick()) {
+    var tries = 0;
+    var iv = setInterval(function () { if (bindRightClick() || tries++ > 60) clearInterval(iv); }, 200);
+  }
+
+  /* F 키 — 셸 keyName 에 없는 키라 여기서 직접 받는다 (입력창 가드 유지) */
+  document.addEventListener('keydown', function (e) {
+    if (!MG.open || MG.view !== 'play' || !MG.cur || MG.cur.id !== ID || MG.cur.over) return;
+    if (window.__jwTypingTarget && window.__jwTypingTarget(e)) return;
+    if (e.code !== 'KeyF') return;
+    e.preventDefault();
+    try { if (MG.cur.inst && MG.cur.inst.toggleMode) MG.cur.inst.toggleMode(); } catch (er) {}
+  });
+
+  try { console.log('[v547] 💣 스피드 지뢰찾기 등록 · order', (MG.order || []).length); } catch (e) {}
+
+  /* 테스트/검증용 공개 훅 */
+  root.JW547 = {
+    id: ID,
+    key: KEY,
+    cap: DAILY_CAP,
+    size: N,
+    mines: MINES,
+    safe: SAFE,
+    cell: CELL,
+    box: { x: BX, y: BY, w: N * CELL, h: N * CELL },
+    mode: { y: MB.y, h: MB.h },
+    target: SPEED_TARGET,
     tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
     daily: function () { return loadDaily(); },
     state: function () {
