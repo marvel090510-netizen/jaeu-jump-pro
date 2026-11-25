@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.44 정식판 (화면 표시 버전은 아래 BUILD = 'v5.44')
+   muse-v5-9 game.js — v5.45 정식판 (화면 표시 버전은 아래 BUILD = 'v5.45')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -62659,7 +62659,8 @@ if (typeof module !== 'undefined' && module.exports) {
    - v5.41: 개방 4종으로 확장 — 🚀 부스터 로켓: 성층권 돌파(holefly) 추가. 나머지 21종은
      '🔒 준비 중'.
    - v5.42: 개방 5종으로 확장 — 🧩 블록 블라스트(blockblast) 추가. 나머지 20종은 '🔒 준비 중'.
-   - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 5종은 목록 맨 앞에
+   - v5.45: 개방 6종으로 확장 — 🐍 네온 지렁이(snake) 추가. 나머지 19종은 '🔒 준비 중'.
+   - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 6종은 목록 맨 앞에
      ✨ NEW · PLAYABLE 강조 카드로 배치한다.
    ========================================================================== */
 (function (root) {
@@ -62673,19 +62674,21 @@ if (typeof module !== 'undefined' && module.exports) {
   var OPEN3 = 'coin';             /* 개방 3호 (🪙 골드 러시 · v5.38 신작) */
   var OPEN4 = 'holefly';          /* 개방 4호 (🚀 부스터 로켓 · v5.41 신작) */
   var OPEN5 = 'blockblast';       /* 개방 5호 (🧩 블록 블라스트 · v5.42 신작) */
-  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1 };
+  var OPEN6 = 'snake';            /* 개방 6호 (🐍 네온 지렁이 · v5.45 신작) */
+  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1 };
   root.JW530MGLOCK = true;
   root.JW530MG_OPEN = OPEN;
   root.JW530MG_OPEN2 = OPEN2;
   root.JW530MG_OPEN3 = OPEN3;
   root.JW530MG_OPEN4 = OPEN4;
   root.JW530MG_OPEN5 = OPEN5;
+  root.JW530MG_OPEN6 = OPEN6;
   root.JW530MG_OPENS = OPENS;
 
   var doc = document;
   var $ = function (id) { return doc.getElementById(id); };
   var LOCK_MSG = '🔒 이 미니게임은 준비 중이에요';
-  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 5종이 열려 있어요';
+  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 6종이 열려 있어요';
 
   function MG() { return root.JW48MG; }
   function isLocked(id) { return !!id && !OPENS[id]; }
@@ -62752,13 +62755,18 @@ if (typeof module !== 'undefined' && module.exports) {
       '.v530new.v530new5::after{content:"🧩 NEW · PLAYABLE";',
       '  background:linear-gradient(180deg,#ffd6f0,#f472b6);border-color:#9d174d;color:#3b0219;}',
       '.v530new.v530new5{box-shadow:inset 0 0 0 2px rgba(244,114,182,.55),0 0 16px rgba(244,114,182,.32),0 3px 0 #05030a !important;}',
-      /* 다섯 개방 카드의 줄서기: 1호 → 2호 → 3호 → 4호 → 5호 → 잠금 20종 */
-      '#v48mgCards .v530new.v530new1{order:-5 !important;}',
-      '#v48mgCards .v530new.v530new2{order:-4 !important;}',
-      '#v48mgCards .v530new.v530new3{order:-3 !important;}',
-      '#v48mgCards .v530new.v530new4{order:-2 !important;}',
-      '#v48mgCards .v530new.v530new5{order:-1 !important;}',
-      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag{display:none !important;}',
+      /* 6호 개방 카드 (🐍 네온 지렁이 · v5.45) */
+      '.v530new.v530new6::after{content:"🐍 NEW · PLAYABLE";',
+      '  background:linear-gradient(180deg,#c8ffe0,#34d399);border-color:#047857;color:#022c22;}',
+      '.v530new.v530new6{box-shadow:inset 0 0 0 2px rgba(52,211,153,.55),0 0 16px rgba(52,211,153,.34),0 3px 0 #05030a !important;}',
+      /* 여섯 개방 카드의 줄서기: 1호 → 2호 → 3호 → 4호 → 5호 → 6호 → 잠금 19종 */
+      '#v48mgCards .v530new.v530new1{order:-6 !important;}',
+      '#v48mgCards .v530new.v530new2{order:-5 !important;}',
+      '#v48mgCards .v530new.v530new3{order:-4 !important;}',
+      '#v48mgCards .v530new.v530new4{order:-3 !important;}',
+      '#v48mgCards .v530new.v530new5{order:-2 !important;}',
+      '#v48mgCards .v530new.v530new6{order:-1 !important;}',
+      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag,.v530new.v530new6 .tag{display:none !important;}',
       /* 잠금 안내 띠 */
       /* v5.41: flex 로 두면 글자 마디마다 칸이 생겨 세로로 쪼개진다 — block 으로 바꿔 줄바꿈만 되게 */
       '#v530MgNote{display:block;padding:6px 8px;margin:0 0 6px;border-radius:9px;',
@@ -62798,7 +62806,7 @@ if (typeof module !== 'undefined' && module.exports) {
       if (!id) return;
       if (isLocked(id)) {
         if (!el.__v530l) { el.__v530l = 1; el.classList.add('v530lock'); el.setAttribute('aria-disabled', 'true'); }
-        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); }
+        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); }
       } else {
         if (!el.__v530n) { el.__v530n = 1; el.classList.add('v530new'); el.removeAttribute('aria-disabled'); }
         if (id === OPEN && !el.classList.contains('v530new1')) el.classList.add('v530new1');
@@ -62811,6 +62819,8 @@ if (typeof module !== 'undefined' && module.exports) {
         else if (el.classList.contains('v530new4')) el.classList.remove('v530new4');
         if (id === OPEN5) { if (!el.classList.contains('v530new5')) el.classList.add('v530new5'); }
         else if (el.classList.contains('v530new5')) el.classList.remove('v530new5');
+        if (id === OPEN6) { if (!el.classList.contains('v530new6')) el.classList.add('v530new6'); }
+        else if (el.classList.contains('v530new6')) el.classList.remove('v530new6');
         if (el.__v530l) { el.__v530l = 0; el.classList.remove('v530lock'); }
       }
     });
@@ -62823,7 +62833,7 @@ if (typeof module !== 'undefined' && module.exports) {
     var sub = $('v48mgSub');
     var m = MG();
     if (sub && m && m.order) {
-      var want = '5종 플레이 가능 · ' + Math.max(0, m.order.length - 5) + '종 준비 중';
+      var want = '6종 플레이 가능 · ' + Math.max(0, m.order.length - 6) + '종 준비 중';
       if (sub.textContent !== want) sub.textContent = want;
     }
     /* 미니게임 목록 상단 안내 */
@@ -62831,7 +62841,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (hub && !$('v530MgNote')) {
       var n = doc.createElement('div');
       n.id = 'v530MgNote';
-      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> 5종을 지금 플레이할 수 있어요 · 나머지 20종은 다음 업데이트에서 순서대로 열려요';
+      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> 6종을 지금 플레이할 수 있어요 · 나머지 19종은 다음 업데이트에서 순서대로 열려요';
       hub.insertBefore(n, hub.firstChild);
     }
     /* 멀티 방 설정 안내 문구 (25종 → 1종 개방) */
@@ -62839,7 +62849,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (sList) {
       var hint = sList.previousElementSibling;
       if (hint && String(hint.className || '').indexOf('v48mg-hint') >= 0) {
-        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 5종이 열려 있어요 · 나머지 20종은 준비 중';
+        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 6종이 열려 있어요 · 나머지 19종은 준비 중';
         if (hint.textContent !== want2) hint.textContent = want2;
       }
     }
@@ -62908,9 +62918,9 @@ if (typeof module !== 'undefined' && module.exports) {
   function reorder() {
     var m = MG();
     if (!m || !m.order || !m.order.length) return;
-    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5) return;
+    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6) return;
     var rest = m.order.filter(function (x) { return x && !OPENS[x]; });
-    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5].concat(rest);
+    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6].concat(rest);
   }
 
   /* 카드가 새로 그려지는 즉시 배지를 다시 칠한다 (innerHTML 재생성 대응) */
@@ -62929,7 +62939,7 @@ if (typeof module !== 'undefined' && module.exports) {
   setTimeout(paint, 600);
   setTimeout(paint, 1600);
   setInterval(function () { try { reorder(); paint(); } catch (e) {} }, 900);
-  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5);
+  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6);
 })(window);
 
 
@@ -69411,7 +69421,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.44';
+  var BUILD = 'v5.45';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81300,7 +81310,10 @@ if (typeof module !== 'undefined' && module.exports) {
       { id: 'm_rocket900', icon: '🌌', title: '부스터 로켓 900점', desc: '한 판에서 900점 이상', need: 1, coin: 70, unit: '점', mg: 'holefly' },
       /* v5.42: 🧩 블록 블라스트 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
       { id: 'm_block1', icon: '🧩', title: '블록 블라스트 1판', desc: '🧩 블록 블라스트 한 판', need: 1, coin: 50, unit: '판', mg: 'blockblast' },
-      { id: 'm_block300', icon: '🎯', title: '블록 블라스트 300점', desc: '한 판에서 300점 이상', need: 1, coin: 70, unit: '점', mg: 'blockblast' }
+      { id: 'm_block300', icon: '🎯', title: '블록 블라스트 300점', desc: '한 판에서 300점 이상', need: 1, coin: 70, unit: '점', mg: 'blockblast' },
+      /* v5.45: 🐍 네온 지렁이 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
+      { id: 'm_snake1', icon: '🐍', title: '네온 지렁이 1판', desc: '🐍 네온 지렁이 한 판', need: 1, coin: 50, unit: '판', mg: 'snake' },
+      { id: 'm_snake120', icon: '🎯', title: '네온 지렁이 120점', desc: '한 판에서 120점 이상', need: 1, coin: 70, unit: '점', mg: 'snake' }
     ]
   };
   var BY_ID = {};
@@ -81463,6 +81476,9 @@ if (typeof module !== 'undefined' && module.exports) {
         /* v5.42: 🧩 블록 블라스트 — 1판 / 300점 */
         if (mine('m_block1')) changed = bump('m_block1', 1) || changed;
         if (mine('m_block300') && (Number(data.score) || 0) >= 300) changed = bump('m_block300', 1) || changed;
+        /* v5.45: 🐍 네온 지렁이 — 1판 / 120점 */
+        if (mine('m_snake1')) changed = bump('m_snake1', 1) || changed;
+        if (mine('m_snake120') && (Number(data.score) || 0) >= 120) changed = bump('m_snake120', 1) || changed;
       }
       if (changed) {
         save();
@@ -86200,7 +86216,7 @@ if (typeof module !== 'undefined' && module.exports) {
        노폴 배지                     →  'jw532_mastery'   m[map].noFall
        최고 콤보(콤보 업데이트)      →  'jw537_best_combo' (number)
        스토리 클리어                 →  'jw64_story_v1'   .cleared
-       미니게임 최고 기록            →  'jw48mg_best_v1'  (개방 5종: rhythm·meteor·coin·holefly·blockblast)
+       미니게임 최고 기록            →  'jw48mg_best_v1'  (개방 6종: rhythm·meteor·coin·holefly·blockblast·snake)
        펫 보유                       →  JW529.st().owned
        테마 아이템 보유              →  'jw533_theme_v1'  .owned
        총 출석 일수                  →  'jw539_checkin'   .totalDays
@@ -86271,7 +86287,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (!s || !s.cleared || typeof s.cleared !== 'object') return 0;
     return Object.keys(s.cleared).length;
   }
-  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast'];   /* v5.30·v5.35·v5.38·v5.41·v5.42 개방 5종 */
+  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45 개방 6종 */
   function mgCount() {
     var best = ls('jw48mg_best_v1', {}) || {};
     try { if (!best || !Object.keys(best).length) { if (root.JW48MG && root.JW48MG.best) best = root.JW48MG.best; } } catch (e) {}
@@ -86313,7 +86329,7 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'combo10',cat: '기록', ic: '🔥', name: '콤보 파이터',      desc: '최고 콤보 10 이상',           goal: 10,   coin: 40, cur: bestCombo },
     { id: 'combo25',cat: '기록', ic: '💥', name: '피버 마스터',      desc: '최고 콤보 25 이상',           goal: 25,   coin: 80, cur: bestCombo },
     { id: 'story1', cat: '기록', ic: '📖', name: '스토리 도전자',    desc: '스토리 1스테이지 클리어',      goal: 1,    coin: 50, cur: storyCount },
-    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 5종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
+    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 6종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
     { id: 'pet3',   cat: '수집', ic: '🐾', name: '펫 친구',          desc: '펫 3종 이상 보유',            goal: 3,    coin: 50, cur: petCount },
     { id: 'theme5', cat: '수집', ic: '🎨', name: '테마 컬렉터',      desc: '테마 아이템 5종 이상 보유',    goal: 5,    coin: 60, cur: themeCount },
     { id: 'check1', cat: '습관', ic: '📅', name: '개근 시작',        desc: '총 출석 1일 이상',            goal: 1,    coin: 30, cur: checkinDays }
@@ -89734,4 +89750,880 @@ if (typeof module !== 'undefined' && module.exports) {
     }
   };
   try { console.log('[v544] 🎭 코디 프리셋 3슬롯 · 🎲 랜덤 코디 준비'); } catch (e) {}
+})(window);
+
+/* ===== v545 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.45 : 🐍 네온 지렁이 — 미니게임 6호 (여섯 번째 슬롯 'snake' 전면 개편)
+   --------------------------------------------------------------------------
+   · 18×18 네온 그리드 아케이드. 사과를 먹으면 길이가 늘고, 벽이나 내 몸에
+     부딪히면 짧은 네온 폭발과 함께 판이 끝난다.
+   · 조작 3가지 — 폰·태블릿·데스크톱 모두에서 실수 없이.
+     ① 보드 위 스와이프 : 손가락을 17px 이상 끌면 그 방향으로 꺾인다. 한 번
+        끄는 동안에도 계속 꺾을 수 있어(스와이프 리셋) 빠른 연속 회전이 된다.
+     ② 하단 십자 D-패드 : 보드 아래 ▲◀▼▶ 버튼. 누르는 순간 반응한다.
+     ③ 키보드 : 방향키 / WASD (셸의 keyName 이 e.code 로 판정 — 한글 입력기 OK,
+        __jwTypingTarget 가드도 그대로 존중).
+   · 180도 즉시 역주행 금지 + 입력 큐 2칸 버퍼 : 한 틱 안에 위·왼쪽을 연달아
+     눌러도 두 번 다 먹고, 반대 방향(위→아래)은 무시한다.
+   · 먹이 — 🍎 네온 사과(+10점, 길이 +1) · 🌟 황금 사과(3개마다 등장, 6초 제한,
+     +35점 + 3초간 FEVER x2 + 네온 파티클·효과음).
+   · 콤보 — 3.6초 안에 다음 사과를 먹으면 콤보 xN, 최대 +10점 보너스.
+   · 속도 — 길이가 늘수록 틱 간격이 0.17s → 0.075s 까지 자연스럽게 빨라진다.
+   · 스킨 연동 — 머리 색은 장착 스킨, 몸통·꼬리는 장착 꼬리 잔상 테마 색으로
+     은은하게 이어진다(잔상이 기본 구름이면 스킨 색을 어둡게 이어 쓴다).
+   · 펫 코인 +10 / +20 / +35 (하루 상한 60, 키 'jw545_snake', JW529.addCoins 경유).
+   · 🎯 오늘의 미션 '네온 지렁이 1판(+50)' · '네온 지렁이 120점(+70)' 자동 연동
+     (셸 finish() → JW531.ev('mg_end', {id:'snake'})). 🏆 업적 '미니게임 올라운더'도
+     개방 6종 기준으로 센다(v5.45 OPEN_MG).
+   · 기존 'snake' 슬롯(v4.8 프로토타입)을 덮어쓴다 — 기록·봇 대전·방 대전
+     호환이 그대로 이어진다 (v5.30 rhythm · v5.35 meteor · v5.38 coin · v5.41 holefly ·
+     v5.42 blockblast 와 같은 방식).
+   · 고정 배열과 경량 캔버스 드로잉만 써서 60fps 루프에 부담이 없고, 나가기·재시작은
+     셸의 MG.stopGame → inst.stop 으로 정리된다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var MG = root.JW48MG, V = root.JW43;
+  if (!MG || !V) return;
+
+  var ID = 'snake';
+  var W = 360, H = 600;
+  var HUDH = 44;
+
+  /* 보드 · 트레이 배치 (논리 좌표 360×600) */
+  var G = 18;                   /* 18×18 */
+  var CELL = 16;
+  var BX = 36, BY = 50;         /* 보드 좌상단 */
+  var BW = G * CELL;            /* 288 */
+  var TICK0 = 0.17;             /* 시작 틱 간격(초) */
+  var TICKMIN = 0.075;
+  var GOLD_LIFE = 6;            /* 황금 사과 제한 시간 */
+  var FEVER_T = 3;              /* FEVER 지속 */
+  var COMBO_T = 3.6;            /* 콤보 유지 시간 */
+  var DAILY_CAP = 60;           /* 네온 지렁이 하루 펫 코인 상한 */
+  var KEY = 'jw545_snake';
+  var TIERS = [
+    { s: 350, coin: 35, name: '🥇 GOLD', col: '#fde047' },
+    { s: 120, coin: 20, name: '🥈 SILVER', col: '#e2e8f0' },
+    { s: 0, coin: 10, name: '🥉 BRONZE', col: '#fdba74' }
+  ];
+
+  /* 스킨별 네온 색 — 머리 색으로 쓴다 */
+  var SKINCOL = {
+    jaeu: '#5eead4', cat: '#fb923c', frog: '#4ade80', robot: '#38bdf8', ghost: '#c4b5fd',
+    rabbit: '#f9a8d4', panda: '#e2e8f0', fox: '#fb923c', demon: '#f87171', alien: '#a3e635',
+    wizard: '#a78bfa', knight: '#fbbf24'
+  };
+
+  var PAD = {
+    u: { x: 152, y: 384, w: 56, h: 44 },
+    l: { x: 92, y: 432, w: 56, h: 44 },
+    d: { x: 152, y: 432, w: 56, h: 44 },
+    r: { x: 212, y: 432, w: 56, h: 44 }
+  };
+  var DIRS = { u: { x: 0, y: -1 }, d: { x: 0, y: 1 }, l: { x: -1, y: 0 }, r: { x: 1, y: 0 } };
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function tone(f, d, v, t, f2) { try { V.beep(f, d || 0.06, v || 0.09, t || 'square', f2 || null); } catch (e) {} }
+  function seq(list, step, vol, dur) {
+    for (var i = 0; i < list.length; i++) (function (i) {
+      setTimeout(function () { tone(list[i], dur || 0.08, vol || 0.09, 'square', null); }, i * step);
+    })(i);
+  }
+  function hex2rgb(h) {
+    h = String(h || '#4ade80').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return [parseInt(h.slice(0, 2), 16) || 0, parseInt(h.slice(2, 4), 16) || 0, parseInt(h.slice(4, 6), 16) || 0];
+  }
+  function rgba(h, a) { var c = hex2rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function mixHex(x, y, t) {
+    var a = hex2rgb(x), b = hex2rgb(y);
+    t = clamp(t == null ? 0.5 : t, 0, 1);
+    return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * t) + ',' + Math.round(a[1] + (b[1] - a[1]) * t) + ',' + Math.round(a[2] + (b[2] - a[2]) * t) + ')';
+  }
+
+  /* ---------------------------------------------------------------- 저장 */
+  function lsGet(k, d) { try { return V.lsGet(k, d); } catch (e) { return d; } }
+  function lsSet(k, v) { try { V.lsSet(k, v); } catch (e) {} }
+  function dayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function loadDaily() {
+    var s = lsGet(KEY, null);
+    if (!s || typeof s !== 'object') s = { d: '', c: 0 };
+    if (typeof s.c !== 'number' || !isFinite(s.c) || s.c < 0) s.c = 0;
+    return s;
+  }
+  /* 펫 코인 지급 — JW529 저장소를 그대로 거친다 (v5.31 미션·v5.35·v5.38·v5.41·v5.42 와 같은 방식) */
+  function addCoins(n) {
+    n = Math.round(Number(n) || 0);
+    if (n <= 0) return true;
+    try {
+      if (root.JW529 && root.JW529.addCoins) { root.JW529.addCoins(n); return true; }
+      if (root.JW529 && root.JW529.coins && root.JW529.st) {
+        root.JW529.coins((Number(root.JW529.st().coins) || 0) + n);
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  function tierOf(score) {
+    for (var i = 0; i < TIERS.length; i++) if (score >= TIERS[i].s) return TIERS[i];
+    return TIERS[TIERS.length - 1];
+  }
+  function grantCoins(score) {
+    var want = tierOf(score).coin;
+    var d = loadDaily();
+    var used = d.d === dayKey() ? d.c : 0;
+    var left = Math.max(0, DAILY_CAP - used);
+    var gain = Math.min(want, left);
+    var ok = true;
+    if (gain > 0) {
+      if (!addCoins(gain)) { gain = 0; ok = false; }
+      else lsSet(KEY, { d: dayKey(), c: used + gain });
+    }
+    return { gain: gain, want: want, used: used + gain, cap: DAILY_CAP, fail: !ok };
+  }
+
+  /* ---------------------------------------------------------------- 게임 본체 */
+  function create(a) {
+    var A = a.a;
+    var R = a.rng || Math.random;
+
+    var S = {
+      ready: true, over: false, dying: 0, t: 0, acc: 0, step: TICK0, time: 0,
+      body: [], dir: { x: 0, y: -1 }, queue: [],
+      food: null, gold: null, goldT: 0, goldForSpawn: 0,
+      score: 0, eaten: 0, goldEaten: 0,
+      combo: 0, bestCombo: 0, comboT: 0, feverT: 0,
+      sparks: [], rings: [], shake: 0, flash: 0,
+      msg: '', msgT: 0, msgCol: '#a7f3d0', msgSub: '',
+      deathReason: '', deathAt: null,
+      bot: 0, coinGain: 0, coinUsed: 0, coinTier: null,
+      press: '', pressT: 0, sw: null,
+      headCol: '#4ade80', tailCol: '#166534', trailCol: '#4ade80'
+    };
+
+    /* -------------------------------------------------------------- 색 */
+    function skinColor() {
+      var id = '';
+      try { var st = V.st(); id = (st && st.me && st.me.skin) || ''; } catch (e) {}
+      return SKINCOL[id] || '#4ade80';
+    }
+    function trailColor() {
+      var col = null, id = '';
+      try {
+        var st = root.JW529 && root.JW529.st ? root.JW529.st() : null;
+        id = (st && st.trail) || '';
+        if (id && id !== 't_cloud' && id !== 'none') {
+          var list = (root.JW529.trails || []);
+          for (var i = 0; i < list.length; i++) if (list[i].id === id) col = list[i].col || null;
+        }
+      } catch (e) {}
+      return col;
+    }
+    function refreshColors() {
+      var h = skinColor(), t = trailColor();
+      S.headCol = h;
+      S.trailCol = t || h;
+      S.tailCol = t || mixHex(h, '#0b1220', 0.6);
+    }
+
+    /* -------------------------------------------------------------- 보드 */
+    function occ(list, x, y) {
+      for (var i = 0; i < list.length; i++) if (list[i].x === x && list[i].y === y) return true;
+      return false;
+    }
+    function placeFood() {
+      for (var i = 0; i < 500; i++) {
+        var x = Math.floor(R() * G), y = Math.floor(R() * G);
+        if (occ(S.body, x, y)) continue;
+        if (S.gold && S.gold.x === x && S.gold.y === y) continue;
+        S.food = { x: x, y: y };
+        return;
+      }
+      S.food = { x: 2, y: 2 };
+    }
+    function spawnGold() {
+      for (var i = 0; i < 500; i++) {
+        var x = Math.floor(R() * G), y = Math.floor(R() * G);
+        if (occ(S.body, x, y)) continue;
+        if (S.food && S.food.x === x && S.food.y === y) continue;
+        S.gold = { x: x, y: y };
+        S.goldT = GOLD_LIFE;
+        S.msg = '🌟 황금 사과 등장!';
+        S.msgSub = GOLD_LIFE + '초 안에 먹으면 FEVER x2';
+        S.msgCol = '#fde047';
+        S.msgT = 1.2;
+        seq([1040, 1320, 1560], 70, 0.08, 0.08);
+        return;
+      }
+    }
+
+    /* -------------------------------------------------------------- 연출 */
+    function burst(x, y, n, col, spd) {
+      for (var i = 0; i < n; i++) {
+        if (S.sparks.length > 200) break;
+        var ang = Math.random() * 6.283;
+        var v = (spd || 170) * (0.3 + Math.random());
+        S.sparks.push({
+          x: x, y: y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v,
+          life: 0.35 + Math.random() * 0.5, max: 0.85, c: col, s: Math.random() < 0.3 ? 4 : 2
+        });
+      }
+    }
+
+    /* -------------------------------------------------------------- 봇 (같은 시드) */
+    function botPlay(seed) {
+      var r = MG.rng(seed || 1);
+      var body = [{ x: 9, y: 12 }, { x: 9, y: 13 }, { x: 9, y: 14 }];
+      var dir = { x: 0, y: -1 }, food = null, sc = 0, guard = 0, interval = TICK0;
+      var combo = 0, comboT = 0;
+      function inB(x, y) { return occ(body, x, y); }
+      function pf() {
+        for (var i = 0; i < 400; i++) {
+          var x = Math.floor(r() * G), y = Math.floor(r() * G);
+          if (!inB(x, y)) { food = { x: x, y: y }; return; }
+        }
+        food = { x: 1, y: 1 };
+      }
+      pf();
+      var ds = [{ x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 1, y: 0 }];
+      while (guard++ < 520) {
+        var best = null, bestv = -1e9;
+        for (var di = 0; di < 4; di++) {
+          var o = ds[di];
+          if (o.x === -dir.x && o.y === -dir.y) continue;
+          var nx = body[0].x + o.x, ny = body[0].y + o.y;
+          if (nx < 0 || ny < 0 || nx >= G || ny >= G) continue;
+          var hit = false;
+          for (var bi = 0; bi < body.length - 1; bi++) if (body[bi].x === nx && body[bi].y === ny) { hit = true; break; }
+          if (hit) continue;
+          var d = Math.abs(nx - food.x) + Math.abs(ny - food.y);
+          var space = 0;
+          for (var si = 0; si < 10; si++) {
+            var tx = nx + o.x * si, ty = ny + o.y * si;
+            if (tx < 0 || ty < 0 || tx >= G || ty >= G || inB(tx, ty)) break;
+            space++;
+          }
+          var v = -d * 2 + space * 1.6 + (o.x === dir.x && o.y === dir.y ? 0.6 : 0);
+          if (v > bestv) { bestv = v; best = o; }
+        }
+        if (!best) break;
+        dir = best;
+        var hx = body[0].x + dir.x, hy = body[0].y + dir.y;
+        var ate = !!(food && hx === food.x && hy === food.y);
+        body.unshift({ x: hx, y: hy });
+        if (ate) {
+          combo = comboT > 0 ? combo + 1 : 1;
+          comboT = COMBO_T;
+          sc += 10 + Math.min(combo - 1, 5) * 2;
+          pf();
+          interval = Math.max(TICKMIN, TICK0 - (body.length - 3) * 0.0035);
+        } else body.pop();
+        comboT = Math.max(0, comboT - interval);
+        if (comboT === 0) combo = 0;
+      }
+      return sc;
+    }
+
+    /* -------------------------------------------------------------- 시작 / 종료 */
+    function reset() {
+      S.ready = true; S.over = false; S.dying = 0; S.t = 0; S.acc = 0; S.time = 0;
+      S.step = TICK0;
+      S.body = [{ x: 9, y: 12 }, { x: 9, y: 13 }, { x: 9, y: 14 }];
+      S.dir = { x: 0, y: -1 }; S.queue = [];
+      S.food = null; S.gold = null; S.goldT = 0; S.goldForSpawn = 0;
+      S.score = 0; S.eaten = 0; S.goldEaten = 0;
+      S.combo = 0; S.bestCombo = 0; S.comboT = 0; S.feverT = 0;
+      S.sparks = []; S.rings = []; S.shake = 0; S.flash = 0;
+      S.msg = ''; S.msgT = 0; S.msgSub = '';
+      S.deathReason = ''; S.deathAt = null;
+      S.coinGain = 0; S.coinUsed = 0; S.coinTier = null;
+      S.press = ''; S.pressT = 0; S.sw = null;
+      refreshColors();
+      placeFood();
+      S.bot = a.bot ? Math.round(botPlay(a.seed) * 0.8) : 0;
+      a.setScore(0);
+      a.setStatus('');
+      a.vsLine(a.bot ? '🤖 봇 목표 ' + S.bot + '점' : '');
+    }
+    function begin() {
+      if (!S.ready || S.over) return;
+      S.ready = false;
+      S.t = 0;
+      seq([523, 659, 784], 70, 0.09, 0.08);
+    }
+    function gameOver() {
+      if (S.over) return;
+      S.over = true;
+      S.sw = null; S.press = '';
+      var t = tierOf(S.score);
+      S.coinTier = t;
+      var g = grantCoins(S.score);
+      S.coinGain = g.gain;
+      S.coinUsed = g.used;
+      var note = [];
+      note.push('🍎 사과 ' + S.eaten + '개 · 길이 ' + S.body.length);
+      if (S.bestCombo >= 2) note.push('🔥 최고 콤보 x' + S.bestCombo);
+      if (S.goldEaten > 0) note.push('🌟 황금 사과 ' + S.goldEaten + '개');
+      note.push(S.deathReason || '게임 오버');
+      if (g.fail) note.push('🪙 펫 코인 저장소를 찾지 못했어요');
+      else if (g.gain > 0) note.push(t.name + ' · 🪙 펫 코인 +' + g.gain + ' (오늘 ' + g.used + '/' + g.cap + ')');
+      else note.push(t.name + ' · 🪙 오늘 코인 상한(' + g.cap + ')을 다 받았어요');
+      a.setScore(S.score);
+      var win = a.bot ? (S.score >= S.bot) : null;
+      a.over(win, note.join('\n'));
+    }
+    function die(reason, hx, hy) {
+      if (S.over || S.dying > 0) return;
+      S.dying = 0.44;
+      S.deathReason = reason;
+      var dx = clamp(hx, 0, G - 1), dy = clamp(hy, 0, G - 1);
+      var px = BX + dx * CELL + CELL / 2, py = BY + dy * CELL + CELL / 2;
+      S.deathAt = { x: px, y: py };
+      S.shake = 9;
+      S.flash = 1;
+      burst(px, py, 30, '#7dd3fc', 240);
+      burst(px, py, 16, S.headCol, 200);
+      S.rings.push({ x: px, y: py, life: 0.44, max: 0.44, c: S.headCol });
+      tone(180, 0.3, 0.13, 'sawtooth', 90);
+      tone(90, 0.36, 0.1, 'square', 60);
+    }
+
+    /* -------------------------------------------------------------- 한 틱 */
+    function eatApple() {
+      S.eaten++;
+      S.combo = S.comboT > 0 ? S.combo + 1 : 1;
+      if (S.combo > S.bestCombo) S.bestCombo = S.combo;
+      S.comboT = COMBO_T;
+      var bonus = Math.min(S.combo - 1, 5) * 2;
+      var mult = S.feverT > 0 ? 2 : 1;
+      var gain = 10 * mult + bonus;
+      S.score += gain;
+      a.setScore(S.score);
+      var fx = BX + S.body[0].x * CELL + CELL / 2;
+      var fy = BY + S.body[0].y * CELL + CELL / 2;
+      burst(fx, fy, mult > 1 ? 9 : 5, mult > 1 ? '#fde047' : '#f87171', 120);
+      S.msg = (mult > 1 ? '×2  ' : '') + '+' + gain + (S.combo > 1 ? '   콤보 x' + S.combo : '');
+      S.msgCol = mult > 1 ? '#fde047' : '#a7f3d0';
+      S.msgSub = '';
+      S.msgT = 0.85;
+      tone(880 + Math.min(360, S.combo * 40), 0.05, 0.08, 'square', 1180);
+      S.goldForSpawn++;
+      if (!S.gold && S.goldForSpawn >= 3) spawnGold();
+      placeFood();
+      S.step = Math.max(TICKMIN, TICK0 - (S.body.length - 3) * 0.0035);
+    }
+    function eatGold() {
+      S.goldEaten++;
+      S.gold = null;
+      S.goldT = 0;
+      S.goldForSpawn = 0;
+      S.score += 35;
+      S.feverT = FEVER_T;
+      S.shake = 6;
+      S.flash = 0.85;
+      a.setScore(S.score);
+      var fx = BX + S.body[0].x * CELL + CELL / 2;
+      var fy = BY + S.body[0].y * CELL + CELL / 2;
+      burst(fx, fy, 26, '#fde047', 220);
+      burst(fx, fy, 12, '#fff7d6', 170);
+      S.rings.push({ x: fx, y: fy, life: 0.5, max: 0.5, c: '#fde047' });
+      S.msg = '🌟 FEVER x2!  +35';
+      S.msgSub = '3초 동안 점수 2배';
+      S.msgCol = '#fde047';
+      S.msgT = 1.5;
+      seq([784, 988, 1175, 1568], 60, 0.1, 0.08);
+    }
+    function step() {
+      if (S.over || S.dying > 0) return;
+      if (S.queue.length) S.dir = S.queue.shift();
+      var hx = S.body[0].x + S.dir.x, hy = S.body[0].y + S.dir.y;
+      var grow = !!(S.food && hx === S.food.x && hy === S.food.y);
+      if (hx < 0 || hy < 0 || hx >= G || hy >= G) return die('벽에 부딪혔어요', hx, hy);
+      var n = S.body.length, i;
+      var last = grow ? n : n - 1;
+      for (i = 0; i < last; i++) {
+        if (S.body[i].x === hx && S.body[i].y === hy) return die('내 몸에 부딪혔어요', hx, hy);
+      }
+      var ateGold = !!(S.gold && hx === S.gold.x && hy === S.gold.y);
+      S.body.unshift({ x: hx, y: hy });
+      if (grow) { S.food = null; eatApple(); }
+      else {
+        S.body.pop();
+        if (ateGold) eatGold();
+      }
+    }
+
+    /* -------------------------------------------------------------- 입력 */
+    function turnBy(k) {
+      var d = DIRS[k];
+      if (!d || S.ready || S.over || S.dying > 0) return;
+      var last = S.queue.length ? S.queue[S.queue.length - 1] : S.dir;
+      if (last.x === d.x && last.y === d.y) return;
+      if (last.x === -d.x && last.y === -d.y) return;
+      if (S.queue.length >= 2) return;
+      S.queue.push({ x: d.x, y: d.y });
+      tone(560, 0.03, 0.05, 'square', 700);
+    }
+    function padAt(p) {
+      var keys = ['u', 'l', 'd', 'r'];
+      for (var i = 0; i < keys.length; i++) {
+        var b = PAD[keys[i]];
+        if (p.x >= b.x - 3 && p.x <= b.x + b.w + 3 && p.y >= b.y - 3 && p.y <= b.y + b.h + 3) return keys[i];
+      }
+      return '';
+    }
+
+    var api = {
+      start: reset,
+      stop: function () { S.over = true; S.sw = null; },
+      begin: begin,
+      update: function (dt) {
+        S.t += dt;
+        if (S.msgT > 0) S.msgT = Math.max(0, S.msgT - dt);
+        if (S.pressT > 0) { S.pressT = Math.max(0, S.pressT - dt); if (S.pressT === 0) S.press = ''; }
+        if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 30);
+        if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 2.2);
+        var i;
+        for (i = S.sparks.length - 1; i >= 0; i--) {
+          var s = S.sparks[i];
+          s.life -= dt;
+          if (s.life <= 0) { S.sparks.splice(i, 1); continue; }
+          s.vy += 300 * dt;
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+        }
+        for (i = S.rings.length - 1; i >= 0; i--) {
+          S.rings[i].life -= dt;
+          if (S.rings[i].life <= 0) S.rings.splice(i, 1);
+        }
+        if (S.dying > 0) {
+          S.dying -= dt;
+          if (S.dying <= 0) { S.dying = 0; gameOver(); }
+          return;
+        }
+        if (S.over || S.ready) return;
+        S.time += dt;
+        if (S.comboT > 0) {
+          S.comboT = Math.max(0, S.comboT - dt);
+          if (S.comboT === 0) S.combo = 0;
+        }
+        if (S.feverT > 0) {
+          S.feverT = Math.max(0, S.feverT - dt);
+          if (S.feverT === 0) {
+            S.msg = 'FEVER 종료';
+            S.msgCol = '#93a4c4';
+            S.msgSub = '';
+            S.msgT = 0.8;
+            tone(420, 0.12, 0.07, 'triangle', 300);
+          } else if (Math.random() < 0.5) {
+            burst(BX + S.body[0].x * CELL + CELL / 2 + (Math.random() - 0.5) * 14,
+              BY + S.body[0].y * CELL + CELL / 2 + (Math.random() - 0.5) * 14, 1, '#fde047', 60);
+          }
+        }
+        if (S.gold) {
+          S.goldT -= dt;
+          if (S.goldT <= 0) {
+            S.gold = null;
+            S.goldT = 0;
+            S.goldForSpawn = 0;
+            S.msg = '🌟 황금 사과를 놓쳤어요';
+            S.msgCol = '#93a4c4';
+            S.msgSub = '';
+            S.msgT = 0.9;
+            tone(300, 0.1, 0.06, 'triangle', 220);
+          }
+        }
+        S.acc += dt;
+        var guard = 0;
+        while (S.acc >= S.step && guard++ < 4) {
+          S.acc -= S.step;
+          step();
+          if (S.dying > 0 || S.over) break;
+        }
+      },
+      pointer: function (e) {
+        if (!e) return;
+        if (S.over) return;
+        if (S.ready) { if (e.type === 'down') begin(); return; }
+        if (S.dying > 0) return;
+        if (e.type === 'down') {
+          var k = padAt(e);
+          if (k) {
+            S.press = k;
+            S.pressT = 0.13;
+            turnBy(k);
+            return;
+          }
+          S.sw = { x: e.x, y: e.y };
+          return;
+        }
+        if (e.type === 'move') {
+          if (!S.sw) return;
+          var dx = e.x - S.sw.x, dy = e.y - S.sw.y;
+          if (Math.abs(dx) < 17 && Math.abs(dy) < 17) return;
+          if (Math.abs(dx) > Math.abs(dy)) turnBy(dx > 0 ? 'r' : 'l');
+          else turnBy(dy > 0 ? 'd' : 'u');
+          S.sw = { x: e.x, y: e.y };
+          return;
+        }
+        if (e.type === 'up' || e.type === 'cancel') { S.sw = null; }
+      },
+      key: function (k, down) {
+        if (!down || S.over) return;
+        if (S.ready) {
+          if (k === 'left' || k === 'right' || k === 'up' || k === 'down' || k === 'space' || k === 'enter' || k === 'z') begin();
+          return;
+        }
+        if (S.dying > 0) return;
+        if (k === 'left') turnBy('l');
+        else if (k === 'right') turnBy('r');
+        else if (k === 'up') turnBy('u');
+        else if (k === 'down') turnBy('d');
+      },
+
+      /* -------------------------------------------------------------- 그리기 */
+      draw: function (g) {
+        g.fillStyle = '#05070f';
+        g.fillRect(0, 0, W, H);
+        var bg = g.createLinearGradient(0, HUDH, 0, H);
+        bg.addColorStop(0, '#0b1426');
+        bg.addColorStop(0.55, '#070b16');
+        bg.addColorStop(1, '#04060c');
+        g.fillStyle = bg;
+        g.fillRect(0, HUDH, W, H - HUDH);
+
+        var sh = S.shake;
+        if (sh > 0) {
+          g.save();
+          g.translate((Math.random() - 0.5) * sh, (Math.random() - 0.5) * sh * 0.7);
+        }
+        drawBoard(g);
+        drawFood(g);
+        drawSnake(g);
+        drawSparks(g);
+        drawRings(g);
+        if (sh > 0) g.restore();
+
+        drawPad(g);
+        drawHud(g);
+        drawStatus(g);
+        drawTexts(g);
+        if (S.flash > 0) {
+          g.fillStyle = 'rgba(200,245,255,' + (S.flash * 0.3) + ')';
+          g.fillRect(0, 0, W, H);
+        }
+        if (S.feverT > 0) {
+          var k2 = Math.min(1, S.feverT / 0.6) * (0.5 + 0.28 * Math.sin(S.t * 10));
+          g.strokeStyle = 'rgba(253,224,71,' + (k2 * 0.85) + ')';
+          g.lineWidth = 3;
+          g.strokeRect(2, HUDH + 2, W - 4, H - HUDH - 4);
+        }
+        if (S.ready) drawReady(g);
+      },
+      /* 테스트/검증용 */
+      state: function () {
+        return {
+          ready: S.ready, over: S.over, dying: S.dying, score: S.score,
+          len: S.body.length,
+          body: S.body.map(function (b) { return { x: b.x, y: b.y }; }),
+          dir: { x: S.dir.x, y: S.dir.y },
+          food: S.food ? { x: S.food.x, y: S.food.y } : null,
+          gold: S.gold ? { x: S.gold.x, y: S.gold.y } : null,
+          goldT: S.goldT, combo: S.combo, bestCombo: S.bestCombo, comboT: S.comboT,
+          feverT: S.feverT, eaten: S.eaten, goldEaten: S.goldEaten,
+          step: S.step, time: S.time, coinGain: S.coinGain, coinUsed: S.coinUsed,
+          bot: a.bot ? S.bot : 0, headCol: S.headCol, tailCol: S.tailCol,
+          msg: S.msg, msgT: S.msgT
+        };
+      }
+    };
+
+    /* 검증용 훅 — QA(?qa=…)로 열었을 때만 붙는다 (일반 플레이에는 없음) */
+    try {
+      if (/(^|[?&])qa=/.test(String(location.search || ''))) {
+        api.__qa = {
+          setSnake: function (cells, dir) {
+            S.body = (cells || []).map(function (c) { return { x: c[0], y: c[1] }; });
+            if (!S.body.length) S.body = [{ x: 9, y: 12 }];
+            S.queue = [];
+            if (dir) S.dir = { x: dir[0], y: dir[1] };
+            return S.body.length;
+          },
+          setFood: function (x, y) { S.food = { x: x, y: y }; return true; },
+          setGold: function (x, y, life) { S.gold = { x: x, y: y }; S.goldT = life == null ? GOLD_LIFE : life; return true; },
+          setScore: function (n) { S.score = Math.max(0, Math.round(Number(n) || 0)); a.setScore(S.score); return S.score; },
+          setCombo: function (n) { S.combo = Math.max(0, n | 0); S.comboT = n > 0 ? COMBO_T : 0; return S.combo; },
+          fever: function (t) { S.feverT = t == null ? FEVER_T : t; return S.feverT; },
+          step: function (n) { for (var i = 0; i < (n || 1); i++) step(); return api.state(); },
+          over: function (reason) { die(reason || 'QA 테스트', S.body[0].x, S.body[0].y); return true; },
+          state: function () { return api.state(); }
+        };
+      }
+    } catch (e) {}
+    return api;
+
+    /* -------------------------------------------------------------- 그리기 구현 */
+    function drawHud(g) {
+      var mid = '', right = '';
+      if (S.ready) { mid = ''; }
+      else if (S.feverT > 0) mid = '🔥 FEVER x2 ' + S.feverT.toFixed(1) + 's';
+      else if (S.combo >= 2) mid = '🔥 COMBO x' + S.combo;
+      else mid = '길이 ' + S.body.length;
+      if (a.bot) right = '🤖 ' + S.bot;
+      else {
+        var best = null;
+        try { best = a.best(); } catch (e) { best = null; }
+        right = best != null ? '최고 ' + best : '';
+      }
+      MG.hud(g, a, { label: 'SCORE', score: S.score, mid: mid, right: right });
+    }
+    function drawBoard(g) {
+      A.panel(g, BX - 5, BY - 5, BW + 10, BW + 10, {
+        r: 14, fill: 'rgba(6,12,24,.95)', stroke: 'rgba(125,211,252,.28)'
+      });
+      var x, y;
+      for (y = 0; y < G; y++) {
+        for (x = 0; x < G; x++) {
+          g.fillStyle = ((x + y) % 2 === 0) ? 'rgba(255,255,255,.035)' : 'rgba(255,255,255,.018)';
+          g.fillRect(BX + x * CELL, BY + y * CELL, CELL, CELL);
+        }
+      }
+      g.strokeStyle = 'rgba(56,189,248,.07)';
+      g.lineWidth = 1;
+      g.beginPath();
+      for (x = 1; x < G; x++) {
+        g.moveTo(BX + x * CELL + 0.5, BY);
+        g.lineTo(BX + x * CELL + 0.5, BY + BW);
+        g.moveTo(BX, BY + x * CELL + 0.5);
+        g.lineTo(BX + BW, BY + x * CELL + 0.5);
+      }
+      g.stroke();
+      var pulse = 0.3 + 0.18 * Math.sin(S.t * 2.4);
+      g.strokeStyle = S.feverT > 0 ? 'rgba(253,224,71,' + (0.55 + 0.35 * Math.sin(S.t * 12)) + ')' : rgba(S.headCol, pulse);
+      g.lineWidth = 1.6;
+      A.rr(g, BX - 5, BY - 5, BW + 10, BW + 10, 14);
+      g.stroke();
+    }
+    function star(g, x, y, r1, r2, n, col, alpha) {
+      g.globalAlpha = alpha == null ? 1 : alpha;
+      g.beginPath();
+      for (var i = 0; i < n * 2; i++) {
+        var r = (i % 2) ? r2 : r1;
+        var ang = -Math.PI / 2 + i * Math.PI / n;
+        var px = x + Math.cos(ang) * r, py = y + Math.sin(ang) * r;
+        if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+      }
+      g.closePath();
+      g.fillStyle = col;
+      g.fill();
+      g.globalAlpha = 1;
+    }
+    function drawFood(g) {
+      if (S.food) {
+        var fx = BX + S.food.x * CELL + CELL / 2, fy = BY + S.food.y * CELL + CELL / 2;
+        var pl = 0.5 + 0.5 * Math.sin(S.t * 5 + S.food.x);
+        A.circle(g, fx, fy, 8 + pl * 1.6, 'rgba(248,113,113,.14)');
+        A.circle(g, fx, fy, 6.2, 'rgba(248,113,113,.34)');
+        A.circle(g, fx, fy, 4.6, '#f87171');
+        A.circle(g, fx - 1.4, fy - 1.7, 1.5, 'rgba(255,255,255,.9)');
+        g.strokeStyle = 'rgba(255,205,205,.55)';
+        g.lineWidth = 1;
+        g.beginPath(); g.arc(fx, fy, 6.2, 0, Math.PI * 2); g.stroke();
+      }
+      if (S.gold) {
+        var gx = BX + S.gold.x * CELL + CELL / 2, gy = BY + S.gold.y * CELL + CELL / 2;
+        var go = 0.5 + 0.5 * Math.sin(S.t * 7);
+        var blink = S.goldT < 1.6 ? (0.4 + 0.6 * Math.abs(Math.sin(S.t * 9))) : 1;
+        A.circle(g, gx, gy, 9.5 + go * 2, 'rgba(253,224,71,' + (0.16 * blink) + ')');
+        A.circle(g, gx, gy, 7, 'rgba(253,224,71,' + (0.3 * blink) + ')');
+        star(g, gx, gy, 7.4, 3.1, 5, '#fde047', blink);
+        star(g, gx, gy, 4.2, 1.8, 5, '#fff7d6', blink);
+        /* 남은 시간 링 */
+        g.strokeStyle = 'rgba(253,224,71,' + (0.75 * blink) + ')';
+        g.lineWidth = 1.6;
+        g.beginPath();
+        g.arc(gx, gy, 10.5, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(0, S.goldT / GOLD_LIFE));
+        g.stroke();
+      }
+    }
+    function drawSnake(g) {
+      var n = S.body.length, i;
+      var warm = S.feverT > 0;
+      for (i = n - 1; i >= 0; i--) {
+        var b = S.body[i];
+        var t = n > 1 ? i / (n - 1) : 0;
+        var col = mixHex(S.headCol, S.tailCol, t * 0.9);
+        if (warm) col = mixHex(col, '#fde047', 0.45);
+        var px = BX + b.x * CELL, py = BY + b.y * CELL;
+        if (i === 0) {
+          A.circle(g, px + CELL / 2, py + CELL / 2, 11, rgba(S.headCol, warm ? 0.28 : 0.16));
+        }
+        g.fillStyle = col;
+        A.rr(g, px + 1.2, py + 1.2, CELL - 2.4, CELL - 2.4, i === 0 ? 6 : 4);
+        g.fill();
+        g.fillStyle = 'rgba(255,255,255,.24)';
+        A.rr(g, px + 2.8, py + 2.8, CELL - 5.6, Math.max(2.4, CELL * 0.2), 2);
+        g.fill();
+        if (i === 0) {
+          /* 눈 — 진행 방향을 바라본다 */
+          var cx = px + CELL / 2, cy = py + CELL / 2;
+          var ex = S.dir.x !== 0 ? S.dir.x * 2.6 : 0;
+          var ey = S.dir.y !== 0 ? S.dir.y * 2.6 : 0;
+          var pxo = S.dir.x !== 0 ? 0 : 3.1;
+          var pyo = S.dir.y !== 0 ? 0 : 3.1;
+          g.fillStyle = '#04101c';
+          A.circle(g, cx + ex + pxo, cy + ey + pyo, 1.5, '#04101c');
+          A.circle(g, cx + ex - pxo, cy + ey - pyo, 1.5, '#04101c');
+        }
+      }
+    }
+    function drawSparks(g) {
+      for (var i = 0; i < S.sparks.length; i++) {
+        var s = S.sparks[i];
+        var al = Math.max(0, Math.min(1, s.life / s.max * 1.7));
+        g.globalAlpha = al;
+        g.fillStyle = s.c;
+        g.fillRect(s.x - s.s / 2, s.y - s.s / 2, s.s, s.s);
+      }
+      g.globalAlpha = 1;
+    }
+    function drawRings(g) {
+      for (var i = 0; i < S.rings.length; i++) {
+        var r = S.rings[i];
+        var k = 1 - Math.max(0, r.life / r.max);
+        g.globalAlpha = Math.max(0, 1 - k) * 0.9;
+        g.strokeStyle = r.c;
+        g.lineWidth = 2.5 * (1 - k) + 1;
+        g.beginPath();
+        g.arc(r.x, r.y, 6 + k * 46, 0, Math.PI * 2);
+        g.stroke();
+      }
+      g.globalAlpha = 1;
+    }
+    function arrow(g, k, cx, cy, col) {
+      g.fillStyle = col;
+      g.beginPath();
+      if (k === 'u') { g.moveTo(cx, cy - 8); g.lineTo(cx + 8, cy + 6); g.lineTo(cx - 8, cy + 6); }
+      else if (k === 'd') { g.moveTo(cx, cy + 8); g.lineTo(cx + 8, cy - 6); g.lineTo(cx - 8, cy - 6); }
+      else if (k === 'l') { g.moveTo(cx - 8, cy); g.lineTo(cx + 6, cy + 8); g.lineTo(cx + 6, cy - 8); }
+      else { g.moveTo(cx + 8, cy); g.lineTo(cx - 6, cy + 8); g.lineTo(cx - 6, cy - 8); }
+      g.closePath();
+      g.fill();
+    }
+    function drawPad(g) {
+      var keys = ['u', 'l', 'd', 'r'], i;
+      for (i = 0; i < keys.length; i++) {
+        var k = keys[i], b = PAD[k], on = S.press === k;
+        A.panel(g, b.x, b.y, b.w, b.h, {
+          r: 12,
+          fill: on ? rgba(S.headCol, 0.32) : 'rgba(15,25,42,.94)',
+          stroke: on ? rgba(S.headCol, 0.95) : 'rgba(140,190,255,.22)'
+        });
+        arrow(g, k, b.x + b.w / 2, b.y + b.h / 2, on ? '#06111f' : mixHex(S.headCol, '#ffffff', 0.35));
+      }
+    }
+    function drawStatus(g) {
+      var pct = S.feverT > 0 ? S.feverT / FEVER_T : (S.comboT > 0 ? S.comboT / COMBO_T : 0);
+      if (pct > 0) A.bar(g, 20, 348, 320, 6, pct, S.feverT > 0 ? '#fde047' : '#34d399');
+      A.text(g, '🍎 ' + S.eaten, 22, 368, { size: 10, color: '#8fa3c4' });
+      A.text(g, '길이 ' + S.body.length, 180, 368, { size: 10, color: '#8fa3c4', align: 'center' });
+      A.text(g, '속도 ' + (TICK0 / S.step).toFixed(2) + 'x', 338, 368, { size: 10, color: '#8fa3c4', align: 'right' });
+    }
+    function drawTexts(g) {
+      if (S.msgT > 0 && S.msg) {
+        var al = Math.min(1, S.msgT * 2.2);
+        g.globalAlpha = al;
+        var tw = Math.min(330, S.msg.length * 7.6 + 28);
+        A.rr(g, 180 - tw / 2, BY + 10, tw, S.msgSub ? 40 : 26, 13);
+        g.fillStyle = 'rgba(4,8,18,.9)';
+        g.fill();
+        g.strokeStyle = S.msgCol;
+        g.lineWidth = 1.5;
+        g.stroke();
+        A.text(g, S.msg, 180, BY + 28, { size: 13.5, color: S.msgCol, align: 'center', font: '"Jua",sans-serif' });
+        if (S.msgSub) A.text(g, S.msgSub, 180, BY + 44, { size: 9, color: '#fef3c7', align: 'center' });
+        g.globalAlpha = 1;
+      }
+      if (S.ready) return;
+      A.text(g, '👆 보드 스와이프 · 십자 버튼 · ⌨️ 방향키/WASD', 180, 498, { size: 9, color: '#5b6f92', align: 'center' });
+      A.text(g, '🍎 +10 · 🌟 황금 사과 +35 & 3초 FEVER x2 · 길수록 빨라져요', 180, 514, { size: 8.5, color: '#4a5c7c', align: 'center' });
+      A.text(g, '벽·내 몸에 닿으면 끝 · 🪙 코인 +10/+20/+35 (하루 60)', 180, 530, { size: 8.5, color: '#4a5c7c', align: 'center' });
+    }
+    function drawReady(g) {
+      g.fillStyle = 'rgba(3,6,12,.93)';
+      g.fillRect(0, HUDH, W, H - HUDH);
+      A.panel(g, 20, 60, 320, 442, { r: 18, fill: 'rgba(10,18,32,.98)', stroke: rgba(S.headCol, 0.4) });
+      A.text(g, '🐍 네온 지렁이', 180, 104, { size: 26, color: S.headCol, align: 'center', font: '"Jua",sans-serif' });
+      A.text(g, '18×18 네온 그리드 아케이드', 180, 126, { size: 11, color: '#a8bdd8', align: 'center' });
+      A.text(g, '👆 보드 위를 스와이프 — 가고 싶은 방향으로', 180, 164, { size: 11.5, color: '#fde68a', align: 'center' });
+      A.text(g, '🕹️ 아래 십자 D-패드 버튼도 그대로 동작해요', 180, 184, { size: 10.5, color: '#c7d6ef', align: 'center' });
+      A.text(g, '⌨️ 방향키 / WASD — 한글 입력기가 켜져 있어도 OK', 180, 204, { size: 10.5, color: '#c7d6ef', align: 'center' });
+      A.text(g, '🍎 사과 +10점 · 길이 +1 — 길어질수록 조금씩 빨라져요', 180, 238, { size: 10.5, color: '#a5f3fc', align: 'center' });
+      A.text(g, '🌟 황금 사과(3개마다 등장) +35점 · 3초간 FEVER x2', 180, 258, { size: 10.5, color: '#fde047', align: 'center' });
+      A.text(g, '🔥 3.6초 안에 연속으로 먹으면 콤보 보너스', 180, 278, { size: 10.5, color: '#fdba74', align: 'center' });
+      A.text(g, '↩️ 180도 즉시 역주행은 막고, 빠른 연속 회전은 2칸 버퍼로 부드럽게', 180, 298, { size: 9.5, color: '#93a4c4', align: 'center' });
+      A.text(g, '벽이나 내 몸에 부딪히면 끝 · 🪙 코인 +10/+20/+35 (하루 60)', 180, 328, { size: 9.5, color: '#7f93b3', align: 'center' });
+      A.text(g, '지렁이 머리·꼬리 색은 지금 장착한 스킨·꼬리 잔상에 맞춰 빛나요', 180, 348, { size: 9.5, color: '#7f93b3', align: 'center' });
+      var best = null;
+      try { best = a.best(); } catch (e) { best = null; }
+      if (best != null) A.text(g, '최고 기록 ' + best + '점', 180, 380, { size: 11, color: '#fbbf24', align: 'center' });
+      g.globalAlpha = 0.62 + 0.38 * Math.sin(S.t * 4);
+      A.text(g, '▶ 탭해서 시작', 180, 424, { size: 16, color: S.headCol, align: 'center', font: '"Jua",sans-serif' });
+      g.globalAlpha = 1;
+      A.text(g, '⌨️ 스페이스·엔터·방향키로도 시작', 180, 452, { size: 9, color: '#5b6f92', align: 'center' });
+    }
+  }
+
+  /* ==========================================================================
+     등록 — 기존 'snake' 슬롯을 덮어쓴다 (기록·봇·방 대전 호환 유지)
+     ========================================================================== */
+  MG.def({
+    id: ID,
+    name: '네온 지렁이',
+    emoji: '🐍',
+    tag: '아케이드',
+    desc: '18×18 네온 보드 · 사과를 먹고 황금 사과로 FEVER',
+    unit: '점',
+    record: {
+      type: 'high',
+      fmt: function (v) { return String(Math.round(v)) + '점'; }
+    },
+    create: create
+  });
+
+  /* 목록 순서: 개방 6호로 맨 뒤(5호 다음)에 — v5.30 잠금 모듈의 reorder 가 앞으로 당긴다 */
+  try {
+    if (MG.order) {
+      var rest = MG.order.filter(function (x) { return x && x !== ID; });
+      var at = rest.indexOf('blockblast');
+      if (at >= 0) rest.splice(at + 1, 0, ID);
+      else rest.unshift(ID);
+      MG.order = rest;
+    }
+  } catch (e) {}
+
+  try { console.log('[v545] 🐍 네온 지렁이 등록 · order', (MG.order || []).length); } catch (e) {}
+
+  /* 테스트/검증용 공개 훅 */
+  root.JW545 = {
+    id: ID,
+    key: KEY,
+    cap: DAILY_CAP,
+    tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
+    daily: function () { return loadDaily(); },
+    state: function () {
+      var c = MG.cur;
+      if (!c || c.id !== ID || !c.inst || !c.inst.state) return null;
+      return c.inst.state();
+    },
+    colors: function () {
+      try { var st = V.st(); return { skin: (st && st.me && st.me.skin) || 'jaeu' }; } catch (e) { return { skin: 'jaeu' }; }
+    }
+  };
 })(window);
