@@ -89222,10 +89222,21 @@ if (typeof module !== 'undefined' && module.exports) {
     if (Run.on) {
       if (jw.game.inPlay && !jw.game.paused && !jw.game.victory) sample(jw);
     }
+    if (jw.game.paused) hideLegacyGhostBtn();
   }
 
   /* ---------------------------------------------------------------- UI */
+  /* v5.43: 예전 v4.2 멀티 고스트 버튼(#v43GhostPause)은 싱글에서 아무 일도 하지 않는다.
+     일시정지 카드에 '고스트' 토글이 둘로 보이면 헷갈리므로 싱글에서는 숨긴다 (멀티는 레이스 메뉴를 쓴다). */
+  function hideLegacyGhostBtn() {
+    try {
+      var b = document.getElementById('v43GhostPause');
+      if (b && !inRoom() && b.style.display !== 'none') b.style.display = 'none';
+    } catch (e) {}
+  }
+
   function refreshInfo() {
+    hideLegacyGhostBtn();
     var el = document.getElementById('v543GhostInfo');
     if (!el) return;
     var map = 'default';
