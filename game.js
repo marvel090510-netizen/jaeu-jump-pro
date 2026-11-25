@@ -57073,6 +57073,14 @@ if (typeof module !== 'undefined' && module.exports) {
     } catch (e) {}
     return 118;
   }
+  /* 토스트(#mpToasts)는 z-index 42 라 프로필 모달(12700) 뒤에 가린다 —
+     모달이 열려 있는 동안에만 토스트를 위로 올려 '🎲 랜덤 코디' 조합이 실제로 보이게 한다.
+     (pointer-events:none 이라 터치는 그대로 통과) */
+  function liftToasts(on) {
+    /* 인라인 style 은 다른 모듈이 cssText 로 덮어쓰므로 body 클래스 + 스타일시트(!important)로 올린다 */
+    try { document.body.classList.toggle('v544-open', !!on); } catch (e) {}
+  }
+
   function ensureBar() {
     css();
     var el = $('v48bHp');
@@ -89539,6 +89547,7 @@ if (typeof module !== 'undefined' && module.exports) {
     s.id = 'v544css';
     s.textContent = [
       '#v544Bar{padding:8px 12px 0;display:flex;flex-direction:column;gap:5px;}',
+      'body.v544-open #mpToasts,body:has(#v57Prof:not(.hide)) #mpToasts{z-index:12800 !important;}',
       '#v544Bar .v544-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}',
       '#v544Bar .v544-card{position:relative;display:flex;flex-direction:column;justify-content:center;gap:3px;',
       '  min-height:66px;min-width:0;padding:6px 7px 0;border-radius:11px;border:2px solid #22304a;background:#0d1728;',
@@ -89556,6 +89565,7 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v544Bar .v544-rnd{height:38px;min-height:38px;border-radius:11px;border:2px solid #5a3204;',
       '  background:linear-gradient(180deg,#ffe79a,#f7b91f 60%,#dc9a0d);color:#4a2f04;',
       '  font-family:"Jua",sans-serif;font-size:13.5px;font-weight:900;letter-spacing:.2px;box-shadow:0 3px 0 #6b4405;}',
+      '#v544Bar .v544-rnd.wide{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}',
       '#v544Bar .v544-rnd:active{transform:translateY(1px);box-shadow:0 2px 0 #6b4405;}'
     ].join('\n');
     (doc.head || doc.documentElement).appendChild(s);
@@ -89576,9 +89586,12 @@ if (typeof module !== 'undefined' && module.exports) {
     return bar;
   }
 
+  var rollUntil = 0, rollText = '';
+
   function render() {
     var bar = ensureBar();
     if (!bar) return;
+    try { var m0 = $('v57Prof'); liftToasts(!!m0 && !m0.classList.contains('hide')); } catch (e) {}
     var slots = loadSlots(), cur = nowOutfit(), h = '';
     h += '<div class="v544-grid">';
     for (var i = 0; i < N; i++) {
@@ -89595,7 +89608,8 @@ if (typeof module !== 'undefined' && module.exports) {
       }
     }
     h += '</div>';
-    h += '<button type="button" class="v544-rnd" data-v544rnd="1">🎲 랜덤 코디</button>';
+    var rndLabel = (rollUntil > Date.now() && rollText) ? '🎲 ' + rollText : '🎲 랜덤 코디';
+    h += '<button type="button" class="v544-rnd' + (rndLabel.length > 16 ? ' wide' : '') + '" data-v544rnd="1">' + esc(rndLabel) + '</button>';
     bar.innerHTML = h;
   }
 
@@ -89635,6 +89649,9 @@ if (typeof module !== 'undefined' && module.exports) {
     if (f && f.id !== 'none') parts.push(f.name);
     toast('🎲 랜덤 코디!', 'lucky', parts.join(' · '), 3000);
     beep(1180);
+    /* 버튼에도 뽑힌 조합을 잠깐 보여 준다 — 토스트는 화면 위쪽에 떠서 놓치기 쉽다 */
+    rollText = parts.join(' · '); rollUntil = Date.now() + 3200;
+    setTimeout(function () { rollUntil = 0; try { render(); } catch (e) {} }, 3400);
     render();
   }
 
@@ -89670,6 +89687,14 @@ if (typeof module !== 'undefined' && module.exports) {
       P.paint = function () {
         var r = _paint.apply(this, arguments);
         try { render(); } catch (e) {}
+        return r;
+      };
+    }
+    if (typeof P.close === 'function') {
+      var _close = P.close;
+      P.close = function () {
+        var r = _close.apply(this, arguments);
+        try { liftToasts(false); } catch (e) {}
         return r;
       };
     }
