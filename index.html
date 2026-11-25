@@ -5,7 +5,7 @@
 (function(){try{
   if(localStorage.getItem('jw51_wipe_v1')==='1')return;
   localStorage.setItem('jw51_wipe_v1','1');
-  var KEEP=/^(jw51_wipe_v1|jw41_identity_v1|jw_friends_v1|jw_friends_v2|jw_friends|jw4_friends_v1|jw40_friends_v1|jw41_friends_v1|jw42_friends_v1|jw41_friends_v1_migrated|jw485_fsent_v1|jw51_dm_v1|jw51_dm_read_v1|jw43_ctrl_custom_v1|jw49_ctrl_v1|jaewoo_ctrl_v2|jw51_cfg_v1|jw43_theme_v1|jw48_juke_v1|jw43_presets_v1|jw47_wide|jw484_netsk|jw484_update_toast|jw51_tut_v1|jw51_tut_v2|jw51_tut_v3|jw43_best_v1|jw43_rank_v1|jw42_rank_v1|jw41_records_v1|jaewoo_stats_v2|jaewoo_stats_v3|jw43_stats_v1|jw44_endless_v1|jw48mg_best_v1|jw43_rectitle_v1|jw43_ghosts_v1|jw42_ghosts_v1|jw43_ach_v1|jw44_trophy_v1|jw44_codex_v1|jw51_board_v2|jw41_profile_v1|v57_plate_v1|v57_frame_v1|jw44_frame_v1|jw43_qol_v1|jw43_items_v1|jw43_solo_v1|jw43_fav_v1|jw43_recent_v1|jw43_freq_v1|jw43_lastset_v1|jw42_cfg_v1|jw42_mymap_v1|jw45_ed_goal|jw44_practice_v1|jw46_rainbow|jw44_rooms_v1|jw44_mynick_next|jw43_rejoin_v1|jw48c2_on|jw48c2_sub|jw48c2_auto|v44_clean_reset_v2|v47_clean_reset_v1|jw51_board_reset_v2)$/;
+  var KEEP=/^(jw51_wipe_v1|jw41_identity_v1|jw_friends_v1|jw_friends_v2|jw_friends|jw4_friends_v1|jw40_friends_v1|jw41_friends_v1|jw42_friends_v1|jw41_friends_v1_migrated|jw485_fsent_v1|jw51_dm_v1|jw51_dm_read_v1|jw43_ctrl_custom_v1|jw49_ctrl_v1|jaewoo_ctrl_v2|jw51_cfg_v1|jw43_theme_v1|jw48_juke_v1|jw43_presets_v1|jw47_wide|jw484_netsk|jw484_update_toast|jw51_tut_v1|jw51_tut_v2|jw51_tut_v3|jw43_best_v1|jw43_rank_v1|jw42_rank_v1|jw41_records_v1|jaewoo_stats_v2|jaewoo_stats_v3|jw43_stats_v1|jw44_endless_v1|jw48mg_best_v1|jw43_rectitle_v1|jw43_ghosts_v1|jw42_ghosts_v1|jw43_ach_v1|jw44_trophy_v1|jw44_codex_v1|jw51_board_v2|jw41_profile_v1|v57_plate_v1|v57_frame_v1|jw44_frame_v1|jw43_qol_v1|jw43_items_v1|jw43_solo_v1|jw43_fav_v1|jw43_recent_v1|jw43_freq_v1|jw43_lastset_v1|jw42_cfg_v1|jw42_mymap_v1|jw45_ed_goal|jw44_practice_v1|jw46_rainbow|jw44_rooms_v1|jw44_mynick_next|jw43_rejoin_v1|jw48c2_on|jw48c2_sub|jw48c2_auto|v44_clean_reset_v2|v47_clean_reset_v1|jw51_board_reset_v2|jw544_presets)$/;
   var rm=[],i,k;for(i=0;i<localStorage.length;i++){k=localStorage.key(i);if(!k||KEEP.test(k))continue;
     if(/^(jw|jaewoo|v4|v5|mp_|v43|v44|v45|v46|v47|v48|v49|v50|v51)/.test(k))rm.push(k);}
   for(i=0;i<rm.length;i++){try{localStorage.removeItem(rm[i]);}catch(e){}}
@@ -121,8 +121,8 @@
   })();
   </script>
   <title>성공하고싶은 재우 - 한 번 더, 정상까지!</title>
-    <link rel="stylesheet" href="tw.css?v=543tw4">
-  <script src="game.js?v=543tw4" defer></script>
+    <link rel="stylesheet" href="tw.css?v=544tw1">
+  <script src="game.js?v=544tw1" defer></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
   <style>
     * {

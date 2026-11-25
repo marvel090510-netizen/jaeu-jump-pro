@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.42 정식판 (화면 표시 버전은 아래 BUILD = 'v5.42')
+   muse-v5-9 game.js — v5.44 정식판 (화면 표시 버전은 아래 BUILD = 'v5.44')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -9842,6 +9842,10 @@ extends CanvasLayer
     if (m > V.maxM) V.maxM = m;
   }
   function ghostFinish() {
+    /* v5.44: 본편 혼자 하기(방 없는 상태)에서는 옛 v4.2 멀티 고스트를 저장/토스트하지 않는다.
+       v5.43 결과 문구('👻 내 최고 고스트보다 …')와 '👻 고스트 저장 · 내 최고 N.Nm 기록을 저장했어요'가
+       겹쳐 보이던 부분 정리 — 방(멀티 레이스)에서는 예전 동작 그대로 둔다. */
+    try { if (window.JW544 && window.JW544.legacyGhostOff && window.JW544.legacyGhostOff()) return false; } catch (e) {}
     const key = ghostKey();
     const g = ghosts();
     const prev = g[key];
@@ -69399,7 +69403,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.43';
+  var BUILD = 'v5.44';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -89328,4 +89332,378 @@ if (typeof module !== 'undefined' && module.exports) {
   } catch (e) {}
 
   try { console.log('[v543] 👻 내 최고 기록 고스트 리플레이 준비'); } catch (e) {}
+})(window);
+
+
+/* ===== v544 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.44 : 🎭 스타일 프리셋 3슬롯 + 🎲 랜덤 코디
+   --------------------------------------------------------------------------
+   · [🎭 스킨·꾸미기] 모달(통합 프로필)의 탭 바 바로 아래에 컴팩트 바를 붙인다.
+   · 프리셋 3슬롯 — 지금 착용 중인 ① 스킨 ② 펫 ③ 꼬리 잔상 ④ 테두리 ⑤ 칭호
+     다섯 가지를 통째로 저장/복원한다 (저장 키 'jw544_presets', 배열 3칸).
+       · 빈 슬롯은 [+ 현재 코디 저장]
+       · 저장된 슬롯은 한 번 누르면 즉시 장착(원터치), 오른쪽 위 [저장]은 덮어쓰기
+   · 🎲 랜덤 코디 — 보유(해금) 중인 스킨·펫·잔상·테두리·칭호에서 각각 하나씩 뽑아
+     바로 장착하고 토스트로 조합을 알려 준다. 잠긴 아이템은 절대 장착되지 않는다
+     (불러오기도 같은 검사를 거친다 — 잠긴 값은 건너뛰고 나머지만 적용).
+   · 기존 저장 키(jw41_identity_v1 · v57_frame_v1 · jw529_pet_v1)는 읽기/쓰기만
+     정해진 API로 통과시켜 다른 기능과 충돌하지 않는다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var V = root.JW43;
+  if (!V) return;
+  if (root.JW544) return;
+  var doc = document;
+  var $ = function (id) { return doc.getElementById(id); };
+  var KEY = 'jw544_presets';
+  var N = 3;
+
+  function Prof() { return root.JW57PROF || null; }
+  function PL() { return root.JW57PL || null; }
+  function P29() { return root.JW529 || null; }
+  function TI() { return root.JW51TITLES || null; }
+  function api() { try { return V.api() || {}; } catch (e) { return {}; } }
+  function lsGet(k, d) { try { return V.lsGet ? V.lsGet(k, d) : JSON.parse(localStorage.getItem(k) || 'null') || d; } catch (e) { return d; } }
+  function lsSet(k, v) { try { if (V.lsSet) V.lsSet(k, v); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (c) { return c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '&' ? '&amp;' : '&quot;'; }); }
+  function toast(t, k, s, ms) { try { if (V.toast) V.toast(t, k || 'lucky', s || '', ms || 2200); } catch (e) {} }
+  function beep(f) { try { if (V.beep) V.beep(f || 880, 0.07, 0.09, 'square', (f || 880) + 220); } catch (e) {} }
+
+  /* ---------------- 저장 (프리셋 3칸) ---------------- */
+  function loadSlots() {
+    var a = lsGet(KEY, null);
+    if (!Array.isArray(a)) a = [];
+    while (a.length < N) a.push(null);
+    return a.slice(0, N);
+  }
+  function saveSlots(a) { lsSet(KEY, a.slice(0, N)); }
+
+  /* ---------------- 지금 착용 중인 코디 5종 ---------------- */
+  function petState() { var P = P29(); try { return (P && P.st && P.st()) || {}; } catch (e) { return {}; } }
+  function nowOutfit() {
+    var a = api(), ps = petState(), o = {};
+    try { o.skin = (a.meSkin && a.meSkin()) || 'jaeu'; } catch (e) { o.skin = 'jaeu'; }
+    o.pet = ps.equip || '';
+    o.trail = ps.trail || 't_cloud';
+    try { var f = PL() && PL().frame && PL().frame(); o.frame = (f && f.id) || 'none'; } catch (e) { o.frame = 'none'; }
+    try { o.title = (TI() && TI().equipped && TI().equipped()) || 'auto'; } catch (e) { o.title = 'auto'; }
+    return o;
+  }
+
+  function findIn(list, id) {
+    for (var i = 0; i < (list || []).length; i++) if (list[i] && list[i].id === id) return list[i];
+    return null;
+  }
+  function skinOf(id) {
+    var it = null;
+    try { it = findIn(api().skins() || [], id); } catch (e) {}
+    return it || { id: id || 'jaeu', name: '기본 재우', emoji: '🧑' };
+  }
+  function petOf(id) { var P = P29(); return id ? findIn((P && P.pets) || [], id) : null; }
+  function trailOf(id) { var P = P29(); return findIn((P && P.trails) || [], id); }
+  function frameOf(id) { return findIn((PL() && PL().frames) || [], id); }
+  function titleOf(id) {
+    var l = null;
+    try { l = (TI() && TI().list && TI().list()) || []; } catch (e) { l = []; }
+    return findIn(l, id);
+  }
+  function shortName(it, dflt) {
+    if (!it) return dflt || '';
+    return String(it.short || it.name || dflt || '').replace(/^[^\w가-힣]+/, '').replace(/^기본\s+/, '').trim() || (dflt || '');
+  }
+
+  /* ---------------- 보유(해금) 판정 — 잠긴 것은 절대 장착하지 않는다 ---------------- */
+  function skinOk(id) { try { return !!id && !(V.skinLocked && V.skinLocked(id)); } catch (e) { return false; } }
+  function petOk(id) { if (!id) return true; var ps = petState(); return !!(ps.owned && ps.owned[id]); }
+  function trailOk(id) {
+    var tr = trailOf(id);
+    if (!tr) return false;
+    var ok = false;
+    try { ok = !!(tr.need && tr.need()); } catch (e) { ok = false; }
+    if (ok) return true;
+    var ps = petState();
+    return !!(ps.grant && ps.grant[id]);
+  }
+  function frameOk(id) {
+    if (!id || id === 'none') return true;
+    var f = frameOf(id);
+    if (!f) return false;
+    try { return !!f.need(); } catch (e) { return false; }
+  }
+  function titleOk(id) {
+    if (!id) return false;
+    if (id === 'auto') return true;
+    try {
+      var un = api().unlockedTitles ? (api().unlockedTitles() || []) : [];
+      return !!findIn(un, id);
+    } catch (e) { return false; }
+  }
+
+  /* ---------------- 장착 ---------------- */
+  function setSkin(id) { try { if (api().setSkin) { api().setSkin(id); return true; } } catch (e) {} return false; }
+  function setPet(id) {
+    var P = P29();
+    if (!P) return false;
+    var ps = petState();
+    if (id && !(ps.owned && ps.owned[id])) return false;
+    if ((ps.equip || '') === (id || '')) return true;
+    if (id) { try { P.equip(id); return true; } catch (e) { return false; } }
+    /* 펫 해제: 공개 API에 해제가 없어 상태 객체를 비운 뒤 코인 값 그대로 저장(save)을 태운다 */
+    try { ps.equip = ''; P.coins(ps.coins); return true; } catch (e) { return false; }
+  }
+  function setTrail(id) {
+    var P = P29();
+    if (!P || !id || !trailOk(id)) return false;
+    try { P.setTrail(id); return true; } catch (e) { return false; }
+  }
+  function setFrame(id) {
+    var P = PL();
+    if (!P || !frameOk(id)) return false;
+    try { return P.equip('frame', id || 'none') !== false; } catch (e) { return false; }
+  }
+  function setTitle(id) {
+    var t = id || 'auto';
+    if (t !== 'auto' && !titleOk(t)) return false;
+    var raw = lsGet('jw41_identity_v1', {}) || {};
+    if ((raw.title || 'auto') === t) return true;
+    raw.title = t;
+    lsSet('jw41_identity_v1', raw);
+    try { var inst = api().internals ? api().internals() : null; if (inst && inst.ident) inst.ident.title = t; } catch (e) {}
+    try { if (lsGet('jw43_rectitle_v1', '')) lsSet('jw43_rectitle_v1', ''); } catch (e) {}
+    try { if (api().renderLobby) api().renderLobby(); } catch (e) {}
+    try { if (window.__paintProfTitles) window.__paintProfTitles(); } catch (e) {}
+    try { if (api().renderProfileCard) api().renderProfileCard(); } catch (e) {}
+    return true;
+  }
+
+  /* 통째 적용 — 잠긴 값은 건너뛰고 나머지만 적용한다 */
+  function applyOutfit(o) {
+    var miss = [];
+    o = o || {};
+    if (o.skin) { if (skinOk(o.skin)) setSkin(o.skin); else miss.push('스킨'); }
+    if (petOk(o.pet)) setPet(o.pet || ''); else if (o.pet) miss.push('펫');
+    if (trailOk(o.trail)) setTrail(o.trail); else miss.push('잔상');
+    if (o.frame && frameOk(o.frame)) setFrame(o.frame); else if (o.frame) miss.push('테두리');
+    if (o.title && titleOk(o.title)) setTitle(o.title); else if (o.title) miss.push('칭호');
+    repaint();
+    return miss;
+  }
+  function repaint() {
+    try { if (root.JW57PLATE && root.JW57PLATE.apply) root.JW57PLATE.apply(); } catch (e) {}
+    try { var P = Prof(); if (P && P.paint) P.paint(); } catch (e) {}
+  }
+
+  /* ---------------- 🎲 랜덤 코디 풀 (보유 중인 것만) ---------------- */
+  function pools() {
+    var a = api(), ps = petState(), P = P29();
+    var skins = [];
+    try { skins = (a.skins() || []).filter(function (s) { return s && skinOk(s.id); }); } catch (e) {}
+    var pets = ((P && P.pets) || []).filter(function (p) { return p && ps.owned && ps.owned[p.id]; });
+    var trails = ((P && P.trails) || []).filter(function (t) { return t && trailOk(t.id); });
+    var frames = ((PL() && PL().frames) || []).filter(function (f) { return f && f.id !== 'none' && frameOk(f.id); });
+    var titles = [];
+    try { titles = (a.unlockedTitles ? (a.unlockedTitles() || []) : []); } catch (e) { titles = []; }
+    return { skins: skins, pets: pets, trails: trails, frames: frames, titles: titles };
+  }
+  function pickOne(arr) { return (arr && arr.length) ? arr[Math.floor(Math.random() * arr.length)] : null; }
+
+  function summaryLine(d) {
+    var p = petOf(d.pet), t = trailOf(d.trail), tn = shortName(t, '기본');
+    /* 좁은 폰(≈390px)에서는 잔상 이름을 첫 단어로 줄여 카드 두 째 줄이 잘리지 않게 한다 */
+    try { if ((window.innerWidth || 0) < 430) tn = tn.split(/\s+/)[0]; } catch (e) {}
+    return '🐾 ' + (p ? p.name : '없음') + ' · ✨ ' + tn;
+  }  function cardTitle(d) {
+    var s = skinOf(d.skin), p = petOf(d.pet), t = trailOf(d.trail), f = frameOf(d.frame), ti = titleOf(d.title);
+    return ['🎨 ' + (s.emoji || '') + ' ' + s.name,
+      '🐾 ' + (p ? p.name : '없음'),
+      '✨ ' + (t ? t.name : '기본'),
+      '🖼️ ' + (f ? f.name : '기본'),
+      '🏅 ' + (ti ? shortName(ti, '자동') : (d.title === 'auto' ? '자동' : '없음'))].join(' · ');
+  }
+  function sameAs(d, cur) {
+    return d.skin === cur.skin && (d.pet || '') === (cur.pet || '') &&
+      (d.trail || 't_cloud') === (cur.trail || 't_cloud') &&
+      (d.frame || 'none') === (cur.frame || 'none') &&
+      (d.title || 'auto') === (cur.title || 'auto');
+  }
+
+  /* ---------------- 바 그리기 ---------------- */
+  function css() {
+    if ($('v544css')) return;
+    var s = doc.createElement('style');
+    s.id = 'v544css';
+    s.textContent = [
+      '#v544Bar{padding:8px 12px 0;display:flex;flex-direction:column;gap:5px;}',
+      '#v544Bar .v544-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}',
+      '#v544Bar .v544-card{position:relative;display:flex;flex-direction:column;justify-content:center;gap:3px;',
+      '  min-height:60px;min-width:0;padding:6px 7px 0;border-radius:11px;border:2px solid #22304a;background:#0d1728;',
+      '  color:#dbe7f8;text-align:left;font-family:inherit;box-shadow:0 2px 0 #060b14;overflow:hidden;}',
+      '#v544Bar .v544-card.on{border-color:#38bdf8;background:linear-gradient(180deg,rgba(37,99,235,.28),rgba(13,23,40,.96));}',
+      '#v544Bar .v544-card.empty{align-items:center;justify-content:center;text-align:center;border-style:dashed;border-color:#33456a;background:#0a1322;}',
+      '#v544Bar .v544-card b{display:block;max-width:100%;font-size:11px;font-weight:900;color:#eaf2ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+      '#v544Bar .v544-card i{display:block;max-width:100%;font-style:normal;font-size:9.5px;font-weight:800;color:#93a8c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+      '#v544Bar .v544-card.empty b{font-size:11px;color:#cfe0f7;}',
+      '#v544Bar .v544-card.empty i{color:#8fa3c4;}',
+      '#v544Bar .v544-foot{display:flex;align-items:center;justify-content:center;gap:3px;height:18px;margin:5px -7px 0;',
+      '  border-top:1px solid #22304a;background:#0a1220;color:#a8bad5;font-size:9px;font-weight:900;}',
+      '#v544Bar .v544-card.on .v544-foot{border-top-color:#1e4a6e;background:#0b1f36;color:#7dd3fc;}',
+      '#v544Bar .v544-rnd{height:38px;min-height:38px;border-radius:11px;border:2px solid #5a3204;',
+      '  background:linear-gradient(180deg,#ffe79a,#f7b91f 60%,#dc9a0d);color:#4a2f04;',
+      '  font-family:"Jua",sans-serif;font-size:13.5px;font-weight:900;letter-spacing:.2px;box-shadow:0 3px 0 #6b4405;}',
+      '#v544Bar .v544-rnd:active{transform:translateY(1px);box-shadow:0 2px 0 #6b4405;}'
+    ].join('\n');
+    (doc.head || doc.documentElement).appendChild(s);
+  }
+
+  function ensureBar() {
+    var m = $('v57Prof');
+    if (!m) return null;
+    var bar = $('v544Bar');
+    if (bar) return bar;
+    var tabs = m.querySelector('.tabs');
+    if (!tabs || !tabs.parentNode) return null;
+    css();
+    bar = doc.createElement('div');
+    bar.id = 'v544Bar';
+    tabs.parentNode.insertBefore(bar, tabs.nextSibling);
+    bind(m);
+    return bar;
+  }
+
+  function render() {
+    var bar = ensureBar();
+    if (!bar) return;
+    var slots = loadSlots(), cur = nowOutfit(), h = '';
+    h += '<div class="v544-grid">';
+    for (var i = 0; i < N; i++) {
+      var d = slots[i];
+      if (!d) {
+        h += '<button type="button" class="v544-card empty" data-v544save="' + i + '">' +
+          '<b>＋ 프리셋 ' + (i + 1) + '</b><i>현재 코디 저장</i></button>';
+      } else {
+        var sk = skinOf(d.skin), on = sameAs(d, cur);
+        h += '<div class="v544-card' + (on ? ' on' : '') + '" data-v544load="' + i + '" title="' + esc(cardTitle(d)) + '">' +
+          '<b>' + (on ? '✓ ' : '') + (i + 1) + ' · ' + (sk.emoji ? sk.emoji + ' ' : '') + esc(shortName(sk, '재우')) + '</b>' +
+          '<i>' + esc(summaryLine(d)) + '</i>' +
+          '<span class="v544-foot" data-v544save="' + i + '">💾 저장</span></div>';
+      }
+    }
+    h += '</div>';
+    h += '<button type="button" class="v544-rnd" data-v544rnd="1">🎲 랜덤 코디</button>';
+    bar.innerHTML = h;
+  }
+
+  /* ---------------- 동작 ---------------- */
+  function doSave(i) {
+    var slots = loadSlots();
+    slots[i] = nowOutfit();
+    saveSlots(slots);
+    var s = skinOf(slots[i].skin);
+    toast('💾 프리셋 ' + (i + 1) + ' 저장', 'lucky', (s.emoji ? s.emoji + ' ' : '') + s.name + ' · ' + summaryLine(slots[i]), 2000);
+    beep(920);
+    render();
+  }
+  function doLoad(i) {
+    var d = loadSlots()[i];
+    if (!d) { toast('📂 빈 슬롯', 'danger', '먼저 현재 코디를 저장하세요', 1800); return; }
+    var miss = applyOutfit(d);
+    var s = skinOf(d.skin);
+    if (miss.length) toast('📂 프리셋 ' + (i + 1) + ' 부분 적용', 'chat', '잠긴 ' + miss.join('·') + ' 은 그대로 뒀어요', 2600);
+    else toast('📂 프리셋 ' + (i + 1) + ' 장착', 'lucky', (s.emoji ? s.emoji + ' ' : '') + s.name + ' · ' + summaryLine(d), 2200);
+    beep(1046);
+    render();
+  }
+  function doRandom() {
+    var P = pools(), o = {}, cur = nowOutfit();
+    var sk = pickOne(P.skins); o.skin = sk ? sk.id : cur.skin;
+    var pt = pickOne(P.pets); o.pet = pt ? pt.id : '';
+    var tr = pickOne(P.trails); o.trail = tr ? tr.id : (trailOk(cur.trail) ? cur.trail : 't_cloud');
+    var fr = pickOne(P.frames); o.frame = fr ? fr.id : (frameOk(cur.frame) ? cur.frame : 'none');
+    var ti = pickOne(P.titles); o.title = ti ? ti.id : cur.title;
+    /* 뽑은 값이 그대로면 장착 단계에서 한 번 더 보유 검사를 하므로 잠금 위반은 0건 */
+    applyOutfit(o);
+    var s = skinOf(o.skin), p = petOf(o.pet), t = trailOf(o.trail), f = frameOf(o.frame);
+    var parts = [(s.emoji ? s.emoji + ' ' : '') + s.name];
+    if (p) parts.push('🐾 ' + p.name);
+    if (t) parts.push('✨ ' + shortName(t, '기본'));
+    if (f && f.id !== 'none') parts.push(f.name);
+    toast('🎲 랜덤 코디!', 'lucky', parts.join(' · '), 3000);
+    beep(1180);
+    render();
+  }
+
+  function bind(m) {
+    if (!m || m.__v544) return;
+    m.__v544 = 1;
+    m.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest) return;
+      var sv = t.closest('[data-v544save]');
+      if (sv) { e.preventDefault(); if (e.stopPropagation) e.stopPropagation(); doSave(Number(sv.getAttribute('data-v544save')) || 0); return; }
+      var ld = t.closest('[data-v544load]');
+      if (ld) { e.preventDefault(); doLoad(Number(ld.getAttribute('data-v544load')) || 0); return; }
+      var rn = t.closest('[data-v544rnd]');
+      if (rn) { e.preventDefault(); doRandom(); return; }
+    });
+  }
+
+  /* ---------------- 프로필 모달에 연결 ---------------- */
+  function hook() {
+    var P = Prof();
+    if (!P || P.__v544) return !!P;
+    if (typeof P.open === 'function') {
+      var _open = P.open;
+      P.open = function () {
+        var r = _open.apply(this, arguments);
+        try { render(); } catch (e) {}
+        return r;
+      };
+    }
+    if (typeof P.paint === 'function') {
+      var _paint = P.paint;
+      P.paint = function () {
+        var r = _paint.apply(this, arguments);
+        try { render(); } catch (e) {}
+        return r;
+      };
+    }
+    P.__v544 = 1;
+    try { render(); } catch (e) {}
+    return true;
+  }
+
+  /* JW57PROF 는 이 블록보다 위에서 만들어지지만, 로드 순서가 흔들려도 잡히게 몇 번 재시도 */
+  (function boot() {
+    var n = 0;
+    var t = setInterval(function () {
+      n++;
+      try { if (hook() || n > 40) clearInterval(t); } catch (e) { if (n > 40) clearInterval(t); }
+    }, 250);
+    try { css(); } catch (e) {}
+    if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', function () { try { hook(); } catch (e) {} });
+    else setTimeout(function () { try { hook(); } catch (e) {} }, 600);
+  })();
+
+  /* 테스트/검증용 공개 훅 */
+  root.JW544 = {
+    slots: function () { return loadSlots(); },
+    save: doSave, load: doLoad, random: doRandom,
+    current: nowOutfit,
+    ok: function (o) { o = o || nowOutfit(); return { skin: skinOk(o.skin), pet: petOk(o.pet), trail: trailOk(o.trail), frame: frameOk(o.frame), title: titleOk(o.title) }; },
+    pools: function () { var p = pools(); return { skins: p.skins.length, pets: p.pets.length, trails: p.trails.length, frames: p.frames.length, titles: p.titles.length }; },
+    clear: function () { try { localStorage.removeItem(KEY); } catch (e) {} try { render(); } catch (e) {} },
+    /** v5.44 본편 혼자 하기에서는 옛 v4.2 멀티 고스트를 저장/토스트하지 않는다 */
+    legacyGhostOff: function () {
+      try {
+        if (V.inMulti && V.inMulti()) return false;
+        var S = V.st && V.st();
+        if (S && S.room && (S.phase === 'lobby' || S.phase === 'count' || S.phase === 'race' || S.phase === 'result')) return false;
+        return true;
+      } catch (e) { return false; }
+    }
+  };
+  try { console.log('[v544] 🎭 코디 프리셋 3슬롯 · 🎲 랜덤 코디 준비'); } catch (e) {}
 })(window);
