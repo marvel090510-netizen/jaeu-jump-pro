@@ -1,10 +1,34 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.41 정식판 (화면 표시 버전은 아래 BUILD = 'v5.41')
+   muse-v5-9 game.js — v5.41-r1 정식판 (화면 표시 버전은 아래 BUILD = 'v5.41-r1')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
      방·친구 대전 호환 때문에 절대 변경 금지 — 혼동 금지용 안내.
    ========================================================================== */
+
+/* ===== v5.41-r1 (키보드 입력 핫픽스): 글자 입력창 가드 =====
+   증상: 맵·모드 검색창, 닉네임 입력창 등에서 스페이스가 안 써지고 엔터도 안 먹는다.
+   원인: 아래 두 전역 핸들러가 '입력창에 포커스가 있는지'를 보지 않고 Space/Enter를 가로챘다.
+     ① window keydown(본편):  if (!game.inPlay && (Space|Enter)) { e.preventDefault(); startGameNow(); }
+     ② document keydown(캡처): if (Space && !inPlay) go();  ← 맵/모드 확정까지 덮어씀
+   그래서 검색창에 스페이스를 치면 글자가 안 들어가고 그 판이 시작돼 버렸다.
+   이 파일 전체에서 같은 판단을 쓰도록 한 곳에 둔다. */
+(function () {
+  if (window.__jwTypingTarget) return;
+  window.__jwTypingTarget = function (e) {
+    try {
+      var t = e && e.target;
+      if (!t) return false;
+      if (t.isContentEditable) return true;
+      var tag = (t.tagName || '').toUpperCase();
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+      try { if (t.closest && t.closest('input,textarea,select,[contenteditable=""],[contenteditable="true"]')) return true; } catch (er) {}
+      /* 멀티 채팅 등에서 이미 잡아 둔 '입력 중' 상태도 같이 존중한다 */
+      try { if (window.JWG && JWG.captureKeys && JWG.captureKeys()) return true; } catch (er) {}
+      return false;
+    } catch (err) { return false; }
+  };
+})();
 
 /* ===== v5.31-r1 (삼성 패드 크롬 버튼 무반응 핫픽스): 캔버스 2D 컨텍스트 안전망 =====
    실기기(안드로이드 태블릿 크롬)에서 canvas.getContext('2d')가 null을 돌려주는 경우가 있다
@@ -2389,6 +2413,22 @@ window.__jwRainbowGrad = function (ctx, nameW) {
         document.getElementById('btnQuickOriginTest').classList.remove('hidden');
         document.getElementById('btnQuickPlayToggle').textContent = '🏠 타이틀 화면';
 
+        /* v5.41-r1: 시작 버튼에 포커스가 남아 있으면 Space/Enter가 그 버튼을 '한 번 더 눌러'
+           방금 시작한 판을 다시 시작(resetWorldAndPlayer)해 버리고, 캔버스에 키보드 포커스가
+           아예 안 가는 환경(아이프레임·외장 키보드)에서는 점프/이동이 먹지 않는다.
+           시작 시 포커스를 캔버스로 넘긴다. */
+        try {
+          var __v541ae = document.activeElement;
+          if (__v541ae && __v541ae !== document.body && __v541ae.blur) __v541ae.blur();
+        } catch (e) {}
+        try {
+          var __v541cv = document.getElementById('gameCanvas');
+          if (__v541cv) {
+            if (!__v541cv.hasAttribute('tabindex')) __v541cv.setAttribute('tabindex', '-1');
+            if (__v541cv.focus) __v541cv.focus({ preventScroll: true });
+          }
+        } catch (e) {}
+
         /* v5.11 로딩: 플레이 시작을 진입 베일에 게이트 — 아트 준비(또는 실패·무아트·타임아웃) 후 시작 */
         var __v59started = false;
         function __v59beginPlay() {
@@ -2567,6 +2607,9 @@ extends CanvasLayer
           // Keyboard Input
           window.addEventListener('keydown', (e) => {
             if (window.JWG && JWG.captureKeys && JWG.captureKeys()) return;
+            /* v5.41-r1: 글자 입력창(검색·닉네임 등)에 포커스가 있으면 스페이스·엔터를 절대 가로채지 않는다.
+               이 가드가 없어서 검색창 스페이스가 사라지고 그 판이 시작됐다. */
+            if (window.__jwTypingTarget && window.__jwTypingTarget(e)) return;
             if (!game.inPlay && (e.code === 'Space' || e.code === 'Enter')) {
               const settingsOpen = !document.getElementById('settingsModal').classList.contains('hidden');
               const godotOpen = !document.getElementById('godotModal').classList.contains('hidden');
@@ -8823,6 +8866,8 @@ extends CanvasLayer
     });
     /* 일시정지의 '계속 등반하기' 는 재시작하지 않으므로 제외 */
     document.addEventListener('keydown', (e) => {
+      /* v5.41-r1: 입력창에서 스페이스를 치면 이 캡처 핸들러가 먼저 맵/모드를 확정해 버렸다 → 입력 중이면 넘긴다 */
+      if (window.__jwTypingTarget && window.__jwTypingTarget(e)) return;
       if (e.code === 'Space' && !JW().game.inPlay) go();
     }, true);
   }
@@ -9026,6 +9071,8 @@ extends CanvasLayer
       }
     }, true);
     window.addEventListener('keydown', (e) => {
+      /* v5.41-r1: 레이스 중 채팅 입력창에서 'p'를 치면 일시정지 메뉴가 열려 글자가 안 써졌다 */
+      if (window.__jwTypingTarget && window.__jwTypingTarget(e)) return;
       if ((S.phase === 'race' || S.phase === 'count') && (e.code === 'Escape' || e.code === 'KeyP')) {
         e.preventDefault(); e.stopPropagation();
         if (S.raceMenuOpen) closeRaceMenu(); else openRaceMenu();
@@ -30852,6 +30899,7 @@ extends CanvasLayer
   }
   window.addEventListener('keydown', (e) => {
     if (!Q.hotkeyCustom) return;
+    if (window.__jwTypingTarget && window.__jwTypingTarget(e)) return; /* v5.41-r1 */
     const g = J() && J().game;
     if (!g || !g.inPlay || g.paused) return;
     if (['KeyA', 'KeyD', 'Space', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'KeyW', 'Escape'].indexOf(e.code) >= 0) return;
@@ -46930,6 +46978,8 @@ extends CanvasLayer
     });
     doc.addEventListener('keydown', function (e) {
       if (!MG.open || MG.view !== 'play' || !MG.cur) return;
+      /* v5.41-r1: 미니게임 중에도 입력창(친구 검색·방 코드 등)에 글자를 치고 있으면 키를 먹지 않는다 */
+      if (window.__jwTypingTarget && window.__jwTypingTarget(e)) return;
       var m = keyName(e);
       if (!m) return;
       e.preventDefault();
@@ -46948,6 +46998,20 @@ extends CanvasLayer
     });
   }
   function keyName(e) {
+    /* v5.41-r1: 한글 입력기(IME)가 켜져 있으면 e.key 가 'Process'로 오고 스페이스·방향키도
+       ' '(U+0020)로 오지 않는다. 물리 키 위치(e.code)를 먼저 보고, 없을 때만 e.key 로 떨어진다. */
+    switch (e.code) {
+      case 'ArrowLeft': case 'KeyA': return 'left';
+      case 'ArrowRight': case 'KeyD': return 'right';
+      case 'ArrowUp': case 'KeyW': return 'up';
+      case 'ArrowDown': case 'KeyS': return 'down';
+      case 'Space': return 'space';
+      case 'Enter': case 'NumpadEnter': return 'enter';
+      case 'Escape': return 'esc';
+      case 'KeyZ': return 'z';
+      case 'KeyX': return 'x';
+      case 'KeyC': return 'c';
+    }
     switch (e.key) {
       case 'ArrowLeft': case 'a': case 'A': return 'left';
       case 'ArrowRight': case 'd': case 'D': return 'right';
@@ -69325,7 +69389,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.41';
+  var BUILD = 'v5.41-r1';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
