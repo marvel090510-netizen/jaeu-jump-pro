@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.41-r1 정식판 (화면 표시 버전은 아래 BUILD = 'v5.41-r1')
+   muse-v5-9 game.js — v5.42 정식판 (화면 표시 버전은 아래 BUILD = 'v5.42')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -62646,7 +62646,8 @@ if (typeof module !== 'undefined' && module.exports) {
    - v5.38: 개방 3종으로 확장 — 🪙 골드 러시(coin) 추가.
    - v5.41: 개방 4종으로 확장 — 🚀 부스터 로켓: 성층권 돌파(holefly) 추가. 나머지 21종은
      '🔒 준비 중'.
-   - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 4종은 목록 맨 앞에
+   - v5.42: 개방 5종으로 확장 — 🧩 블록 블라스트(blockblast) 추가. 나머지 20종은 '🔒 준비 중'.
+   - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 5종은 목록 맨 앞에
      ✨ NEW · PLAYABLE 강조 카드로 배치한다.
    ========================================================================== */
 (function (root) {
@@ -62659,18 +62660,20 @@ if (typeof module !== 'undefined' && module.exports) {
   var OPEN2 = 'meteor';           /* 개방 2호 (☄️ 메테오 스텝 · v5.35 신작) */
   var OPEN3 = 'coin';             /* 개방 3호 (🪙 골드 러시 · v5.38 신작) */
   var OPEN4 = 'holefly';          /* 개방 4호 (🚀 부스터 로켓 · v5.41 신작) */
-  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1 };
+  var OPEN5 = 'blockblast';       /* 개방 5호 (🧩 블록 블라스트 · v5.42 신작) */
+  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1 };
   root.JW530MGLOCK = true;
   root.JW530MG_OPEN = OPEN;
   root.JW530MG_OPEN2 = OPEN2;
   root.JW530MG_OPEN3 = OPEN3;
   root.JW530MG_OPEN4 = OPEN4;
+  root.JW530MG_OPEN5 = OPEN5;
   root.JW530MG_OPENS = OPENS;
 
   var doc = document;
   var $ = function (id) { return doc.getElementById(id); };
   var LOCK_MSG = '🔒 이 미니게임은 준비 중이에요';
-  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 4종이 열려 있어요';
+  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 5종이 열려 있어요';
 
   function MG() { return root.JW48MG; }
   function isLocked(id) { return !!id && !OPENS[id]; }
@@ -62733,12 +62736,17 @@ if (typeof module !== 'undefined' && module.exports) {
       '.v530new.v530new4::after{content:"🚀 NEW · PLAYABLE";',
       '  background:linear-gradient(180deg,#bfe6ff,#38bdf8);border-color:#075985;color:#04202e;}',
       '.v530new.v530new4{box-shadow:inset 0 0 0 2px rgba(56,189,248,.55),0 0 16px rgba(56,189,248,.34),0 3px 0 #05030a !important;}',
-      /* 네 개방 카드의 줄서기: 1호 → 2호 → 3호 → 4호 → 잠금 21종 */
-      '#v48mgCards .v530new.v530new1{order:-4 !important;}',
-      '#v48mgCards .v530new.v530new2{order:-3 !important;}',
-      '#v48mgCards .v530new.v530new3{order:-2 !important;}',
-      '#v48mgCards .v530new.v530new4{order:-1 !important;}',
-      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag{display:none !important;}',
+      /* 5호 개방 카드 (🧩 블록 블라스트 · v5.42) */
+      '.v530new.v530new5::after{content:"🧩 NEW · PLAYABLE";',
+      '  background:linear-gradient(180deg,#ffd6f0,#f472b6);border-color:#9d174d;color:#3b0219;}',
+      '.v530new.v530new5{box-shadow:inset 0 0 0 2px rgba(244,114,182,.55),0 0 16px rgba(244,114,182,.32),0 3px 0 #05030a !important;}',
+      /* 다섯 개방 카드의 줄서기: 1호 → 2호 → 3호 → 4호 → 5호 → 잠금 20종 */
+      '#v48mgCards .v530new.v530new1{order:-5 !important;}',
+      '#v48mgCards .v530new.v530new2{order:-4 !important;}',
+      '#v48mgCards .v530new.v530new3{order:-3 !important;}',
+      '#v48mgCards .v530new.v530new4{order:-2 !important;}',
+      '#v48mgCards .v530new.v530new5{order:-1 !important;}',
+      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag{display:none !important;}',
       /* 잠금 안내 띠 */
       /* v5.41: flex 로 두면 글자 마디마다 칸이 생겨 세로로 쪼개진다 — block 으로 바꿔 줄바꿈만 되게 */
       '#v530MgNote{display:block;padding:6px 8px;margin:0 0 6px;border-radius:9px;',
@@ -62778,7 +62786,7 @@ if (typeof module !== 'undefined' && module.exports) {
       if (!id) return;
       if (isLocked(id)) {
         if (!el.__v530l) { el.__v530l = 1; el.classList.add('v530lock'); el.setAttribute('aria-disabled', 'true'); }
-        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); }
+        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); }
       } else {
         if (!el.__v530n) { el.__v530n = 1; el.classList.add('v530new'); el.removeAttribute('aria-disabled'); }
         if (id === OPEN && !el.classList.contains('v530new1')) el.classList.add('v530new1');
@@ -62789,6 +62797,8 @@ if (typeof module !== 'undefined' && module.exports) {
         else if (el.classList.contains('v530new3')) el.classList.remove('v530new3');
         if (id === OPEN4) { if (!el.classList.contains('v530new4')) el.classList.add('v530new4'); }
         else if (el.classList.contains('v530new4')) el.classList.remove('v530new4');
+        if (id === OPEN5) { if (!el.classList.contains('v530new5')) el.classList.add('v530new5'); }
+        else if (el.classList.contains('v530new5')) el.classList.remove('v530new5');
         if (el.__v530l) { el.__v530l = 0; el.classList.remove('v530lock'); }
       }
     });
@@ -62801,7 +62811,7 @@ if (typeof module !== 'undefined' && module.exports) {
     var sub = $('v48mgSub');
     var m = MG();
     if (sub && m && m.order) {
-      var want = '4종 플레이 가능 · ' + Math.max(0, m.order.length - 4) + '종 준비 중';
+      var want = '5종 플레이 가능 · ' + Math.max(0, m.order.length - 5) + '종 준비 중';
       if (sub.textContent !== want) sub.textContent = want;
     }
     /* 미니게임 목록 상단 안내 */
@@ -62809,7 +62819,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (hub && !$('v530MgNote')) {
       var n = doc.createElement('div');
       n.id = 'v530MgNote';
-      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> 4종을 지금 플레이할 수 있어요 · 나머지 21종은 다음 업데이트에서 순서대로 열려요';
+      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> 5종을 지금 플레이할 수 있어요 · 나머지 20종은 다음 업데이트에서 순서대로 열려요';
       hub.insertBefore(n, hub.firstChild);
     }
     /* 멀티 방 설정 안내 문구 (25종 → 1종 개방) */
@@ -62817,7 +62827,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (sList) {
       var hint = sList.previousElementSibling;
       if (hint && String(hint.className || '').indexOf('v48mg-hint') >= 0) {
-        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 4종이 열려 있어요 · 나머지 21종은 준비 중';
+        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 5종이 열려 있어요 · 나머지 20종은 준비 중';
         if (hint.textContent !== want2) hint.textContent = want2;
       }
     }
@@ -62886,9 +62896,9 @@ if (typeof module !== 'undefined' && module.exports) {
   function reorder() {
     var m = MG();
     if (!m || !m.order || !m.order.length) return;
-    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4) return;
+    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5) return;
     var rest = m.order.filter(function (x) { return x && !OPENS[x]; });
-    m.order = [OPEN, OPEN2, OPEN3, OPEN4].concat(rest);
+    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5].concat(rest);
   }
 
   /* 카드가 새로 그려지는 즉시 배지를 다시 칠한다 (innerHTML 재생성 대응) */
@@ -62907,7 +62917,7 @@ if (typeof module !== 'undefined' && module.exports) {
   setTimeout(paint, 600);
   setTimeout(paint, 1600);
   setInterval(function () { try { reorder(); paint(); } catch (e) {} }, 900);
-  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4);
+  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5);
 })(window);
 
 
@@ -69389,7 +69399,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.41-r1';
+  var BUILD = 'v5.42';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81220,6 +81230,7 @@ if (typeof module !== 'undefined' && module.exports) {
      v5.36 미니게임 후보 5종 — ⚡ 차징 점프 3종 + ☄️ 메테오 스텝 2종(1판 · 15초 생존).
      v5.38 미니게임 후보 7종 — + 🪙 골드 러시 2종(1판 · 600점).
      v5.41 미니게임 후보 9종 — + 🚀 부스터 로켓 2종(1판 · 900점).
+     v5.42 미니게임 후보 11종 — + 🧩 블록 블라스트 2종(1판 · 300점).
    · 진행도는 이벤트 시점(등반 종료/완등, CLUTCH!, 스토리 시작/클리어, 미니게임 종료)에만
      갱신한다 → 인게임 60fps 루프에는 아무 부하도 없다.
    · 보상은 v5.29 펫 코인(JW529)에 그대로 합산한다. 코인 저장은 JW529.coins()만 거친다
@@ -81274,7 +81285,10 @@ if (typeof module !== 'undefined' && module.exports) {
       { id: 'm_gold600', icon: '🎯', title: '골드 러시 600점', desc: '한 판에서 600점 이상', need: 1, coin: 70, unit: '점', mg: 'coin' },
       /* v5.41: 🚀 부스터 로켓 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
       { id: 'm_rocket1', icon: '🚀', title: '부스터 로켓 1판', desc: '🚀 부스터 로켓: 성층권 돌파 한 판', need: 1, coin: 50, unit: '판', mg: 'holefly' },
-      { id: 'm_rocket900', icon: '🌌', title: '부스터 로켓 900점', desc: '한 판에서 900점 이상', need: 1, coin: 70, unit: '점', mg: 'holefly' }
+      { id: 'm_rocket900', icon: '🌌', title: '부스터 로켓 900점', desc: '한 판에서 900점 이상', need: 1, coin: 70, unit: '점', mg: 'holefly' },
+      /* v5.42: 🧩 블록 블라스트 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
+      { id: 'm_block1', icon: '🧩', title: '블록 블라스트 1판', desc: '🧩 블록 블라스트 한 판', need: 1, coin: 50, unit: '판', mg: 'blockblast' },
+      { id: 'm_block300', icon: '🎯', title: '블록 블라스트 300점', desc: '한 판에서 300점 이상', need: 1, coin: 70, unit: '점', mg: 'blockblast' }
     ]
   };
   var BY_ID = {};
@@ -81434,6 +81448,9 @@ if (typeof module !== 'undefined' && module.exports) {
         /* v5.41: 🚀 부스터 로켓 — 1판 / 900점 */
         if (mine('m_rocket1')) changed = bump('m_rocket1', 1) || changed;
         if (mine('m_rocket900') && (Number(data.score) || 0) >= 900) changed = bump('m_rocket900', 1) || changed;
+        /* v5.42: 🧩 블록 블라스트 — 1판 / 300점 */
+        if (mine('m_block1')) changed = bump('m_block1', 1) || changed;
+        if (mine('m_block300') && (Number(data.score) || 0) >= 300) changed = bump('m_block300', 1) || changed;
       }
       if (changed) {
         save();
@@ -86171,7 +86188,7 @@ if (typeof module !== 'undefined' && module.exports) {
        노폴 배지                     →  'jw532_mastery'   m[map].noFall
        최고 콤보(콤보 업데이트)      →  'jw537_best_combo' (number)
        스토리 클리어                 →  'jw64_story_v1'   .cleared
-       미니게임 최고 기록            →  'jw48mg_best_v1'  (개방 4종: rhythm·meteor·coin·holefly)
+       미니게임 최고 기록            →  'jw48mg_best_v1'  (개방 5종: rhythm·meteor·coin·holefly·blockblast)
        펫 보유                       →  JW529.st().owned
        테마 아이템 보유              →  'jw533_theme_v1'  .owned
        총 출석 일수                  →  'jw539_checkin'   .totalDays
@@ -86242,7 +86259,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (!s || !s.cleared || typeof s.cleared !== 'object') return 0;
     return Object.keys(s.cleared).length;
   }
-  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly'];   /* v5.30·v5.35·v5.38·v5.41 개방 4종 */
+  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast'];   /* v5.30·v5.35·v5.38·v5.41·v5.42 개방 5종 */
   function mgCount() {
     var best = ls('jw48mg_best_v1', {}) || {};
     try { if (!best || !Object.keys(best).length) { if (root.JW48MG && root.JW48MG.best) best = root.JW48MG.best; } } catch (e) {}
@@ -86284,7 +86301,7 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'combo10',cat: '기록', ic: '🔥', name: '콤보 파이터',      desc: '최고 콤보 10 이상',           goal: 10,   coin: 40, cur: bestCombo },
     { id: 'combo25',cat: '기록', ic: '💥', name: '피버 마스터',      desc: '최고 콤보 25 이상',           goal: 25,   coin: 80, cur: bestCombo },
     { id: 'story1', cat: '기록', ic: '📖', name: '스토리 도전자',    desc: '스토리 1스테이지 클리어',      goal: 1,    coin: 50, cur: storyCount },
-    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 4종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
+    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 5종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
     { id: 'pet3',   cat: '수집', ic: '🐾', name: '펫 친구',          desc: '펫 3종 이상 보유',            goal: 3,    coin: 50, cur: petCount },
     { id: 'theme5', cat: '수집', ic: '🎨', name: '테마 컬렉터',      desc: '테마 아이템 5종 이상 보유',    goal: 5,    coin: 60, cur: themeCount },
     { id: 'check1', cat: '습관', ic: '📅', name: '개근 시작',        desc: '총 출석 1일 이상',            goal: 1,    coin: 30, cur: checkinDays }
@@ -87850,4 +87867,1046 @@ if (typeof module !== 'undefined' && module.exports) {
   } catch (e) {}
 
   try { console.log('[v541] 🚀 부스터 로켓 등록 · order', (MG.order || []).length); } catch (e) {}
+})(window);
+
+/* ===== v542 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.42 : 🧩 블록 블라스트 — 미니게임 5호 (다섯 번째 슬롯 'blockblast' 전면 개편)
+   --------------------------------------------------------------------------
+   · 8×8 네온 블록 퍼즐. 하단 트레이의 블록 3개를 보드에 놓아 가로 8칸 또는
+     세로 8칸을 가득 채우면 네온 폭발과 함께 줄이 지워진다.
+   · 조작 3가지 — 폰·태블릿·데스크톱 모두에서 실수 없이.
+     ① 드래그 앤 드롭 : 블록을 끌면 손가락보다 42px 위에 반투명 미리보기가 따라오고,
+        놓을 칸에 스냅된다(놓을 수 없는 자리면 빨간 미리보기).
+     ② 원터치 : 블록을 한 번 탭해 고른 뒤 보드 칸을 탭하면 그 자리에 놓인다
+        (가운데 기준으로 놓고, 안 되면 가까운 칸을 자동으로 찾아 준다).
+     ③ 키보드 : 1·2·3 또는 Tab 으로 블록 전환 · 방향키로 보드 위 이동 ·
+        Space/Enter 로 놓기. 한글 입력기(IME)가 켜져 있어도 e.code 로 판정한다.
+   · 줄 클리어 & 콤보 : 한 번에 여러 줄을 지우면 줄마다 100점 + 추가 보너스,
+     연 속 턴으로 지우면 COMBO xN 배수 보너스가 붙는다.
+   · ALL CLEAR : 보드 8×8을 완전히 비우면 +300점.
+   · 종료 : 트레이 블록 중 어느 것도 놓을 자리가 없으면 자동 게임 오버 → 결과 화면.
+   · 펫 코인 +10 / +20 / +35 (하루 상한 60, 키 'jw542_blockblast', JW529.addCoins 경유).
+   · 🎯 오늘의 미션 '블록 블라스트 1판(+50)' · '블록 블라스트 300점(+70)' 자동 연동
+     (셸 finish() → JW531.ev('mg_end', {id:'blockblast'})). 🏆 업적 '미니게임 올라운더'도
+     개방 5종 기준으로 센다(v5.40 OPEN_MG).
+   · 기존 'blockblast' 슬롯(v4.8 프로토타입)을 덮어쓴다 — 기록·봇 대전·방 대전
+     호환이 그대로 이어진다 (v5.30 rhythm · v5.35 meteor · v5.38 coin · v5.41 holefly 와 같은 방식).
+   · 고정 배열과 경량 캔버스 드로잉만 써서 60fps 루프에 부담이 없고, 나가기·재시작은
+     셸의 MG.stopGame → inst.stop 으로 정리된다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var MG = root.JW48MG, V = root.JW43;
+  if (!MG || !V) return;
+
+  var ID = 'blockblast';
+  var W = 360, H = 600;
+
+  /* 보드 · 트레이 배치 (논리 좌표 360×600) */
+  var B = 8;                    /* 8×8 */
+  var CELL = 38;
+  var BX = 28, BY = 64;         /* 보드 좌상단 */
+  var BW = B * CELL;            /* 304 */
+  var TRAY_Y = 388, TRAY_H = 96, TRAY_W = 96, TRAY_X0 = 26, TRAY_PITCH = 106;
+  var LIFT = 42;                /* 드래그 미리보기를 손가락 위로 띄우는 거리(px) */
+  var DAILY_CAP = 60;           /* 블록 블라스트 하루 펫 코인 상한 */
+  var KEY = 'jw542_blockblast';
+  var TIERS = [
+    { s: 1200, coin: 35, name: '🥇 GOLD', col: '#fde047' },
+    { s: 400, coin: 20, name: '🥈 SILVER', col: '#e2e8f0' },
+    { s: 0, coin: 10, name: '🥉 BRONZE', col: '#fdba74' }
+  ];
+
+  /* 블록 조각 — w 는 뽑힐 가중치(작은 조각이 자주 나온다) */
+  var SHAPES = [
+    { w: 3, cells: [[0, 0]] },
+    { w: 4, cells: [[0, 0], [0, 1]] }, { w: 4, cells: [[0, 0], [1, 0]] },
+    { w: 5, cells: [[0, 0], [0, 1], [0, 2]] }, { w: 5, cells: [[0, 0], [1, 0], [2, 0]] },
+    { w: 3, cells: [[0, 0], [0, 1], [0, 2], [0, 3]] }, { w: 3, cells: [[0, 0], [1, 0], [2, 0], [3, 0]] },
+    { w: 4, cells: [[0, 0], [0, 1], [1, 0], [1, 1]] },
+    { w: 4, cells: [[0, 0], [0, 1], [1, 1]] }, { w: 4, cells: [[0, 1], [1, 0], [1, 1]] },
+    { w: 4, cells: [[0, 0], [0, 1], [1, 0]] }, { w: 4, cells: [[0, 0], [1, 0], [1, 1]] },
+    { w: 3, cells: [[0, 0], [0, 1], [0, 2], [1, 0]] }, { w: 3, cells: [[0, 0], [1, 0], [1, 1], [1, 2]] },
+    { w: 3, cells: [[0, 0], [0, 1], [0, 2], [1, 2]] }, { w: 3, cells: [[0, 0], [0, 1], [0, 2], [1, 0]] },
+    { w: 3, cells: [[0, 1], [1, 0], [1, 1], [1, 2]] }, { w: 3, cells: [[0, 0], [0, 1], [0, 2], [1, 1]] },
+    { w: 2, cells: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]] }, { w: 2, cells: [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]] },
+    { w: 2, cells: [[0, 0], [0, 1], [0, 2], [1, 1], [2, 1]] }
+  ];
+  var TOTALW = (function () { var n = 0; for (var i = 0; i < SHAPES.length; i++) n += SHAPES[i].w; return n; })();
+  var BCOL = ['#f472b6', '#38bdf8', '#4ade80', '#fbbf24', '#a78bfa', '#fb923c'];
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function tone(f, d, v, t, f2) { try { V.beep(f, d || 0.06, v || 0.09, t || 'square', f2 || null); } catch (e) {} }
+  function seq(list, step, vol, dur) {
+    for (var i = 0; i < list.length; i++) (function (i) {
+      setTimeout(function () { tone(list[i], dur || 0.08, vol || 0.09, 'square', null); }, i * step);
+    })(i);
+  }
+
+  /* ---------------------------------------------------------------- 저장 */
+  function lsGet(k, d) { try { return V.lsGet(k, d); } catch (e) { return d; } }
+  function lsSet(k, v) { try { V.lsSet(k, v); } catch (e) {} }
+  function dayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function loadDaily() {
+    var s = lsGet(KEY, null);
+    if (!s || typeof s !== 'object') s = { d: '', c: 0 };
+    if (typeof s.c !== 'number' || !isFinite(s.c) || s.c < 0) s.c = 0;
+    return s;
+  }
+  /* 펫 코인 지급 — JW529 저장소를 그대로 거친다 (v5.31 미션·v5.35·v5.38·v5.41 과 같은 방식) */
+  function addCoins(n) {
+    n = Math.round(Number(n) || 0);
+    if (n <= 0) return true;
+    try {
+      if (root.JW529 && root.JW529.addCoins) { root.JW529.addCoins(n); return true; }
+      if (root.JW529 && root.JW529.coins && root.JW529.st) {
+        root.JW529.coins((Number(root.JW529.st().coins) || 0) + n);
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  function tierOf(score) {
+    for (var i = 0; i < TIERS.length; i++) if (score >= TIERS[i].s) return TIERS[i];
+    return TIERS[TIERS.length - 1];
+  }
+  function grantCoins(score) {
+    var want = tierOf(score).coin;
+    var d = loadDaily();
+    var used = d.d === dayKey() ? d.c : 0;
+    var left = Math.max(0, DAILY_CAP - used);
+    var gain = Math.min(want, left);
+    var ok = true;
+    if (gain > 0) {
+      if (!addCoins(gain)) { gain = 0; ok = false; }
+      else lsSet(KEY, { d: dayKey(), c: used + gain });
+    }
+    return { gain: gain, want: want, used: used + gain, cap: DAILY_CAP, fail: !ok };
+  }
+
+  /* ---------------------------------------------------------------- 조각 도우미 */
+  function normCells(cells) {
+    var mr = 99, mc = 99, i;
+    for (i = 0; i < cells.length; i++) {
+      if (cells[i][0] < mr) mr = cells[i][0];
+      if (cells[i][1] < mc) mc = cells[i][1];
+    }
+    var out = [];
+    for (i = 0; i < cells.length; i++) out.push([cells[i][0] - mr, cells[i][1] - mc]);
+    return out;
+  }
+  function bbOf(cells) {
+    var mr = 0, mc = 0, i;
+    for (i = 0; i < cells.length; i++) {
+      if (cells[i][0] > mr) mr = cells[i][0];
+      if (cells[i][1] > mc) mc = cells[i][1];
+    }
+    return { w: mc + 1, h: mr + 1 };
+  }
+  function randPiece(r) {
+    var t = r() * TOTALW, i = 0;
+    for (i = 0; i < SHAPES.length; i++) {
+      t -= SHAPES[i].w;
+      if (t <= 0) break;
+    }
+    if (i >= SHAPES.length) i = SHAPES.length - 1;
+    return { cells: normCells(SHAPES[i].cells), color: BCOL[Math.floor(r() * BCOL.length)] };
+  }
+
+  /* ---------------------------------------------------------------- 게임 본체 */
+  function create(a) {
+    var A = a.a;
+    var R = a.rng || Math.random;
+
+    var S = {
+      ready: true, over: false, dying: 0, t: 0,
+      board: [], tray: [], sel: -1,
+      drag: null, hover: null, cursor: null,
+      combo: 0, bestCombo: 0, lines: 0, placed: 0, score: 0, allClears: 0,
+      msg: '', msgT: 0, msgCol: '#fde047', msgSub: '',
+      sparks: [], flashes: [], shake: 0, allFlash: 0,
+      bot: 0, coinGain: 0, coinUsed: 0, coinTier: null
+    };
+
+    function blankBoard() {
+      var bd = [];
+      for (var i = 0; i < B * B; i++) bd.push(0);
+      return bd;
+    }
+    function emptyCount(bd) {
+      var n = 0;
+      for (var i = 0; i < bd.length; i++) if (!bd[i]) n++;
+      return n;
+    }
+    function fits(bd, cells, ax, ay) {
+      for (var i = 0; i < cells.length; i++) {
+        var x = ax + cells[i][1], y = ay + cells[i][0];
+        if (x < 0 || y < 0 || x >= B || y >= B) return false;
+        if (bd[y * B + x]) return false;
+      }
+      return true;
+    }
+    function stamp(bd, p, ax, ay) {
+      for (var i = 0; i < p.cells.length; i++) {
+        bd[(ay + p.cells[i][0]) * B + ax + p.cells[i][1]] = p.color;
+      }
+    }
+    /* 꽉 찬 가로·세로 줄을 찾아 지운다 — 지운 칸과 색을 돌려준다(폭발 연출용) */
+    function clearLines(bd) {
+      var rows = [], cols = [], r, c, i;
+      for (r = 0; r < B; r++) {
+        var full = true;
+        for (c = 0; c < B; c++) if (!bd[r * B + c]) { full = false; break; }
+        if (full) rows.push(r);
+      }
+      for (c = 0; c < B; c++) {
+        var fullc = true;
+        for (r = 0; r < B; r++) if (!bd[r * B + c]) { fullc = false; break; }
+        if (fullc) cols.push(c);
+      }
+      if (!rows.length && !cols.length) return { rows: rows, cols: cols, cells: [] };
+      var seen = {}, cells = [];
+      function take(x, y) {
+        var k = y * B + x;
+        if (seen[k]) return;
+        seen[k] = 1;
+        cells.push({ x: x, y: y, c: bd[k] });
+        bd[k] = 0;
+      }
+      for (i = 0; i < rows.length; i++) for (c = 0; c < B; c++) take(c, rows[i]);
+      for (i = 0; i < cols.length; i++) for (r = 0; r < B; r++) take(cols[i], r);
+      return { rows: rows, cols: cols, cells: cells };
+    }
+    function anyFit(bd, tray) {
+      for (var i = 0; i < tray.length; i++) {
+        var p = tray[i];
+        if (!p) continue;
+        for (var y = 0; y < B; y++) for (var x = 0; x < B; x++) if (fits(bd, p.cells, x, y)) return true;
+      }
+      return false;
+    }
+    /* 트레이 보충 — 지금 보드에 놓을 수 있는 조각이 하나도 없으면 몇 번 다시 뽑는다 */
+    function refill() {
+      var tries = 0, tray = null;
+      do {
+        tray = [randPiece(R), randPiece(R), randPiece(R)];
+        tries++;
+      } while (tries < 8 && !anyFit(S.board, tray));
+      S.tray = tray;
+      S.sel = -1;
+      S.cursor = null;
+      S.drag = null;
+    }
+
+    /* ---------------------------------------------------------------- 봇 (같은 시드) */
+    function botPlay(seed) {
+      var r = MG.rng(seed || 1), bd = blankBoard(), tray = null, sc = 0, combo = 0, guard = 0;
+      function refillB() { tray = [randPiece(r), randPiece(r), randPiece(r)]; }
+      refillB();
+      while (guard++ < 260) {
+        var best = null, s, x, y;
+        for (s = 0; s < tray.length; s++) {
+          var p = tray[s];
+          if (!p) continue;
+          var bb = bbOf(p.cells);
+          for (y = 0; y <= B - bb.h; y++) for (x = 0; x <= B - bb.w; x++) {
+            if (!fits(bd, p.cells, x, y)) continue;
+            var t = bd.slice();
+            stamp(t, p, x, y);
+            var res = clearLines(t);
+            var n = res.rows.length + res.cols.length;
+            /* 구멍(위가 막힌 빈칸) 패널티로 판이 막히지 않게 */
+            var holes = 0, filled = 0, k;
+            for (k = 0; k < B * B; k++) {
+              if (t[k]) { filled++; continue; }
+              if (k >= B && t[k - B]) holes++;
+            }
+            var val = n * 260 + filled * 2 - holes * 7 + (x === 0 || x === B - 1 ? 4 : 0);
+            if (!best || val > best.val) best = { val: val, s: s, x: x, y: y };
+          }
+        }
+        if (!best) break;
+        stamp(bd, tray[best.s], best.x, best.y);
+        var rr = clearLines(bd);
+        var cnt = rr.rows.length + rr.cols.length;
+        sc += tray[best.s].cells.length;
+        if (cnt > 0) {
+          combo = combo > 0 ? combo + 1 : 1;
+          sc += cnt * 100 + (cnt > 1 ? (cnt - 1) * 80 : 0) + (combo > 1 ? (combo - 1) * 60 : 0);
+          if (emptyCount(bd) === B * B) sc += 300;
+        } else {
+          combo = 0;
+        }
+        tray[best.s] = null;
+        if (!tray[0] && !tray[1] && !tray[2]) refillB();
+      }
+      return sc;
+    }
+
+    /* ---------------------------------------------------------------- 시작 / 종료 */
+    function reset() {
+      S.ready = true; S.over = false; S.dying = 0; S.t = 0;
+      S.board = blankBoard();
+      S.sel = -1; S.drag = null; S.hover = null; S.cursor = null;
+      S.combo = 0; S.bestCombo = 0; S.lines = 0; S.placed = 0; S.score = 0; S.allClears = 0;
+      S.msg = ''; S.msgT = 0; S.msgSub = '';
+      S.sparks = []; S.flashes = []; S.shake = 0; S.allFlash = 0;
+      S.coinGain = 0; S.coinUsed = 0; S.coinTier = null;
+      refill();
+      S.bot = a.bot ? Math.round(botPlay(a.seed) * 0.85) : 0;
+      a.setScore(0);
+      a.setStatus('');
+      a.vsLine(a.bot ? '🤖 봇 목표 ' + S.bot + '점' : '');
+    }
+    function begin() {
+      if (!S.ready) return;
+      S.ready = false;
+      S.t = 0;
+      seq([523, 659, 784], 70, 0.09, 0.08);
+    }
+    function gameOver() {
+      if (S.over) return;
+      S.over = true;
+      S.drag = null;
+      var t = tierOf(S.score);
+      S.coinTier = t;
+      var g = grantCoins(S.score);
+      S.coinGain = g.gain;
+      S.coinUsed = g.used;
+      var note = [];
+      note.push('🧩 ' + S.placed + '개 배치 · ' + S.lines + '줄 클리어');
+      if (S.bestCombo >= 2) note.push('🔥 최고 콤보 x' + S.bestCombo);
+      if (S.allClears > 0) note.push('🌟 ALL CLEAR ' + S.allClears + '회 (+' + (300 * S.allClears) + ')');
+      note.push('더 놓을 자리가 없어요');
+      if (g.fail) note.push('🪙 펫 코인 저장소를 찾지 못했어요');
+      else if (g.gain > 0) note.push(t.name + ' · 🪙 펫 코인 +' + g.gain + ' (오늘 ' + g.used + '/' + g.cap + ')');
+      else note.push(t.name + ' · 🪙 오늘 코인 상한(' + g.cap + ')을 다 받았어요');
+      a.setScore(S.score);
+      var win = a.bot ? (S.score >= S.bot) : null;
+      a.over(win, note.join('\n'));
+    }
+    function checkOver() {
+      if (S.over || S.ready || S.dying > 0) return;
+      if (!anyFit(S.board, S.tray)) {
+        S.dying = 0.42;
+        S.msg = '😵 놓을 자리가 없어요';
+        S.msgSub = '';
+        S.msgCol = '#fca5a5';
+        S.msgT = 1.2;
+        tone(240, 0.2, 0.12, 'sawtooth', 150);
+      }
+    }
+
+    /* ---------------------------------------------------------------- 연출 */
+    function addSparks(x, y, col, n, spd) {
+      for (var i = 0; i < n; i++) {
+        if (S.sparks.length > 190) break;
+        var ang = Math.random() * 6.283;
+        var v = (spd || 150) * (0.3 + Math.random());
+        S.sparks.push({
+          x: x, y: y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v,
+          life: 0.35 + Math.random() * 0.45, max: 0.8, c: col, s: Math.random() < 0.32 ? 4 : 2
+        });
+      }
+    }
+    function spawnClearFx(res) {
+      var i, cell;
+      for (i = 0; i < res.rows.length; i++) S.flashes.push({ t: 'row', i: res.rows[i], life: 0.5, max: 0.5 });
+      for (i = 0; i < res.cols.length; i++) S.flashes.push({ t: 'col', i: res.cols[i], life: 0.5, max: 0.5 });
+      for (i = 0; i < res.cells.length; i++) {
+        cell = res.cells[i];
+        addSparks(BX + cell.x * CELL + CELL / 2, BY + cell.y * CELL + CELL / 2,
+          cell.c || '#7dd3fc', 3, 190);
+      }
+    }
+
+    /* ---------------------------------------------------------------- 놓기 */
+    function anchorCandidates(cells, cx, cy, radius) {
+      var bb = bbOf(cells);
+      var base = { ax: cx - Math.floor((bb.w - 1) / 2), ay: cy - Math.floor((bb.h - 1) / 2) };
+      /* 순서: 제자리 → 좌우/상하 → 대각선 (가로 블록은 좌우로 밀리는 게 자연스럽다) */
+      var offs = [[0, 0]], d;
+      for (d = 1; d <= (radius || 1); d++) {
+        offs.push([-d, 0], [d, 0], [0, -d], [0, d]);
+        offs.push([-d, -d], [-d, d], [d, -d], [d, d]);
+      }
+      var out = [];
+      for (var i = 0; i < offs.length; i++) out.push({ ax: base.ax + offs[i][0], ay: base.ay + offs[i][1] });
+      return out;
+    }
+    /* 가운데 기준 → 안 되면 가까운 칸. 놓을 수 있는 첫 후보를 돌려준다 */
+    function resolveAnchor(cells, cx, cy, radius) {
+      var list = anchorCandidates(cells, cx, cy, radius), i;
+      for (i = 0; i < list.length; i++) {
+        if (fits(S.board, cells, list[i].ax, list[i].ay)) return list[i];
+      }
+      return null;
+    }
+    /* 지정한 칸(좌상단) 우선 → 안 되면 한 칸 옆까지 (드래그·호버 미리보기용) */
+    function resolveAt(cells, ax, ay, radius) {
+      if (fits(S.board, cells, ax, ay)) return { ax: ax, ay: ay };
+      var d;
+      for (d = 1; d <= (radius || 1); d++) {
+        var runs = [[-d, 0], [d, 0], [0, -d], [0, d], [-d, -d], [-d, d], [d, -d], [d, d]];
+        for (var i = 0; i < runs.length; i++) {
+          if (fits(S.board, cells, ax + runs[i][0], ay + runs[i][1])) {
+            return { ax: ax + runs[i][0], ay: ay + runs[i][1] };
+          }
+        }
+      }
+      return null;
+    }
+    function wouldClear(cells, ax, ay) {
+      var t = S.board.slice(), k;
+      for (k = 0; k < cells.length; k++) t[(ay + cells[k][0]) * B + ax + cells[k][1]] = 1;
+      var rows = [], cols = [], r, c;
+      for (r = 0; r < B; r++) {
+        var full = true;
+        for (c = 0; c < B; c++) if (!t[r * B + c]) { full = false; break; }
+        if (full) rows.push(r);
+      }
+      for (c = 0; c < B; c++) {
+        var fullc = true;
+        for (r = 0; r < B; r++) if (!t[r * B + c]) { fullc = false; break; }
+        if (fullc) cols.push(c);
+      }
+      return { rows: rows, cols: cols, n: rows.length + cols.length };
+    }
+    function place(slot, ax, ay) {
+      var p = S.tray[slot];
+      if (!p || S.over || S.ready) return false;
+      if (!fits(S.board, p.cells, ax, ay)) return false;
+      stamp(S.board, p, ax, ay);
+      S.tray[slot] = null;
+      S.placed++;
+      var gain = p.cells.length;
+      S.score += gain;
+      var res = clearLines(S.board);
+      var n = res.rows.length + res.cols.length;
+      if (n > 0) {
+        S.combo = S.combo > 0 ? S.combo + 1 : 1;
+        if (S.combo > S.bestCombo) S.bestCombo = S.combo;
+        var lineScore = n * 100 + (n > 1 ? (n - 1) * 80 : 0);
+        var comboScore = S.combo > 1 ? (S.combo - 1) * 60 : 0;
+        S.score += lineScore + comboScore;
+        S.lines += n;
+        S.shake = n > 1 ? 6 : 3;
+        spawnClearFx(res);
+        if (S.combo > 1) {
+          S.msg = 'COMBO x' + S.combo + '  +' + (lineScore + comboScore);
+          S.msgCol = '#fde047';
+        } else {
+          S.msg = n > 1 ? '🔥 ' + n + '줄 폭발!  +' + lineScore : '✨ 줄 클리어!  +' + lineScore;
+          S.msgCol = n > 1 ? '#fdba74' : '#a5f3fc';
+        }
+        S.msgSub = '';
+        S.msgT = 1.25;
+        seq(n > 1 ? [660, 880, 1100, 1320].sort(function (x, y) { return x - y; }) : [760, 1040], 60, 0.1, 0.08);
+        tone(160, 0.12, 0.12, 'square', 90);
+        if (emptyCount(S.board) === B * B) {
+          S.allClears++;
+          S.score += 300;
+          S.allFlash = 0.7;
+          S.shake = 8;
+          S.msg = '🌟 ALL CLEAR!  +300';
+          S.msgCol = '#fff7d6';
+          S.msgSub = '보드를 전부 비웠어요!';
+          S.msgT = 1.8;
+          seq([784, 988, 1175, 1568, 1976], 70, 0.11, 0.1);
+        }
+      } else {
+        S.combo = 0;
+        tone(480 + Math.min(240, S.placed * 3), 0.04, 0.06, 'triangle');
+      }
+      a.setScore(S.score);
+      S.sel = -1;
+      S.cursor = null;
+      if (!S.tray[0] && !S.tray[1] && !S.tray[2]) refill();
+      checkOver();
+      return true;
+    }
+
+    /* ---------------------------------------------------------------- 입력 */
+    function slotAt(p) {
+      if (p.y < TRAY_Y - 8 || p.y > TRAY_Y + TRAY_H + 8) return -1;
+      for (var i = 0; i < 3; i++) {
+        var x = TRAY_X0 + i * TRAY_PITCH;
+        if (p.x >= x - 4 && p.x <= x + TRAY_W + 4) return i;
+      }
+      return -1;
+    }
+    function cellAt(p) {
+      var x = Math.floor((p.x - BX) / CELL), y = Math.floor((p.y - BY) / CELL);
+      if (x < 0 || y < 0 || x >= B || y >= B) return null;
+      return { x: x, y: y };
+    }
+    function ghostAnchor(gx, gy, cells) {
+      var bb = bbOf(cells);
+      var left = gx - (bb.w * CELL) / 2;
+      var top = gy - (bb.h * CELL) / 2;
+      return { ax: Math.round((left - BX) / CELL), ay: Math.round((top - BY) / CELL) };
+    }
+    function pick(slot) {
+      if (slot < 0 || slot > 2) return;
+      if (!S.tray[slot]) return;
+      S.sel = slot;
+      if (!S.cursor) {
+        var bb = bbOf(S.tray[slot].cells);
+        S.cursor = { ax: clamp(Math.floor((B - bb.w) / 2), 0, B - bb.w), ay: clamp(B - bb.h, 0, B - bb.h) };
+      } else {
+        var bb2 = bbOf(S.tray[slot].cells);
+        S.cursor = { ax: clamp(S.cursor.ax, 0, B - bb2.w), ay: clamp(S.cursor.ay, 0, B - bb2.h) };
+      }
+      tone(760, 0.05, 0.07, 'square', 980);
+    }
+    function cycleSel(dir) {
+      var start = S.sel < 0 ? (dir > 0 ? -1 : 3) : S.sel;
+      for (var i = 1; i <= 3; i++) {
+        var s = (start + dir * i + 6) % 3;
+        if (S.tray[s]) { pick(s); return; }
+      }
+    }
+
+    var api = {
+      start: reset,
+      stop: function () { S.over = true; S.drag = null; },
+      update: function (dt) {
+        S.t += dt;
+        var i;
+        if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 26);
+        if (S.allFlash > 0) S.allFlash = Math.max(0, S.allFlash - dt * 1.6);
+        if (S.msgT > 0) S.msgT = Math.max(0, S.msgT - dt);
+        for (i = S.sparks.length - 1; i >= 0; i--) {
+          var s = S.sparks[i];
+          s.life -= dt;
+          if (s.life <= 0) { S.sparks.splice(i, 1); continue; }
+          s.vy += 340 * dt;
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+        }
+        for (i = S.flashes.length - 1; i >= 0; i--) {
+          S.flashes[i].life -= dt;
+          if (S.flashes[i].life <= 0) S.flashes.splice(i, 1);
+        }
+        if (S.dying > 0) {
+          S.dying -= dt;
+          if (S.dying <= 0) { S.dying = 0; gameOver(); }
+        }
+      },
+      pointer: function (e) {
+        if (!e) return;
+        if (S.over) return;
+        if (S.ready) {
+          if (e.type === 'down') begin();
+          return;
+        }
+        if (S.dying > 0) return;
+
+        if (e.type === 'down') {
+          var sl = slotAt(e);
+          if (sl >= 0 && S.tray[sl]) {
+            pick(sl);
+            S.drag = {
+              slot: sl, sx: e.x, sy: e.y,
+              gx: TRAY_X0 + sl * TRAY_PITCH + TRAY_W / 2,
+              gy: TRAY_Y + TRAY_H / 2,
+              moved: false
+            };
+            return;
+          }
+          var c0 = cellAt(e);
+          if (c0 && S.sel >= 0) S.hover = c0;
+          return;
+        }
+
+        if (e.type === 'move') {
+          if (S.drag) {
+            if (!S.drag.moved &&
+              Math.abs(e.x - S.drag.sx) + Math.abs(e.y - S.drag.sy) > 5) S.drag.moved = true;
+            if (S.drag.moved) {
+              S.drag.gx = e.x;
+              S.drag.gy = e.y - LIFT;
+            }
+            return;
+          }
+          var c1 = cellAt(e);
+          S.hover = c1;
+          return;
+        }
+
+        if (e.type === 'up') {
+          if (S.drag) {
+            var d = S.drag;
+            S.drag = null;
+            if (!d.moved) return;                       /* 그냥 톡 누른 것 = 선택만 */
+            var p = S.tray[d.slot];
+            if (!p) return;
+            var anc = ghostAnchor(d.gx, d.gy, p.cells);
+            var spot = resolveAt(p.cells, anc.ax, anc.ay, 1);
+            if (spot) place(d.slot, spot.ax, spot.ay);
+            else {
+              S.msg = '여기엔 못 놓아요';
+              S.msgSub = '';
+              S.msgCol = '#fca5a5';
+              S.msgT = 0.8;
+              tone(220, 0.06, 0.08, 'square', 160);
+            }
+            S.hover = null;
+            return;
+          }
+          var c2 = cellAt(e);
+          if (c2 && S.sel >= 0 && S.tray[S.sel]) {
+            var p2 = S.tray[S.sel];
+            var spot2 = resolveAnchor(p2.cells, c2.x, c2.y, 1);
+            if (spot2) place(S.sel, spot2.ax, spot2.ay);
+            else {
+              S.msg = '여기엔 못 놓아요';
+              S.msgSub = '';
+              S.msgCol = '#fca5a5';
+              S.msgT = 0.8;
+              S.hover = c2;
+              tone(220, 0.06, 0.08, 'square', 160);
+            }
+          }
+          return;
+        }
+        if (e.type === 'cancel') { S.drag = null; }
+      },
+      key: function (k, down) {
+        if (!down || S.over) return;
+        if (S.ready) {
+          if (k === 'space' || k === 'enter' || k === 'up' || k === 'down' || k === 'left' || k === 'right' || k === 'z') begin();
+          return;
+        }
+        if (S.dying > 0) return;
+        if (k === 'tab') { cycleSel(1); return; }
+        if (k === '1' || k === '2' || k === '3') { pick(Number(k) - 1); return; }
+        if (k === 'left' || k === 'right' || k === 'up' || k === 'down') {
+          if (S.sel < 0) { cycleSel(1); return; }
+          if (!S.cursor) {
+            var bb = bbOf(S.tray[S.sel].cells);
+            S.cursor = { ax: 0, ay: B - bb.h };
+          }
+          var bb2 = bbOf(S.tray[S.sel].cells);
+          var dx = k === 'left' ? -1 : k === 'right' ? 1 : 0;
+          var dy = k === 'up' ? -1 : k === 'down' ? 1 : 0;
+          S.cursor.ax = clamp(S.cursor.ax + dx, 0, B - bb2.w);
+          S.cursor.ay = clamp(S.cursor.ay + dy, 0, B - bb2.h);
+          tone(560, 0.03, 0.05, 'square', 700);
+          return;
+        }
+        if (k === 'space' || k === 'enter' || k === 'z') {
+          if (S.sel < 0) { cycleSel(1); return; }
+          var p = S.tray[S.sel];
+          if (!p) return;
+          var hr = bbOf(p.cells);
+          if (!S.cursor) S.cursor = { ax: 0, ay: B - hr.h };
+          var cx = clamp(S.cursor.ax, 0, B - hr.w), cyc = clamp(S.cursor.ay, 0, B - hr.h);
+          if (fits(S.board, p.cells, cx, cyc)) place(S.sel, cx, cyc);
+          else {
+            S.msg = '여기엔 못 놓아요';
+            S.msgSub = '';
+            S.msgCol = '#fca5a5';
+            S.msgT = 0.8;
+            tone(220, 0.06, 0.08, 'square', 160);
+          }
+          return;
+        }
+        if (k === 'esc') S.sel = -1;
+      },
+
+      /* -------------------------------------------------------------- 그리기 */
+      draw: function (g) {
+        var i, x, y, c;
+        g.fillStyle = '#080d1a';
+        g.fillRect(0, 0, W, H);
+        var bg = g.createLinearGradient(0, 44, 0, H);
+        bg.addColorStop(0, '#101a30');
+        bg.addColorStop(0.55, '#0b1020');
+        bg.addColorStop(1, '#060912');
+        g.fillStyle = bg;
+        g.fillRect(0, 44, W, H - 44);
+
+        var sh = S.shake;
+        if (sh > 0) {
+          g.save();
+          g.translate((Math.random() - 0.5) * sh, (Math.random() - 0.5) * sh * 0.6);
+        }
+
+        drawBoard(g);
+        drawTray(g);
+        drawSparks(g);
+        if (sh > 0) g.restore();
+
+        drawHud(g);
+        drawTexts(g);
+        if (S.allFlash > 0) {
+          g.fillStyle = 'rgba(255,251,214,' + (S.allFlash * 0.42) + ')';
+          g.fillRect(0, 0, W, H);
+        }
+        if (S.ready) drawReady(g);
+      },
+      /* 테스트/검증용 */
+      state: function () {
+        return {
+          ready: S.ready, over: S.over, dying: S.dying, score: S.score, combo: S.combo,
+          bestCombo: S.bestCombo, lines: S.lines, placed: S.placed, allClears: S.allClears,
+          sel: S.sel, bot: a.bot ? S.bot : 0, coinGain: S.coinGain, coinUsed: S.coinUsed,
+          board: S.board.slice(),
+          tray: S.tray.map(function (p) { return p ? { cells: p.cells, color: p.color } : null; }),
+          msg: S.msg, msgT: S.msgT
+        };
+      },
+      begin: begin
+    };
+
+    /* 검증용 훅 — QA(?qa=…)로 열었을 때만 붙는다 (일반 플레이에는 없음) */
+    try {
+      if (/(^|[?&])qa=/.test(String(location.search || ''))) {
+        api.__qa = {
+          setBoard: function (rows) {
+            var bd = blankBoard();
+            for (var y = 0; y < B && y < rows.length; y++) {
+              var row = String(rows[y] || '');
+              for (var x = 0; x < B && x < row.length; x++) {
+                if (row.charAt(x) !== '.' && row.charAt(x) !== ' ') bd[y * B + x] = BCOL[(x + y) % BCOL.length];
+              }
+            }
+            S.board = bd;
+            a.setScore(S.score);
+            return emptyCount(bd);
+          },
+          setTray: function (list) {
+            S.tray = [0, 1, 2].map(function (i) {
+              var d = list && list[i];
+              if (!d) return null;
+              return { cells: normCells(d.cells), color: d.color || BCOL[i % BCOL.length] };
+            });
+            S.sel = -1; S.cursor = null; S.drag = null;
+            return true;
+          },
+          setScore: function (n) { S.score = Math.max(0, Math.round(Number(n) || 0)); a.setScore(S.score); },
+          over: function () { S.dying = 0; gameOver(); },
+          refill: refill,
+          state: function () { return api.state(); }
+        };
+      }
+    } catch (e) {}
+    return api;
+
+    /* ---------------------------------------------------------------- 그리기 구현 */
+    function drawHud(g) {
+      var mid = '', right = '';
+      if (S.over) { mid = ''; }
+      else if (a.bot) {
+        mid = '🤖 ' + S.bot + '점';
+        right = S.score >= S.bot ? '이기고 있어요!' : (S.bot - S.score) + '점 남음';
+      } else if (S.combo >= 2) {
+        mid = '🔥 COMBO x' + S.combo;
+      } else {
+        mid = S.lines + '줄 · ' + S.placed + '개';
+      }
+      MG.hud(g, a, { label: 'SCORE', score: S.score, mid: mid, right: right });
+    }
+    function drawBoard(g) {
+      A.panel(g, BX - 5, BY - 5, BW + 10, BW + 10, {
+        r: 14, fill: 'rgba(9,14,28,.96)', stroke: 'rgba(125,211,252,.26)'
+      });
+      var i, x, y, bxf, byf;
+      for (y = 0; y < B; y++) {
+        for (x = 0; x < B; x++) {
+          var v = S.board[y * B + x];
+          bxf = BX + x * CELL;
+          byf = BY + y * CELL;
+          if (!v) {
+            g.fillStyle = ((x + y) % 2 === 0) ? 'rgba(255,255,255,.045)' : 'rgba(255,255,255,.026)';
+            A.rr(g, bxf + 1.5, byf + 1.5, CELL - 3, CELL - 3, 7);
+            g.fill();
+          } else {
+            drawBlock(g, bxf, byf, CELL, v, 1);
+          }
+        }
+      }
+      /* 지워지는 줄 섬광 */
+      for (i = 0; i < S.flashes.length; i++) {
+        var fl = S.flashes[i];
+        var al = Math.max(0, fl.life / fl.max);
+        if (fl.t === 'row') {
+          var ry = BY + fl.i * CELL;
+          var gr = g.createLinearGradient(BX, ry, BX + BW, ry);
+          gr.addColorStop(0, 'rgba(125,211,252,' + (al * 0.1) + ')');
+          gr.addColorStop(0.5, 'rgba(255,255,255,' + (al * 0.85) + ')');
+          gr.addColorStop(1, 'rgba(125,211,252,' + (al * 0.1) + ')');
+          g.fillStyle = gr;
+          g.fillRect(BX, ry, BW, CELL);
+        } else {
+          var rx = BX + fl.i * CELL;
+          var gc = g.createLinearGradient(rx, BY, rx, BY + BW);
+          gc.addColorStop(0, 'rgba(125,211,252,' + (al * 0.1) + ')');
+          gc.addColorStop(0.5, 'rgba(255,255,255,' + (al * 0.85) + ')');
+          gc.addColorStop(1, 'rgba(125,211,252,' + (al * 0.1) + ')');
+          g.fillStyle = gc;
+          g.fillRect(rx, BY, CELL, BW);
+        }
+      }
+      drawPreview(g);
+    }
+    function drawBlock(g, px, py, cs, col, alpha) {
+      g.globalAlpha = alpha == null ? 1 : alpha;
+      g.fillStyle = col;
+      A.rr(g, px + 1.5, py + 1.5, cs - 3, cs - 3, Math.max(3, cs * 0.18));
+      g.fill();
+      /* 위쪽 하이라이트 · 아래쪽 그림자 — 네온 블록 느낌 */
+      g.fillStyle = 'rgba(255,255,255,.38)';
+      A.rr(g, px + 3, py + 3, cs - 6, Math.max(3, cs * 0.16), 3);
+      g.fill();
+      g.fillStyle = 'rgba(0,0,0,.26)';
+      A.rr(g, px + 3, py + cs - 3 - Math.max(3, cs * 0.16), cs - 6, Math.max(3, cs * 0.16), 3);
+      g.fill();
+      g.strokeStyle = 'rgba(255,255,255,.3)';
+      g.lineWidth = 1;
+      A.rr(g, px + 1.5, py + 1.5, cs - 3, cs - 3, Math.max(3, cs * 0.18));
+      g.stroke();
+      g.globalAlpha = 1;
+    }
+    function previewSpot() {
+      if (S.over || S.ready || S.dying > 0) return null;
+      /* 드래그 중 */
+      if (S.drag && S.drag.moved) {
+        var pd = S.tray[S.drag.slot];
+        if (!pd) return null;
+        var anc = ghostAnchor(S.drag.gx, S.drag.gy, pd.cells);
+        var spot = resolveAt(pd.cells, anc.ax, anc.ay, 1);
+        if (spot) return { cells: pd.cells, color: pd.color, ax: spot.ax, ay: spot.ay, ok: true, slot: S.drag.slot };
+        return { cells: pd.cells, color: pd.color, ax: anc.ax, ay: anc.ay, ok: false, slot: S.drag.slot };
+      }
+      if (S.sel < 0) return null;
+      var p = S.tray[S.sel];
+      if (!p) return null;
+      /* 키보드 커서 */
+      if (S.cursor) {
+        var bb = bbOf(p.cells);
+        var ax = clamp(S.cursor.ax, 0, B - bb.w), ay = clamp(S.cursor.ay, 0, B - bb.h);
+        return { cells: p.cells, color: p.color, ax: ax, ay: ay, ok: fits(S.board, p.cells, ax, ay), slot: S.sel, cursor: true };
+      }
+      /* 마우스 호버 */
+      if (S.hover) {
+        var spot2 = resolveAnchor(p.cells, S.hover.x, S.hover.y, 1);
+        if (spot2) return { cells: p.cells, color: p.color, ax: spot2.ax, ay: spot2.ay, ok: true, slot: S.sel };
+        var bb2 = bbOf(p.cells);
+        return {
+          cells: p.cells, color: p.color,
+          ax: S.hover.x - Math.floor((bb2.w - 1) / 2), ay: S.hover.y - Math.floor((bb2.h - 1) / 2),
+          ok: false, slot: S.sel
+        };
+      }
+      return null;
+    }
+    function drawPreview(g) {
+      var pv = previewSpot();
+      if (!pv) return;
+      /* 놓으면 지워질 줄을 미리 밝힌다 */
+      if (pv.ok) {
+        var wc = wouldClear(pv.cells, pv.ax, pv.ay), i;
+        for (i = 0; i < wc.rows.length; i++) {
+          g.fillStyle = 'rgba(253,224,71,.22)';
+          g.fillRect(BX, BY + wc.rows[i] * CELL, BW, CELL);
+        }
+        for (i = 0; i < wc.cols.length; i++) {
+          g.fillStyle = 'rgba(253,224,71,.22)';
+          g.fillRect(BX + wc.cols[i] * CELL, BY, CELL, BW);
+        }
+      }
+      for (var k = 0; k < pv.cells.length; k++) {
+        var cx = pv.ax + pv.cells[k][1], cy = pv.ay + pv.cells[k][0];
+        if (cx < 0 || cy < 0 || cx >= B || cy >= B) continue;
+        var px = BX + cx * CELL, py = BY + cy * CELL;
+        if (pv.ok) drawBlock(g, px, py, CELL, pv.color, 0.5);
+        else {
+          g.globalAlpha = 0.42;
+          g.fillStyle = '#f87171';
+          A.rr(g, px + 1.5, py + 1.5, CELL - 3, CELL - 3, 7);
+          g.fill();
+          g.globalAlpha = 0.9;
+          g.strokeStyle = '#ef4444';
+          g.lineWidth = 2;
+          A.rr(g, px + 2.5, py + 2.5, CELL - 5, CELL - 5, 6);
+          g.stroke();
+          g.globalAlpha = 1;
+        }
+      }
+      /* 키보드 커서 테두리 */
+      if (pv.cursor) {
+        g.strokeStyle = pv.ok ? 'rgba(253,224,71,.9)' : 'rgba(248,113,113,.9)';
+        g.lineWidth = 2;
+        for (var m = 0; m < pv.cells.length; m++) {
+          var kx = pv.ax + pv.cells[m][1], ky = pv.ay + pv.cells[m][0];
+          if (kx < 0 || ky < 0 || kx >= B || ky >= B) continue;
+          A.rr(g, BX + kx * CELL + 2, BY + ky * CELL + 2, CELL - 4, CELL - 4, 6);
+          g.stroke();
+        }
+      }
+    }
+    function drawTray(g) {
+      for (var i = 0; i < 3; i++) {
+        var sx = TRAY_X0 + i * TRAY_PITCH, sy = TRAY_Y;
+        var on = S.sel === i;
+        var dragging = !!(S.drag && S.drag.slot === i && S.drag.moved);
+        A.panel(g, sx, sy, TRAY_W, TRAY_H, {
+          r: 12,
+          fill: on ? 'rgba(34,72,116,.82)' : 'rgba(17,24,42,.9)',
+          stroke: on ? 'rgba(125,211,252,.9)' : 'rgba(150,190,255,.16)'
+        });
+        if (on) {
+          g.strokeStyle = 'rgba(125,211,252,.55)';
+          g.lineWidth = 2;
+          A.rr(g, sx + 1, sy + 1, TRAY_W - 2, TRAY_H - 2, 11);
+          g.stroke();
+        }
+        A.text(g, String(i + 1), sx + 8, sy + 15, { size: 9, color: on ? '#bae6fd' : '#4b5f7f' });
+        var p = S.tray[i];
+        if (!p) {
+          A.text(g, '✔', sx + TRAY_W / 2, sy + TRAY_H / 2 + 8, { size: 20, color: '#243352', align: 'center' });
+          continue;
+        }
+        var bb = bbOf(p.cells);
+        var cs = Math.min(19, 62 / Math.max(bb.w, bb.h));
+        var ox = sx + TRAY_W / 2 - (bb.w * cs) / 2;
+        var oy = sy + TRAY_H / 2 - (bb.h * cs) / 2;
+        g.globalAlpha = dragging ? 0.28 : 1;
+        for (var k = 0; k < p.cells.length; k++) {
+          drawBlock(g, ox + p.cells[k][1] * cs, oy + p.cells[k][0] * cs, cs, p.color, 1);
+        }
+        g.globalAlpha = 1;
+      }
+      /* 드래그 중인 조각은 손가락 위에 그린다 */
+      if (S.drag && S.drag.moved) {
+        var pd = S.tray[S.drag.slot];
+        if (pd) {
+          var bb2 = bbOf(pd.cells);
+          var w2 = bb2.w * CELL, h2 = bb2.h * CELL;
+          var x2 = S.drag.gx - w2 / 2, y2 = S.drag.gy - h2 / 2;
+          g.globalAlpha = 0.9;
+          for (var j = 0; j < pd.cells.length; j++) {
+            drawBlock(g, x2 + pd.cells[j][1] * CELL, y2 + pd.cells[j][0] * CELL, CELL, pd.color, 0.95);
+          }
+          g.globalAlpha = 1;
+        }
+      }
+    }
+    function drawSparks(g) {
+      for (var i = 0; i < S.sparks.length; i++) {
+        var s = S.sparks[i];
+        var al = Math.max(0, Math.min(1, s.life / s.max * 1.6));
+        g.globalAlpha = al;
+        g.fillStyle = s.c;
+        g.fillRect(s.x - s.s / 2, s.y - s.s / 2, s.s, s.s);
+      }
+      g.globalAlpha = 1;
+    }
+    function drawTexts(g) {
+      if (S.msgT > 0 && S.msg) {
+        var al = Math.min(1, S.msgT * 2.2);
+        g.globalAlpha = al;
+        var tw = Math.min(330, S.msg.length * 8.4 + 26);
+        A.rr(g, 180 - tw / 2, BY + 10, tw, 26, 13);
+        g.fillStyle = 'rgba(4,8,18,.88)';
+        g.fill();
+        g.strokeStyle = S.msgCol;
+        g.lineWidth = 1.5;
+        g.stroke();
+        A.text(g, S.msg, 180, BY + 28, { size: 14, color: S.msgCol, align: 'center', font: '"Jua",sans-serif' });
+        if (S.msgSub) {
+          A.text(g, S.msgSub, 180, BY + 50, { size: 9.5, color: '#fef3c7', align: 'center' });
+        }
+        g.globalAlpha = 1;
+      }
+      if (S.ready) return;
+      A.text(g, '블록을 끌어 놓기 · 한 번 탭해 고른 뒤 칸 탭 · 1·2·3/Tab 전환 · 방향키+Space', 180, 512,
+        { size: 8.5, color: '#5b6f92', align: 'center' });
+      A.text(g, '가로·세로 8칸을 채우면 폭발 · 연속으로 지우면 COMBO xN · 보드를 다 비우면 +300', 180, 528,
+        { size: 8.5, color: '#4a5c7c', align: 'center' });
+    }
+    function drawReady(g) {
+      g.fillStyle = 'rgba(4,7,14,.9)';
+      g.fillRect(0, 44, W, H - 44);
+      A.panel(g, 20, 88, 320, 402, { r: 18, fill: 'rgba(16,24,42,.98)', stroke: 'rgba(125,211,252,.34)' });
+      A.text(g, '🧩 블록 블라스트', 180, 130, { size: 24, color: '#7dd3fc', align: 'center', font: '"Jua",sans-serif' });
+      A.text(g, '8×8 네온 블록 퍼즐', 180, 152, { size: 11, color: '#a8bdd8', align: 'center' });
+      A.text(g, '👆 블록을 끌어 보드에 놓기', 180, 192, { size: 13, color: '#fde68a', align: 'center', font: '"Jua",sans-serif' });
+      A.text(g, '또는 블록을 한 번 탭 → 보드 칸 탭 (원터치)', 180, 212, { size: 10, color: '#c7d6ef', align: 'center' });
+      A.text(g, '⌨️ 1·2·3 / Tab 블록 전환 · 방향키 이동 · Space 놓기', 180, 234, { size: 10, color: '#93a4c4', align: 'center' });
+      A.text(g, '가로 8칸 · 세로 8칸을 채우면 네온 폭발!', 180, 266, { size: 11, color: '#a5f3fc', align: 'center' });
+      A.text(g, '🔥 연속으로 지우면 COMBO xN · 여러 줄은 한 번에 보너스', 180, 288, { size: 10, color: '#fde68a', align: 'center' });
+      A.text(g, '🌟 보드 8×8을 전부 비우면 ALL CLEAR +300', 180, 310, { size: 10, color: '#fef08a', align: 'center' });
+      A.text(g, '블록 3개를 다 놓으면 새 3개가 채워져요', 180, 340, { size: 10, color: '#93a4c4', align: 'center' });
+      A.text(g, '놓을 자리가 없으면 판이 끝나요 · 🪙 코인 +10/+20/+35 (하루 60)', 180, 362, { size: 9.5, color: '#7f93b3', align: 'center' });
+      var best = null;
+      try { best = a.best(); } catch (e) { best = null; }
+      if (best != null) A.text(g, '최고 기록 ' + best + '점', 180, 392, { size: 11, color: '#fbbf24', align: 'center' });
+      g.globalAlpha = 0.62 + 0.38 * Math.sin(S.t * 4);
+      A.text(g, '▶ 탭해서 시작', 180, 442, { size: 16, color: '#7dd3fc', align: 'center', font: '"Jua",sans-serif' });
+      g.globalAlpha = 1;
+    }
+  }
+
+  /* ==========================================================================
+     등록 — 기존 'blockblast' 슬롯을 덮어쓴다 (기록·봇·방 대전 호환 유지)
+     ========================================================================== */
+  MG.def({
+    id: ID,
+    name: '블록 블라스트',
+    emoji: '🧩',
+    tag: '퍼즐',
+    desc: '8×8 보드에 블록 3개 · 가로/세로 줄을 지워 콤보',
+    unit: '점',
+    record: {
+      type: 'high',
+      fmt: function (v) { return String(Math.round(v)) + '점'; }
+    },
+    create: create
+  });
+
+  /* 목록 순서: 개방 5호로 맨 뒤(4호 다음)에 — v5.30 잠금 모듈의 reorder 가 앞으로 당긴다 */
+  try {
+    if (MG.order) {
+      var rest = MG.order.filter(function (x) { return x && x !== ID; });
+      var at = rest.indexOf('holefly');
+      if (at >= 0) rest.splice(at + 1, 0, ID);
+      else rest.push(ID);
+      MG.order = rest;
+    }
+  } catch (e) {}
+
+  /* ----------------------------------------------------------------------
+     1·2·3 · Tab 키 — 셸의 keyName 은 방향키·스페이스·엔터만 넘겨서 숫자/Tab 은
+     여기서 직접 받는다 (한글 IME·입력창 가드 __jwTypingTarget 도 그대로 존중).
+     ---------------------------------------------------------------------- */
+  try {
+    document.addEventListener('keydown', function (e) {
+      try {
+        var c = MG.cur;
+        if (!MG.open || MG.view !== 'play' || !c || c.id !== ID) return;
+        if (c.over || !c.inst || !c.inst.key) return;
+        if (window.__jwTypingTarget && window.__jwTypingTarget(e)) return;
+        var k = e.key || '';
+        if (k === 'Tab') {
+          e.preventDefault();
+          c.inst.key('tab', true);
+          return;
+        }
+        if (k === '1' || k === '2' || k === '3') {
+          e.preventDefault();
+          c.inst.key(k, true);
+        }
+      } catch (er) {}
+    }, true);
+  } catch (e) {}
+
+  try { console.log('[v542] 🧩 블록 블라스트 등록 · order', (MG.order || []).length); } catch (e) {}
 })(window);
