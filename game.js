@@ -89511,11 +89511,13 @@ if (typeof module !== 'undefined' && module.exports) {
   function pickOne(arr) { return (arr && arr.length) ? arr[Math.floor(Math.random() * arr.length)] : null; }
 
   function summaryLine(d) {
-    var p = petOf(d.pet), t = trailOf(d.trail), tn = shortName(t, '기본');
-    /* 좁은 폰(≈390px)에서는 잔상 이름을 첫 단어로 줄여 카드 두 째 줄이 잘리지 않게 한다 */
-    try { if ((window.innerWidth || 0) < 430) tn = tn.split(/\s+/)[0]; } catch (e) {}
-    return '🐾 ' + (p ? p.name : '없음') + ' · ✨ ' + tn;
-  }  function cardTitle(d) {
+    var p = petOf(d.pet), t = trailOf(d.trail), tn = shortName(t, '기본').split(/\s+/)[0];
+    /* 카드 두째 줄은 펫 · 잔상 한 단어로 짧게 — 전체 조합(테두리·칭호 포함)은 카드 title 속성에 있다 */
+    var pn = p ? p.name : '없음';
+    try { if ((window.innerWidth || 0) < 430) return pn + '·' + tn; } catch (e) {}
+    return '🐾 ' + pn + ' · ' + tn;
+  }
+  function cardTitle(d) {
     var s = skinOf(d.skin), p = petOf(d.pet), t = trailOf(d.trail), f = frameOf(d.frame), ti = titleOf(d.title);
     return ['🎨 ' + (s.emoji || '') + ' ' + s.name,
       '🐾 ' + (p ? p.name : '없음'),
@@ -89539,14 +89541,15 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v544Bar{padding:8px 12px 0;display:flex;flex-direction:column;gap:5px;}',
       '#v544Bar .v544-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}',
       '#v544Bar .v544-card{position:relative;display:flex;flex-direction:column;justify-content:center;gap:3px;',
-      '  min-height:60px;min-width:0;padding:6px 7px 0;border-radius:11px;border:2px solid #22304a;background:#0d1728;',
+      '  min-height:66px;min-width:0;padding:6px 7px 0;border-radius:11px;border:2px solid #22304a;background:#0d1728;',
       '  color:#dbe7f8;text-align:left;font-family:inherit;box-shadow:0 2px 0 #060b14;overflow:hidden;}',
       '#v544Bar .v544-card.on{border-color:#38bdf8;background:linear-gradient(180deg,rgba(37,99,235,.28),rgba(13,23,40,.96));}',
       '#v544Bar .v544-card.empty{align-items:center;justify-content:center;text-align:center;border-style:dashed;border-color:#33456a;background:#0a1322;}',
       '#v544Bar .v544-card b{display:block;max-width:100%;font-size:11px;font-weight:900;color:#eaf2ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
-      '#v544Bar .v544-card i{display:block;max-width:100%;font-style:normal;font-size:9.5px;font-weight:800;color:#93a8c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+      '#v544Bar .v544-card i{display:block;max-width:100%;font-style:normal;font-size:9.5px;letter-spacing:-.2px;font-weight:800;color:#93a8c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
       '#v544Bar .v544-card.empty b{font-size:11px;color:#cfe0f7;}',
       '#v544Bar .v544-card.empty i{color:#8fa3c4;}',
+      '#v544Bar .v544-card b,#v544Bar .v544-card i,#v544Bar .v544-foot{flex:0 0 auto;}',
       '#v544Bar .v544-foot{display:flex;align-items:center;justify-content:center;gap:3px;height:18px;margin:5px -7px 0;',
       '  border-top:1px solid #22304a;background:#0a1220;color:#a8bad5;font-size:9px;font-weight:900;}',
       '#v544Bar .v544-card.on .v544-foot{border-top-color:#1e4a6e;background:#0b1f36;color:#7dd3fc;}',
