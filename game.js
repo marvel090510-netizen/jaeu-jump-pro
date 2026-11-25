@@ -89231,7 +89231,7 @@ if (typeof module !== 'undefined' && module.exports) {
   function hideLegacyGhostBtn() {
     try {
       var b = document.getElementById('v43GhostPause');
-      if (b && !inRoom() && b.style.display !== 'none') b.style.display = 'none';
+      if (b && !inRoom()) { b.style.setProperty('display', 'none', 'important'); b.setAttribute('aria-hidden', 'true'); }
     } catch (e) {}
   }
 
