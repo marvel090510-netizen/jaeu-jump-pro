@@ -670,6 +670,10 @@
     if ($('#btnRegenerateVariant')) $('#btnRegenerateVariant').addEventListener('click', generateVariant);
     if ($('#btnSaveVariant')) $('#btnSaveVariant').addEventListener('click', saveVariant);
     if ($('#btnCopyVariant')) $('#btnCopyVariant').addEventListener('click', copyVariant);
+    if ($('#btnVariantSpeak')) $('#btnVariantSpeak').addEventListener('click', function () {
+      if (!V) { SB.toast('먼저 변형 문제를 만들어 주세요', 'bad'); return; }
+      SB.speak(V.body + '. ' + (V.answer ? '정답은 ' + V.answer : ''), V.subject === '영어' ? 'en-US' : 'ko-KR');
+    });
     updateVariantHint();
 
     /* 시험지 */
@@ -764,6 +768,13 @@
     if ($('#btnPdfPrintPage')) $('#btnPdfPrintPage').addEventListener('click', printPdfPages);
     if ($('#btnPdfClose')) $('#btnPdfClose').addEventListener('click', closePdf);
     if ($('#btnPdfMakeVariant')) $('#btnPdfMakeVariant').addEventListener('click', pdfMakeVariant);
+    if ($('#btnPdfSpeak')) $('#btnPdfSpeak').addEventListener('click', function () {
+      const pg = activePdfPage();
+      if (!pg) { SB.toast('PDF를 먼저 열어 주세요', 'bad'); return; }
+      const text = pdfTextFor(pg);
+      if (!text) { SB.toast('읽을 텍스트가 없어요', 'bad'); return; }
+      SB.speak(text.slice(0, 900), /[가-힣]/.test(text) ? 'ko-KR' : 'en-US');
+    });
     if ($('#btnPdfSaveProblem')) $('#btnPdfSaveProblem').addEventListener('click', pdfSaveProblem);
     if ($('#pdfText')) $('#pdfText').addEventListener('input', function () {
       const pg = activePdfPage();
