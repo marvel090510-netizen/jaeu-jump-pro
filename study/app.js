@@ -442,8 +442,8 @@
     $('#problemModalTitle').textContent = p ? '문제 수정' : '문제 등록';
     $('#pfId').value = p ? p.id : '';
     $('#pfLevel').value = data.level || '고등';
-    if (D.SUBJECT_KEYS.indexOf(data.subject) === -1) $('#pfSubject').value = '기타';
-    else $('#pfSubject').value = data.subject || '기타';
+    if (data.subject && D.SUBJECT_KEYS.indexOf(data.subject) !== -1) $('#pfSubject').value = data.subject;
+    else $('#pfSubject').value = '수학';
     rebuildCurriculum();
     $('#pfDifficulty').value = data.difficulty || '중';
     $('#pfBody').value = data.body || '';
