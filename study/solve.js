@@ -19,6 +19,7 @@
       if (f.level !== 'all' && p.level !== f.level) return false;
       if (f.subject !== 'all' && p.subject !== f.subject) return false;
       if (f.diff !== 'all' && p.difficulty !== f.diff) return false;
+      if (!SB.hasAnswer(p)) return false;
       if (wrongOnly) {
         const w = SB.wrongByPid(p.id);
         if (!((w && !w.resolved) || p.lastResult === 'wrong')) return false;
@@ -46,8 +47,15 @@
   }
 
   SB.startSolve = function (ids) {
-    const list = (ids || []).map(SB.problemById).filter(Boolean);
-    if (!list.length) { SB.toast('풀 문제가 없어요', 'bad'); return; }
+    const raw = (ids || []).map(SB.problemById).filter(Boolean);
+    const list = raw.filter(SB.hasAnswer);
+    if (!list.length) {
+      if (raw.length) {
+        SB.toast('정답이 비어 있는 문제예요. 수정에서 정답을 먼저 채워 주세요', 'bad');
+        SB.openProblemModal({ id: raw[0].id });
+      } else SB.toast('풀 문제가 없어요', 'bad');
+      return;
+    }
     lastIds = list.map(function (p) { return p.id; });
     S = {
       queue: list, idx: 0, results: [],

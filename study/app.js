@@ -286,6 +286,12 @@
     }).sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
   };
 
+  SB.hasAnswer = function (p) {
+    if (!p) return false;
+    if (p.type === 'mc') return !!(p.choices && p.choices[p.answerIndex]);
+    return !!String(p.answer || '').trim();
+  };
+
   SB.statusChip = function (p) {
     const map = { unsolved: '미풀이', correct: '맞힘', wrong: '틀림' };
     const k = p.lastResult || 'unsolved';
@@ -307,6 +313,7 @@
     return '<article class="q-card" data-id="' + p.id + '">' +
       '<div class="q-card-top">' + SB.subjectBadge(p) + SB.levelBadge(p) + SB.diffBadge(p) +
       (p.type === 'short' ? '<span class="badge badge-soft">주관식</span>' : '') +
+      (SB.hasAnswer(p) ? '' : '<span class="badge" style="background:var(--warn-soft);color:var(--warn)">정답 미정</span>') +
       SB.statusChip(p) + '</div>' +
       '<div class="q-card-row">' +
       '<div class="grow"><div class="q-card-body">' + SB.esc(p.body) + '</div>' +
@@ -395,6 +402,11 @@
   function rebuildCurriculum() {
     const sel = $('#pfCurriculum');
     if (!sel) return;
+    const level = $('#pfLevel') ? $('#pfLevel').value : '고등';
+    const show = (level === '고등' || level === '수능·N수');
+    const field = $('#pfCurriculumField');
+    if (field) field.hidden = !show;
+    if (!show) { sel.innerHTML = '<option value="">— 직접 입력 —</option>'; return; }
     const subject = $('#pfSubject').value;
     const list = (D.CURRICULUM[subject] || []);
     sel.innerHTML = '<option value="">— 직접 입력 —</option>' + list.map(function (v) {
@@ -756,6 +768,7 @@
       if (e.target === this) SB.closeProblemModal();
     });
     if ($('#pfSubject')) $('#pfSubject').addEventListener('change', rebuildCurriculum);
+    if ($('#pfLevel')) $('#pfLevel').addEventListener('change', rebuildCurriculum);
     if ($('#pfCurriculum')) $('#pfCurriculum').addEventListener('change', function () {
       if (this.value) $('#pfUnit').value = this.value;
     });

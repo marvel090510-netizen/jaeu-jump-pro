@@ -621,19 +621,26 @@
     let body = text;
     if (body.length > 1400) body = body.slice(0, 1400) + ' …';
     if (!body) body = PDF.name + ' ' + pg.num + '페이지 문제';
-    SB.openProblemModal({
+    const p = {
+      id: SB.uid('q'),
       level: '고등',
       subject: '기타',
       unit: 'PDF · ' + PDF.name.slice(0, 20) + ' p.' + pg.num,
       difficulty: '중',
-      type: 'mc',
+      type: 'short',
       body: body,
+      choices: [],
+      answerIndex: 0,
+      answer: '',
       image: pg.image,
       source: PDF.name + ' p.' + pg.num,
       tags: ['PDF', pg.tag || ''].filter(Boolean),
-      solution: pg.memo || ''
-    });
-    SB.toast('내용을 확인하고 저장해 주세요');
+      solution: pg.memo || 'PDF ' + pg.num + '페이지에서 저장',
+      createdAt: new Date().toISOString()
+    };
+    SB.state.problems.unshift(p);
+    SB.save(); SB.renderAll(); refreshVariantSources();
+    SB.toast('PDF ' + pg.num + '페이지를 문제은행에 저장했어요 · 정답은 수정에서 채워 주세요', 'ok');
   }
 
   function closePdf() {

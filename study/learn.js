@@ -110,6 +110,7 @@
     let list = SB.state.problems.filter(function (p) {
       if (f.level !== 'all' && p.level !== f.level) return false;
       if (f.subject !== 'all' && p.subject !== f.subject) return false;
+      if (!SB.hasAnswer(p)) return false;
       if (f.mode === 'star' && !p.starred) return false;
       if (f.mode === 'wrong') {
         const w = SB.wrongByPid(p.id);
