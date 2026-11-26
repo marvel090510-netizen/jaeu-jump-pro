@@ -466,7 +466,7 @@
     pdflibPromise = new Promise(function (resolve) {
       let i = 0;
       function next() {
-        if (i >= urls.length) return resolve(null);
+        if (i >= urls.length) { pdflibPromise = null; return resolve(null); }
         const s = document.createElement('script');
         s.src = urls[i++];
         s.async = true;
