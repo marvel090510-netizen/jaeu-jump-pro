@@ -951,7 +951,20 @@
     const ctx = out.getContext('2d');
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, sw, sh);
     ctx.drawImage(srcCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
-    return out.toDataURL('image/jpeg', 0.88);
+    let url = out.toDataURL('image/jpeg', 0.88);
+    /* 저장 공간이 작은 기기에서도 여러 장을 담을 수 있게 큰 이미지는 품질을 낮춘다 */
+    let q = 0.88;
+    while (url.length > 300000 && q > 0.55) { q -= 0.11; url = out.toDataURL('image/jpeg', q); }
+    if (url.length > 300000) {
+      const small = document.createElement('canvas');
+      small.width = Math.max(1, Math.round(sw * 0.7));
+      small.height = Math.max(1, Math.round(sh * 0.7));
+      const sctx = small.getContext('2d');
+      sctx.fillStyle = '#fff'; sctx.fillRect(0, 0, small.width, small.height);
+      sctx.drawImage(out, 0, 0, small.width, small.height);
+      url = small.toDataURL('image/jpeg', 0.8);
+    }
+    return url;
   }
 
   async function applyPdfCrop(num, rect) {
