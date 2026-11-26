@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.49 정식판 (화면 표시 버전은 아래 BUILD = 'v5.49')
+   muse-v5-9 game.js — v5.50 정식판 (화면 표시 버전은 아래 BUILD = 'v5.50')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -12261,7 +12261,7 @@ extends CanvasLayer
   const QOL = Object.assign({}, QOL_DEF, lsGet(LS.qol, {}));
   function saveQol() { lsSet(LS.qol, QOL); }
 
-  const VERSION = '4.8';      /* 멀티 프로토콜 호환 번호 (화면 표시는 BUILD = 'v5.39') — 바꿔선 안 됨 */
+  const VERSION = '4.8';      /* 멀티 프로토콜 호환 번호 (화면 표시는 BUILD = 'v5.50') — 바꿔선 안 됨 */
   /* ================================================================
      구간 도달 보정 (모든 맵 88층 보장)
      - 생성된 발판을 실제 점프 물리로 검사해, 닿지 않는 구간만 조금씩 당긴다.
@@ -62665,7 +62665,8 @@ if (typeof module !== 'undefined' && module.exports) {
    - v5.47: 개방 8종으로 확장 — 💣 스피드 지뢰찾기(mines) 추가. 나머지 17종은 '🔒 준비 중'.
    - v5.48: 개방 9종으로 확장 — 🧱 대전 테트리스(tetris) 추가. 나머지 16종은 '🔒 준비 중'.
    - v5.49: 개방 10종으로 확장 — ⚫ 스피드 오목(gomoku) 추가. 나머지 15종은 '🔒 준비 중'.
-   - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 10종은 목록 맨 앞에
+   - v5.50: 개방 11종으로 확장 — 🃏 메모리 짝 맞추기(memory) 추가. 나머지 14종은 '🔒 준비 중'.
+   - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 11종은 목록 맨 앞에
      ✨ NEW · PLAYABLE 강조 카드로 배치한다.
    ========================================================================== */
 (function (root) {
@@ -62684,7 +62685,8 @@ if (typeof module !== 'undefined' && module.exports) {
   var OPEN8 = 'mines';            /* 개방 8호 (💣 스피드 지뢰찾기 · v5.47 신작) */
   var OPEN9 = 'tetris';           /* 개방 9호 (🧱 대전 테트리스 · v5.48 개편) */
   var OPEN10 = 'gomoku';          /* 개방 10호 (⚫ 스피드 오목 · v5.49 개편) */
-  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1, mines: 1, tetris: 1, gomoku: 1 };
+  var OPEN11 = 'memory';          /* 개방 11호 (🃏 메모리 짝 맞추기 · v5.50 개편) */
+  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1, mines: 1, tetris: 1, gomoku: 1, memory: 1 };
   root.JW530MGLOCK = true;
   root.JW530MG_OPEN = OPEN;
   root.JW530MG_OPEN2 = OPEN2;
@@ -62696,12 +62698,13 @@ if (typeof module !== 'undefined' && module.exports) {
   root.JW530MG_OPEN8 = OPEN8;
   root.JW530MG_OPEN9 = OPEN9;
   root.JW530MG_OPEN10 = OPEN10;
+  root.JW530MG_OPEN11 = OPEN11;
   root.JW530MG_OPENS = OPENS;
 
   var doc = document;
   var $ = function (id) { return doc.getElementById(id); };
   var LOCK_MSG = '🔒 이 미니게임은 준비 중이에요';
-  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 10종이 열려 있어요';
+  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 11종이 열려 있어요';
 
   function MG() { return root.JW48MG; }
   function isLocked(id) { return !!id && !OPENS[id]; }
@@ -62788,7 +62791,12 @@ if (typeof module !== 'undefined' && module.exports) {
       '.v530new.v530new10::after{content:"⚫ NEW · PLAYABLE";',
       '  background:linear-gradient(180deg,#ffe9b8,#fbbf24);border-color:#92400e;color:#2b1600;}',
       '.v530new.v530new10{box-shadow:inset 0 0 0 2px rgba(251,191,36,.6),0 0 16px rgba(251,191,36,.4),0 3px 0 #05030a !important;}',
-      /* 열 개방 카드의 줄서기: 10호 → 1호 → … → 9호 → 잠금 15종 */
+      /* 11호 개방 카드 (🃏 메모리 짝 맞추기 · v5.50) */
+      '.v530new.v530new11::after{content:"🃏 NEW · PLAYABLE";',
+      '  background:linear-gradient(180deg,#e6dcff,#a78bfa);border-color:#5b21b6;color:#1e0a3c;}',
+      '.v530new.v530new11{box-shadow:inset 0 0 0 2px rgba(167,139,250,.62),0 0 16px rgba(167,139,250,.42),0 3px 0 #05030a !important;}',
+      /* 열한 개방 카드의 줄서기: 11호 → 10호 → 1호 → … → 9호 → 잠금 14종 */
+      '#v48mgCards .v530new.v530new11{order:-11 !important;}',
       '#v48mgCards .v530new.v530new10{order:-10 !important;}',
       '#v48mgCards .v530new.v530new1{order:-9 !important;}',
       '#v48mgCards .v530new.v530new2{order:-8 !important;}',
@@ -62799,7 +62807,7 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v48mgCards .v530new.v530new7{order:-3 !important;}',
       '#v48mgCards .v530new.v530new8{order:-2 !important;}',
       '#v48mgCards .v530new.v530new9{order:-1 !important;}',
-      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag,.v530new.v530new6 .tag,.v530new.v530new7 .tag,.v530new.v530new8 .tag,.v530new.v530new9 .tag,.v530new.v530new10 .tag{display:none !important;}',
+      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag,.v530new.v530new6 .tag,.v530new.v530new7 .tag,.v530new.v530new8 .tag,.v530new.v530new9 .tag,.v530new.v530new10 .tag,.v530new.v530new11 .tag{display:none !important;}',
       /* 잠금 안내 띠 */
       /* v5.41: flex 로 두면 글자 마디마다 칸이 생겨 세로로 쪼개진다 — block 으로 바꿔 줄바꿈만 되게 */
       '#v530MgNote{display:block;padding:6px 8px;margin:0 0 6px;border-radius:9px;',
@@ -62839,7 +62847,7 @@ if (typeof module !== 'undefined' && module.exports) {
       if (!id) return;
       if (isLocked(id)) {
         if (!el.__v530l) { el.__v530l = 1; el.classList.add('v530lock'); el.setAttribute('aria-disabled', 'true'); }
-        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); el.classList.remove('v530new8'); el.classList.remove('v530new9'); el.classList.remove('v530new10'); }
+        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); el.classList.remove('v530new8'); el.classList.remove('v530new9'); el.classList.remove('v530new10'); el.classList.remove('v530new11'); }
       } else {
         if (!el.__v530n) { el.__v530n = 1; el.classList.add('v530new'); el.removeAttribute('aria-disabled'); }
         if (id === OPEN && !el.classList.contains('v530new1')) el.classList.add('v530new1');
@@ -62862,6 +62870,8 @@ if (typeof module !== 'undefined' && module.exports) {
         else if (el.classList.contains('v530new9')) el.classList.remove('v530new9');
         if (id === OPEN10) { if (!el.classList.contains('v530new10')) el.classList.add('v530new10'); }
         else if (el.classList.contains('v530new10')) el.classList.remove('v530new10');
+        if (id === OPEN11) { if (!el.classList.contains('v530new11')) el.classList.add('v530new11'); }
+        else if (el.classList.contains('v530new11')) el.classList.remove('v530new11');
         if (el.__v530l) { el.__v530l = 0; el.classList.remove('v530lock'); }
       }
     });
@@ -62874,7 +62884,7 @@ if (typeof module !== 'undefined' && module.exports) {
     var sub = $('v48mgSub');
     var m = MG();
     if (sub && m && m.order) {
-      var want = '10종 플레이 가능 · ' + Math.max(0, m.order.length - 10) + '종 준비 중';
+      var want = '11종 플레이 가능 · ' + Math.max(0, m.order.length - 11) + '종 준비 중';
       if (sub.textContent !== want) sub.textContent = want;
     }
     /* 미니게임 목록 상단 안내 */
@@ -62882,7 +62892,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (hub && !$('v530MgNote')) {
       var n = doc.createElement('div');
       n.id = 'v530MgNote';
-      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> · <b>💣 스피드 지뢰찾기</b> · <b>🧱 대전 테트리스</b> · <b>⚫ 스피드 오목</b> 10종을 지금 플레이할 수 있어요 · 나머지 15종은 다음 업데이트에서 순서대로 열려요';
+      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> · <b>💣 스피드 지뢰찾기</b> · <b>🧱 대전 테트리스</b> · <b>⚫ 스피드 오목</b> · <b>🃏 메모리 짝 맞추기</b> 11종을 지금 플레이할 수 있어요 · 나머지 14종은 다음 업데이트에서 순서대로 열려요';
       hub.insertBefore(n, hub.firstChild);
     }
     /* 멀티 방 설정 안내 문구 (25종 → 1종 개방) */
@@ -62890,7 +62900,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (sList) {
       var hint = sList.previousElementSibling;
       if (hint && String(hint.className || '').indexOf('v48mg-hint') >= 0) {
-        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 10종이 열려 있어요 · 나머지 15종은 준비 중';
+        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 11종이 열려 있어요 · 나머지 14종은 준비 중';
         if (hint.textContent !== want2) hint.textContent = want2;
       }
     }
@@ -62959,9 +62969,9 @@ if (typeof module !== 'undefined' && module.exports) {
   function reorder() {
     var m = MG();
     if (!m || !m.order || !m.order.length) return;
-    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7 && m.order[7] === OPEN8 && m.order[8] === OPEN9 && m.order[9] === OPEN10) return;
+    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7 && m.order[7] === OPEN8 && m.order[8] === OPEN9 && m.order[9] === OPEN10 && m.order[10] === OPEN11) return;
     var rest = m.order.filter(function (x) { return x && !OPENS[x]; });
-    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7, OPEN8, OPEN9, OPEN10].concat(rest);
+    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7, OPEN8, OPEN9, OPEN10, OPEN11].concat(rest);
   }
 
   /* 카드가 새로 그려지는 즉시 배지를 다시 칠한다 (innerHTML 재생성 대응) */
@@ -62980,7 +62990,7 @@ if (typeof module !== 'undefined' && module.exports) {
   setTimeout(paint, 600);
   setTimeout(paint, 1600);
   setInterval(function () { try { reorder(); paint(); } catch (e) {} }, 900);
-  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7 + ', ' + OPEN8 + ', ' + OPEN9 + ', ' + OPEN10);
+  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7 + ', ' + OPEN8 + ', ' + OPEN9 + ', ' + OPEN10 + ', ' + OPEN11);
 })(window);
 
 
@@ -69462,7 +69472,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.49';
+  var BUILD = 'v5.50';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81369,7 +81379,10 @@ if (typeof module !== 'undefined' && module.exports) {
       { id: 'm_tetris5', icon: '🎯', title: '테트리스 5줄 지우기', desc: '한 판에서 줄 5개 이상 지우기', need: 5, coin: 70, unit: '줄', mg: 'tetris' },
       /* v5.49: ⚫ 스피드 오목 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
       { id: 'm_gomoku1', icon: '⚫', title: '스피드 오목 1판', desc: '⚫ 스피드 오목 한 판', need: 1, coin: 50, unit: '판', mg: 'gomoku' },
-      { id: 'm_gomoku_win', icon: '🏆', title: '스피드 오목 승리', desc: 'AI를 꺾고 5목 완성', need: 1, coin: 70, unit: '회', mg: 'gomoku' }
+      { id: 'm_gomoku_win', icon: '🏆', title: '스피드 오목 승리', desc: 'AI를 꺾고 5목 완성', need: 1, coin: 70, unit: '회', mg: 'gomoku' },
+      /* v5.50: 🃏 메모리 짝 맞추기 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
+      { id: 'm_memory1', icon: '🃏', title: '메모리 짝 맞추기 1판', desc: '🃏 메모리 짝 맞추기 한 판', need: 1, coin: 50, unit: '판', mg: 'memory' },
+      { id: 'm_memory_clear', icon: '🎉', title: '메모리 짝 맞추기 클리어', desc: '8쌍을 모두 맞춰 올 클리어', need: 1, coin: 70, unit: '회', mg: 'memory' }
     ]
   };
   var BY_ID = {};
@@ -81547,6 +81560,9 @@ if (typeof module !== 'undefined' && module.exports) {
         /* v5.49: ⚫ 스피드 오목 — 1판 / 승리 */
         if (mine('m_gomoku1')) changed = bump('m_gomoku1', 1) || changed;
         if (mine('m_gomoku_win') && data.win) changed = bump('m_gomoku_win', 1) || changed;
+        /* v5.50: 🃏 메모리 짝 맞추기 — 1판 / 올 클리어(win) */
+        if (mine('m_memory1')) changed = bump('m_memory1', 1) || changed;
+        if (mine('m_memory_clear') && data.win) changed = bump('m_memory_clear', 1) || changed;
       }
       if (changed) {
         save();
@@ -86284,7 +86300,7 @@ if (typeof module !== 'undefined' && module.exports) {
        노폴 배지                     →  'jw532_mastery'   m[map].noFall
        최고 콤보(콤보 업데이트)      →  'jw537_best_combo' (number)
        스토리 클리어                 →  'jw64_story_v1'   .cleared
-       미니게임 최고 기록            →  'jw48mg_best_v1'  (개방 10종: rhythm·meteor·coin·holefly·blockblast·snake·g2048·mines·tetris·gomoku)
+       미니게임 최고 기록            →  'jw48mg_best_v1'  (개방 11종: rhythm·meteor·coin·holefly·blockblast·snake·g2048·mines·tetris·gomoku·memory)
        펫 보유                       →  JW529.st().owned
        테마 아이템 보유              →  'jw533_theme_v1'  .owned
        총 출석 일수                  →  'jw539_checkin'   .totalDays
@@ -86355,7 +86371,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (!s || !s.cleared || typeof s.cleared !== 'object') return 0;
     return Object.keys(s.cleared).length;
   }
-  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048', 'mines', 'tetris', 'gomoku'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46·v5.47·v5.48·v5.49 개방 10종 */
+  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048', 'mines', 'tetris', 'gomoku', 'memory'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46·v5.47·v5.48·v5.49·v5.50 개방 11종 */
   function mgCount() {
     var best = ls('jw48mg_best_v1', {}) || {};
     try { if (!best || !Object.keys(best).length) { if (root.JW48MG && root.JW48MG.best) best = root.JW48MG.best; } } catch (e) {}
@@ -86397,7 +86413,7 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'combo10',cat: '기록', ic: '🔥', name: '콤보 파이터',      desc: '최고 콤보 10 이상',           goal: 10,   coin: 40, cur: bestCombo },
     { id: 'combo25',cat: '기록', ic: '💥', name: '피버 마스터',      desc: '최고 콤보 25 이상',           goal: 25,   coin: 80, cur: bestCombo },
     { id: 'story1', cat: '기록', ic: '📖', name: '스토리 도전자',    desc: '스토리 1스테이지 클리어',      goal: 1,    coin: 50, cur: storyCount },
-    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 10종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
+    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 11종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
     { id: 'pet3',   cat: '수집', ic: '🐾', name: '펫 친구',          desc: '펫 3종 이상 보유',            goal: 3,    coin: 50, cur: petCount },
     { id: 'theme5', cat: '수집', ic: '🎨', name: '테마 컬렉터',      desc: '테마 아이템 5종 이상 보유',    goal: 5,    coin: 60, cur: themeCount },
     { id: 'check1', cat: '습관', ic: '📅', name: '개근 시작',        desc: '총 출석 1일 이상',            goal: 1,    coin: 30, cur: checkinDays }
@@ -94496,6 +94512,848 @@ if (typeof module !== 'undefined' && module.exports) {
     board: { n: N, cell: CELL, x: GX, y: GY, panel: { x: PX, y: PY, w: PW, h: PH }, stone: SR },
     turnTime: TURN_TIME,
     aiDelay: AI_DELAY,
+    tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
+    daily: function () { return loadDaily(); },
+    state: function () {
+      var c = MG.cur;
+      if (!c || c.id !== ID || !c.inst || !c.inst.state) return null;
+      return c.inst.state();
+    }
+  };
+})(window);
+
+/* ===== v550 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.50 : 🃏 메모리 짝 맞추기 — 미니게임 11호 (열한 번째 슬롯 'memory' 전면 개편)
+   --------------------------------------------------------------------------
+   · 4×4 네온 카드 16장 = 8쌍. 아이콘 8종(🍎🍋🍇🍀🐟🌸⭐🫐)마다 네온 컬러가
+     다르고, 뒷면은 보라 네온 '?' 카드로 통일한다.
+   · 👀 2.5초 암기 타임 — 시작하면 16장이 모두 앞면으로 열려 외울 수 있고,
+     그 뒤 위에서부터 스르륵 뒤집히며 60초 타이머가 시작된다.
+   · 🔄 3D 플립 — 카드를 누르면 가로 스케일이 접히며 돌아가는 애니메이션.
+     두 장이 같으면 금빛·네온 글로우로 고정되고, 다르면 0.55초 보여 준 뒤
+     다시 뒤집힌다(그동안 세 번째 카드 입력 잠금).
+   · 🔥 COMBO — 연속으로 맞출 때마다 +100 × 콤보. 한 번 틀리면 콤보가 0으로.
+   · 점수 — 매칭 점수(100 × 콤보 누적) + 올 클리어 300 + 남은 시간 보너스(초당 20)
+     + 최소 시도 보너스((16 − 시도) × 50, 최대 400). 60초가 끝나면 그때까지의
+     매칭 점수 + 쌍 보너스 30으로 결과 화면.
+   · ⌨️ 데스크톱 — 방향키/WASD 로 커서 이동, Enter/Space 로 뒤집기.
+     v5.41-r1 키보드 가드(__jwTypingTarget)를 그대로 존중한다.
+   · 펫 코인 +10 / +20 / +35 (하루 상한 60, 키 'jw550_memory', JW529.addCoins 경유).
+   · 🎯 오늘의 미션 '메모리 짝 맞추기 1판(+50)' · '메모리 짝 맞추기 클리어(+70)'
+     자동 연동. 🏆 업적 '미니게임 올라운더'도 개방 11종 기준으로 센다.
+   · 기존 'memory' 슬롯(v4.8 프로토타입 · 4x4 1.6초 암기)을 덮어쓴다 —
+     목록 순서·기록 호환이 그대로 이어진다 (v5.45 snake · v5.46 g2048 ·
+     v5.47 mines · v5.48 tetris · v5.49 gomoku 와 같은 방식).
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var MG = root.JW48MG, V = root.JW43;
+  if (!MG || !V) return;
+
+  var ID = 'memory';
+  var W = 360, H = 600;
+  var N = 4, CARD = 76, GAP = 8, GX = 16, GY = 86;
+  var MEMO = 2.5;                 /* 암기 타임 */
+  var CLOSE_T = 0.5;              /* 암기 뒤 뒤집히는 시간 */
+  var WRONG_T = 0.55;             /* 다른 짝을 보여 주는 시간 */
+  var LIMIT = 60;                 /* 제한 시간 */
+  var END_T = 1.5;
+  var DAILY_CAP = 60;
+  var KEY = 'jw550_memory';
+  var TIERS = [
+    { s: 2200, coin: 35, name: '🥇 GOLD', col: '#fde047' },
+    { s: 1200, coin: 20, name: '🥈 SILVER', col: '#e2e8f0' },
+    { s: 0, coin: 10, name: '🥉 BRONZE', col: '#fdba74' }
+  ];
+  var FACES = [
+    { ic: '🍎', col: '#f87171' }, { ic: '🍋', col: '#fde047' },
+    { ic: '🍇', col: '#c084fc' }, { ic: '🍀', col: '#4ade80' },
+    { ic: '🐟', col: '#22d3ee' }, { ic: '🌸', col: '#f472b6' },
+    { ic: '⭐', col: '#fbbf24' }, { ic: '🫐', col: '#60a5fa' }
+  ];
+  var ART = MG.arts({});
+  var A = ART;
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function tone(f, d, v, t, f2) { try { V.beep(f, d || 0.05, v || 0.08, t || 'square', f2 || null); } catch (e) {} }
+  function seq(list, step, vol, dur, type) {
+    for (var i = 0; i < list.length; i++) (function (i) {
+      setTimeout(function () { tone(list[i], dur || 0.1, vol || 0.08, type || 'sine', null); }, i * step);
+    })(i);
+  }
+  function hex2rgb(h) {
+    h = String(h || '#38bdf8').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return [parseInt(h.slice(0, 2), 16) || 0, parseInt(h.slice(2, 4), 16) || 0, parseInt(h.slice(4, 6), 16) || 0];
+  }
+  function rgba(h, a) { var c = hex2rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+
+  /* ---------------------------------------------------------------- 저장 */
+  function lsGet(k, d) { try { return V.lsGet(k, d); } catch (e) { return d; } }
+  function lsSet(k, v) { try { V.lsSet(k, v); } catch (e) {} }
+  function dayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function loadDaily() {
+    var s = lsGet(KEY, null);
+    if (!s || typeof s !== 'object') s = { d: '', c: 0 };
+    if (typeof s.c !== 'number' || !isFinite(s.c) || s.c < 0) s.c = 0;
+    return s;
+  }
+  /* 펫 코인 지급 — JW529 저장소를 그대로 거친다 (v5.42 이후 같은 방식) */
+  function addCoins(n) {
+    n = Math.round(Number(n) || 0);
+    if (n <= 0) return true;
+    try {
+      if (root.JW529 && root.JW529.addCoins) { root.JW529.addCoins(n); return true; }
+      if (root.JW529 && root.JW529.coins && root.JW529.st) {
+        root.JW529.coins((Number(root.JW529.st().coins) || 0) + n);
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  function tierOf(score) {
+    for (var i = 0; i < TIERS.length; i++) if (score >= TIERS[i].s) return TIERS[i];
+    return TIERS[TIERS.length - 1];
+  }
+  function grantCoins(score) {
+    var want = tierOf(score).coin;
+    var d = loadDaily();
+    var used = d.d === dayKey() ? d.c : 0;
+    var left = Math.max(0, DAILY_CAP - used);
+    var gain = Math.min(want, left);
+    var ok = true;
+    if (gain > 0) {
+      if (!addCoins(gain)) { gain = 0; ok = false; }
+      else lsSet(KEY, { d: dayKey(), c: used + gain });
+    }
+    return { gain: gain, want: want, used: used + gain, cap: DAILY_CAP, fail: !ok };
+  }
+
+  /* ---------------------------------------------------------------- 덱 */
+  function makeDeck(rng) {
+    var R = rng || Math.random;
+    var deck = [];
+    for (var i = 0; i < 8; i++) { deck.push(i); deck.push(i); }
+    for (var j = deck.length - 1; j > 0; j--) {
+      var k = Math.floor(R() * (j + 1)) % (j + 1);
+      var t = deck[j]; deck[j] = deck[k]; deck[k] = t;
+    }
+    return deck;
+  }
+  function cardRect(i) {
+    var cx = i % N, cy = Math.floor(i / N);
+    return { x: GX + cx * (CARD + GAP), y: GY + cy * (CARD + GAP), w: CARD, h: CARD };
+  }
+  function cardFromPointer(x, y) {
+    var cx = Math.floor((x - GX) / (CARD + GAP));
+    var cy = Math.floor((y - GY) / (CARD + GAP));
+    if (cx < 0 || cy < 0 || cx >= N || cy >= N) return -1;
+    var r = cardRect(cy * N + cx);
+    if (x < r.x - 3 || x > r.x + r.w + 3 || y < r.y - 3 || y > r.y + r.h + 3) return -1;
+    return cy * N + cx;
+  }
+
+  /* ---------------------------------------------------------------- 게임 본체 */
+  function create(a) {
+    var R = a.rng || Math.random;
+
+    var S = {
+      ready: true, over: false, done: false, dying: false, clear: false,
+      phase: 'ready', memoLeft: MEMO, closeT: 0, left: LIMIT, lock: 0,
+      cards: [], sel: [], cursor: null, cursorOn: false,
+      combo: 0, bestCombo: 0, matched: 0, attempts: 0,
+      matchPts: 0, score: 0, clearBonus: 0, timeBonus: 0, attemptBonus: 0,
+      coinGain: 0, coinUsed: 0, coinTier: null,
+      sparks: [], shake: 0, flash: 0,
+      msg: '', msgT: 0, msgCol: '#a7f3d0',
+      banner: '', bannerSub: '', bannerT: 0, bannerCol: '#fde047', bannerAt: 200,
+      t: 0, time: 0, endT: 0, lastTick: -1
+    };
+
+    /* -------------------------------------------------------------- 연출 */
+    function burst(x, y, n, col, spd) {
+      for (var i = 0; i < n; i++) {
+        if (S.sparks.length > 180) break;
+        var ang = Math.random() * 6.283;
+        var v = (spd || 150) * (0.25 + Math.random());
+        S.sparks.push({
+          x: x, y: y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v,
+          life: 0.35 + Math.random() * 0.45, max: 0.8, c: col, s: Math.random() < 0.35 ? 3.5 : 2
+        });
+      }
+    }
+    function say(t, col) { S.msg = t; S.msgT = 1.4; S.msgCol = col || '#a7f3d0'; }
+    /* at: 배너 y 위치 — 200(가운데) / 428(보드 아래). 암기·콤보 배너는 카드를
+       가리면 안 되므로 보드 아래에 띄운다. */
+    function banner(t, sub, col, dur, at) {
+      S.banner = t; S.bannerSub = sub || ''; S.bannerCol = col || '#fde047';
+      S.bannerT = dur || 1.3; S.bannerAt = at || 200;
+    }
+    function chime(pitch) {
+      var base = pitch || 1;
+      seq([880 * base, 1174.66 * base, 1567.98 * base], 52, 0.09, 0.18, 'sine');
+    }
+
+    /* -------------------------------------------------------------- 시작/종료 */
+    function reset() {
+      var deck = makeDeck(R);
+      S.cards = deck.map(function (v, i) {
+        return { v: v, open: true, done: false, anim: 1, glow: 0, delay: (i % N) * 0.02 + Math.floor(i / N) * 0.035 };
+      });
+      S.ready = true; S.over = false; S.done = false; S.dying = false; S.clear = false;
+      S.phase = 'ready'; S.memoLeft = MEMO; S.closeT = 0; S.left = LIMIT; S.lock = 0;
+      S.sel = []; S.cursor = null; S.cursorOn = false;
+      S.combo = 0; S.bestCombo = 0; S.matched = 0; S.attempts = 0;
+      S.matchPts = 0; S.score = 0; S.clearBonus = 0; S.timeBonus = 0; S.attemptBonus = 0;
+      S.coinGain = 0; S.coinUsed = 0; S.coinTier = null;
+      S.sparks = []; S.shake = 0; S.flash = 0;
+      S.msg = ''; S.msgT = 0; S.banner = ''; S.bannerSub = ''; S.bannerT = 0; S.bannerAt = 200;
+      S.t = 0; S.time = 0; S.endT = 0; S.lastTick = -1;
+      a.setScore(0);
+      a.setStatus('');
+      a.vsLine('');
+    }
+    function begin() {
+      if (!S.ready) return;
+      S.ready = false; S.phase = 'memorize'; S.memoLeft = MEMO; S.time = 0;
+      for (var i = 0; i < S.cards.length; i++) { S.cards[i].open = true; S.cards[i].anim = 1; }
+      banner('👀 암기 타임!', '2.5초 동안 16장이 모두 앞면이에요', '#a5f3fc', 1.0, 428);
+      seq([523, 659, 784], 70, 0.08, 0.12, 'triangle');
+    }
+
+    function startPlay() {
+      S.phase = 'play'; S.left = LIMIT; S.lastTick = -1;
+      S.cursor = null; S.cursorOn = false;
+      banner('🃏 시작!', '짝을 맞춰 보세요 · 60초', '#a7f3d0', 1.0, 428);
+      seq([784, 988, 1174], 60, 0.09, 0.12, 'triangle');
+    }
+
+    function tapCard(i) {
+      if (S.ready) { begin(); return; }
+      if (S.over) return;
+      if (S.phase === 'memorize') { say('👀 암기 타임 — 곧 뒤집혀요', '#fde68a'); return; }
+      if (S.phase !== 'play') return;
+      if (S.lock > 0) { say('카드를 확인하는 중…', '#fca5a5'); return; }
+      var c = S.cards[i];
+      if (!c || c.done || c.open) return;
+      c.open = true; c.glow = 0;
+      S.sel.push(i);
+      tone(740 + (i % 4) * 26, 0.05, 0.07, 'triangle', 980);
+      if (S.sel.length >= 2) resolve();
+    }
+
+    function resolve() {
+      var i0 = S.sel[0], i1 = S.sel[1];
+      var c0 = S.cards[i0], c1 = S.cards[i1];
+      S.attempts++;
+      if (c0 && c1 && c0.v === c1.v) {
+        c0.done = c1.done = true;
+        S.sel = [];
+        S.combo++;
+        if (S.combo > S.bestCombo) S.bestCombo = S.combo;
+        var gained = 100 * S.combo;
+        S.matchPts += gained;
+        S.matched++;
+        S.score = S.matchPts;
+        a.setScore(S.score);
+        c0.glow = c1.glow = 1;
+        S.flash = 0.35;
+        var r0 = cardRect(i0), r1 = cardRect(i1);
+        var col = FACES[c0.v].col;
+        burst(r0.x + r0.w / 2, r0.y + r0.h / 2, 12, [col, '#fde047', '#ffffff'][S.combo % 3], 190);
+        burst(r1.x + r1.w / 2, r1.y + r1.h / 2, 12, [col, '#fde047', '#ffffff'][(S.combo + 1) % 3], 190);
+        if (S.combo > 1) {
+          banner('🔥 COMBO x' + S.combo, '+' + gained + '점 · 연속 매칭!', '#fde047', 0.9, 428);
+          chime(1 + Math.min(6, S.combo - 1) * 0.12);
+        } else {
+          say('✅ 짝 맞춤 +' + gained, '#a7f3d0');
+          chime(1);
+        }
+        if (S.matched >= 8) endGame(true);
+      } else {
+        S.combo = 0;
+        S.lock = WRONG_T;
+        S.shake = 6;
+        tone(250, 0.13, 0.09, 'sawtooth', 165);
+        say('다른 카드 — 0.55초 뒤 다시 뒤집혀요', '#fca5a5');
+      }
+    }
+
+    function endGame(clear) {
+      if (S.over) return;
+      S.over = true; S.dying = true; S.endT = END_T; S.clear = !!clear;
+      S.sel = []; S.lock = 0; S.cursorOn = false;
+      if (clear) {
+        S.flash = 0.85; S.shake = 7;
+        banner('🎉 올 클리어!', '8쌍을 모두 맞췄어요', '#fde047', 1.0);
+        seq([659, 784, 988, 1174, 1568], 68, 0.11, 0.16, 'sine');
+        for (var i = 0; i < S.cards.length; i++) {
+          var r = cardRect(i);
+          burst(r.x + r.w / 2, r.y + r.h / 2, 8, FACES[S.cards[i].v].col, 200);
+        }
+      } else {
+        S.shake = 5; S.flash = 0.3;
+        banner('⏱ 시간 종료!', S.matched + '쌍을 맞췄어요 · 결과로 넘어갑니다', '#fca5a5', 1.0);
+        seq([440, 349, 262], 90, 0.1, 0.16, 'triangle');
+      }
+    }
+
+    function finishNow() {
+      if (S.done) return;
+      S.done = true; S.dying = false;
+      if (S.clear) {
+        S.clearBonus = 300;
+        S.timeBonus = Math.round(Math.max(0, S.left) * 20);
+        S.attemptBonus = Math.max(0, 16 - S.attempts) * 50;
+        S.score = S.matchPts + S.clearBonus + S.timeBonus + S.attemptBonus;
+      } else {
+        S.clearBonus = 0; S.timeBonus = 0; S.attemptBonus = 0;
+        S.score = S.matchPts + S.matched * 30;
+      }
+      var t = tierOf(S.score);
+      S.coinTier = t;
+      var g = grantCoins(S.score);
+      S.coinGain = g.gain; S.coinUsed = g.used;
+      a.setScore(S.score);
+      var note = [];
+      note.push('🃏 ' + S.matched + '/8쌍 · 시도 ' + S.attempts + '회 · 최고 COMBO x' + S.bestCombo);
+      if (S.clear) {
+        note.push('올 클리어 +300 · 남은 시간 ' + Math.max(0, Math.round(S.left)) + '초 +' + S.timeBonus + ' · 최소 시도 +' + S.attemptBonus);
+      } else {
+        note.push('매칭 ' + S.matchPts + ' + 쌍 보너스 ' + (S.matched * 30) + ' = ' + S.score + '점');
+        note.push('⏱ 60초가 끝나 8쌍을 다 못 맞췄어요');
+      }
+      if (g.fail) note.push('🪙 펫 코인 저장소를 찾지 못했어요');
+      else if (g.gain > 0) note.push(t.name + ' · 🪙 펫 코인 +' + g.gain + ' (오늘 ' + g.used + '/' + g.cap + ')');
+      else note.push(t.name + ' · 🪙 오늘 코인 상한(' + g.cap + ')을 다 받았어요');
+      a.over(S.clear, note.join('\n'));
+    }
+
+    /* -------------------------------------------------------------- 입력 */
+    function moveCursor(dx, dy) {
+      if (S.ready) { begin(); return; }
+      if (S.over || S.phase !== 'play') return;
+      S.cursorOn = true;
+      if (!S.cursor) S.cursor = { x: 0, y: 0 };
+      else {
+        S.cursor.x = (S.cursor.x + dx + N) % N;
+        S.cursor.y = (S.cursor.y + dy + N) % N;
+      }
+      tone(620, 0.03, 0.045, 'square', 760);
+    }
+    function keyFlip() {
+      if (S.ready) { begin(); return; }
+      if (S.over || S.phase !== 'play') return;
+      S.cursorOn = true;
+      if (!S.cursor) {
+        for (var i = 0; i < S.cards.length; i++) {
+          if (!S.cards[i].done && !S.cards[i].open) { S.cursor = { x: i % N, y: Math.floor(i / N) }; break; }
+        }
+        if (!S.cursor) S.cursor = { x: 0, y: 0 };
+      }
+      tapCard(S.cursor.y * N + S.cursor.x);
+    }
+
+    /* -------------------------------------------------------------- 업데이트 */
+    var api = {
+      start: reset,
+      stop: function () { S.done = true; S.dying = false; S.over = true; },
+      begin: begin,
+      update: function (dt) {
+        S.t += dt;
+        if (S.msgT > 0) S.msgT = Math.max(0, S.msgT - dt);
+        if (S.bannerT > 0) S.bannerT = Math.max(0, S.bannerT - dt);
+        if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 26);
+        if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 2.2);
+        var i, c;
+        for (i = S.sparks.length - 1; i >= 0; i--) {
+          var sp = S.sparks[i];
+          sp.life -= dt;
+          if (sp.life <= 0) { S.sparks.splice(i, 1); continue; }
+          sp.vy += 240 * dt;
+          sp.x += sp.vx * dt;
+          sp.y += sp.vy * dt;
+        }
+        /* 카드 플립 애니메이션 (open 쪽으로 부드럽게) */
+        for (i = 0; i < S.cards.length; i++) {
+          c = S.cards[i];
+          var target = c.open ? 1 : 0;
+          var d = target - c.anim;
+          var sp2 = 7.2 * dt;
+          if (d > sp2) c.anim += sp2;
+          else if (d < -sp2) c.anim -= sp2;
+          else c.anim = target;
+          if (c.glow > 0) c.glow = Math.max(0, c.glow - dt * 0.9);
+        }
+        if (S.ready) return;
+        if (S.dying) {
+          if (S.endT > 0) { S.endT -= dt; if (S.endT <= 0) { S.endT = 0; finishNow(); } }
+          return;
+        }
+        if (S.over) return;
+
+        /* 1) 암기 타임 */
+        if (S.phase === 'memorize') {
+          S.memoLeft -= dt;
+          if (S.memoLeft <= 0) {
+            S.memoLeft = 0; S.phase = 'closing'; S.closeT = 0;
+            tone(420, 0.09, 0.08, 'triangle', 320);
+          }
+          return;
+        }
+        /* 2) 스르륵 뒤집히는 구간 */
+        if (S.phase === 'closing') {
+          S.closeT += dt;
+          for (i = 0; i < S.cards.length; i++) {
+            c = S.cards[i];
+            if (c.open && S.closeT >= c.delay) c.open = false;
+          }
+          if (S.closeT >= CLOSE_T + 0.22) startPlay();
+          return;
+        }
+        /* 3) 플레이 */
+        S.time += dt;
+        if (S.lock > 0) {
+          S.lock -= dt;
+          if (S.lock <= 0) {
+            S.lock = 0;
+            for (i = 0; i < S.sel.length; i++) {
+              c = S.cards[S.sel[i]];
+              if (c && !c.done) { c.open = false; c.glow = 0; }
+            }
+            S.sel = [];
+          }
+        }
+        S.left -= dt;
+        var sec = Math.ceil(S.left);
+        if (sec <= 10 && sec >= 1 && sec !== S.lastTick) { S.lastTick = sec; tone(sec <= 3 ? 1040 : 880, 0.04, 0.06, 'square', sec <= 3 ? 1280 : 1040); }
+        if (S.left <= 0) {
+          S.left = 0;
+          endGame(false);
+        }
+      },
+      pointer: function (e) {
+        if (!e) return;
+        if (e.type !== 'up') return;
+        if (S.ready) { begin(); return; }
+        if (S.over) return;
+        var i = cardFromPointer(e.x, e.y);
+        if (i < 0) return;
+        if (S.phase === 'play') { S.cursor = { x: i % N, y: Math.floor(i / N) }; S.cursorOn = false; }
+        tapCard(i);
+      },
+      key: function (k, down) {
+        if (!down) return;
+        if (S.ready) {
+          if (k === 'space' || k === 'enter' || k === 'left' || k === 'right' || k === 'up' || k === 'down') begin();
+          return;
+        }
+        if (S.over) return;
+        if (k === 'left') moveCursor(-1, 0);
+        else if (k === 'right') moveCursor(1, 0);
+        else if (k === 'up') moveCursor(0, -1);
+        else if (k === 'down') moveCursor(0, 1);
+        else if (k === 'space' || k === 'enter') keyFlip();
+      },
+
+      /* -------------------------------------------------------------- 그리기 */
+      draw: function (g) {
+        g.fillStyle = '#04070f';
+        g.fillRect(0, 0, W, H);
+        var bg = g.createLinearGradient(0, 44, 0, H);
+        bg.addColorStop(0, '#100c22');
+        bg.addColorStop(0.55, '#080a16');
+        bg.addColorStop(1, '#03040a');
+        g.fillStyle = bg;
+        g.fillRect(0, 44, W, H - 44);
+        var gl = g.createRadialGradient(90, 260, 20, 90, 260, 260);
+        gl.addColorStop(0, 'rgba(167,139,250,.10)');
+        gl.addColorStop(1, 'rgba(167,139,250,0)');
+        g.fillStyle = gl;
+        g.fillRect(0, 44, W, H - 44);
+        var gl2 = g.createRadialGradient(280, 380, 20, 280, 380, 240);
+        gl2.addColorStop(0, 'rgba(34,211,238,.08)');
+        gl2.addColorStop(1, 'rgba(34,211,238,0)');
+        g.fillStyle = gl2;
+        g.fillRect(0, 44, W, H - 44);
+
+        var sh = S.shake;
+        if (sh > 0) {
+          g.save();
+          g.translate((Math.random() - 0.5) * sh, (Math.random() - 0.5) * sh * 0.7);
+        }
+        for (var i = 0; i < S.cards.length; i++) drawCard(g, i);
+        drawCursor(g);
+        drawSparks(g);
+        if (sh > 0) g.restore();
+
+        drawHud(g);
+        drawTexts(g);
+        drawBanner(g);
+        if (S.flash > 0) {
+          g.fillStyle = 'rgba(255,255,255,' + (S.flash * 0.10) + ')';
+          g.fillRect(0, 44, W, H - 44);
+        }
+        if (S.ready) drawReady(g);
+      },
+
+      /* 테스트/검증용 */
+      state: function () {
+        return {
+          ready: S.ready, over: S.over, done: S.done, dying: S.dying,
+          phase: S.phase, memoLeft: S.memoLeft, closeT: S.closeT,
+          left: S.left, lock: S.lock, sel: S.sel.slice(), cursor: S.cursor ? { x: S.cursor.x, y: S.cursor.y } : null,
+          combo: S.combo, bestCombo: S.bestCombo, matched: S.matched, attempts: S.attempts,
+          matchPts: S.matchPts, score: S.score,
+          clearBonus: S.clearBonus, timeBonus: S.timeBonus, attemptBonus: S.attemptBonus,
+          coinGain: S.coinGain, coinUsed: S.coinUsed, clear: S.clear,
+          time: S.time, msg: S.msg, banner: S.banner,
+          cards: S.cards.map(function (c) { return { v: c.v, open: c.open, done: c.done, anim: Math.round(c.anim * 100) / 100 }; }),
+          layout: S.cards.map(function (c) { return c.v; })
+        };
+      }
+    };
+
+    /* -------------------------------------------------------------- 검증 훅 (QA 전용) */
+    try {
+      if (/(^|[?&])qa=/.test(String(location.search || ''))) {
+        api.__qa = {
+          begin: function () { begin(); return api.state(); },
+          state: function () { return api.state(); },
+          tap: function (i) { tapCard(i | 0); return api.state(); },
+          tapAt: function (x, y) { var i = cardFromPointer(x, y); if (i >= 0) tapCard(i); return api.state(); },
+          tick: function (dt) { api.update(dt == null ? 0.016 : dt); return api.state(); },
+          skipMemo: function () { if (S.phase === 'memorize') { S.memoLeft = 0.0001; } return api.state(); },
+          timeLeft: function (v) { S.left = Number(v) || 0; return api.state(); },
+          cursor: function (dx, dy) { moveCursor(dx | 0, dy | 0); return api.state(); },
+          key: function (k) { api.key(k, true); return api.state(); },
+          layout: function () { return S.cards.map(function (c) { return c.v; }); },
+          /* 아직 안 맞춘 같은 값 두 장의 인덱스 */
+          pair: function () {
+            for (var i = 0; i < S.cards.length; i++) {
+              if (S.cards[i].done) continue;
+              for (var j = i + 1; j < S.cards.length; j++) {
+                if (S.cards[j].done) continue;
+                if (S.cards[i].v === S.cards[j].v) return [i, j];
+              }
+            }
+            return null;
+          },
+          autoPair: function () {
+            var p = this.pair();
+            if (!p) return api.state();
+            tapCard(p[0]); tapCard(p[1]);
+            return api.state();
+          },
+          wrongPair: function () {
+            for (var i = 0; i < S.cards.length; i++) {
+              if (S.cards[i].done) continue;
+              for (var j = i + 1; j < S.cards.length; j++) {
+                if (S.cards[j].done) continue;
+                if (S.cards[i].v !== S.cards[j].v) {
+                  tapCard(i); tapCard(j);
+                  return api.state();
+                }
+              }
+            }
+            return api.state();
+          },
+          clearAll: function () {
+            for (var k = 0; k < 8; k++) { var p = this.pair(); if (!p) break; tapCard(p[0]); tapCard(p[1]); }
+            return api.state();
+          },
+          finish: function () { S.over = true; S.dying = false; finishNow(); return api.state(); },
+          end: function (clear) { endGame(!!clear); return api.state(); },
+          daily: function () { return loadDaily(); }
+        };
+      }
+    } catch (e) {}
+
+    return api;
+
+    /* -------------------------------------------------------------- 그리기 구현 */
+    function drawCard(g, i) {
+      var r = cardRect(i);
+      var c = S.cards[i];
+      var anim = c.anim;
+      var sc = Math.abs(Math.cos(Math.PI * anim));
+      if (sc < 0.05) sc = 0.05;
+      var faceUp = anim > 0.5;
+      var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+      var pulse = c.done ? 1 + 0.018 * Math.sin(S.t * 5 + i) : 1;
+
+      g.save();
+      g.translate(cx, cy);
+      g.scale(sc * pulse, pulse);
+      g.translate(-cx, -cy);
+
+      var f = FACES[c.v] || FACES[0];
+      if (!faceUp) {
+        var grd = g.createLinearGradient(r.x, r.y, r.x + r.w, r.y + r.h);
+        grd.addColorStop(0, '#2b1f5c');
+        grd.addColorStop(0.5, '#1c1440');
+        grd.addColorStop(1, '#120c2c');
+        A.rr(g, r.x, r.y, r.w, r.h, 12);
+        g.fillStyle = grd;
+        g.fill();
+        g.strokeStyle = 'rgba(167,139,250,.55)';
+        g.lineWidth = 1.3;
+        g.stroke();
+        /* 안쪽 점선 링 */
+        A.rr(g, r.x + 5, r.y + 5, r.w - 10, r.h - 10, 9);
+        g.strokeStyle = 'rgba(196,181,253,.22)';
+        g.lineWidth = 1;
+        g.stroke();
+        g.globalAlpha = 0.5 + 0.2 * Math.sin(S.t * 3 + i * 0.7);
+        A.text(g, '?', cx, cy + 12, { size: 30, color: '#c4b5fd', align: 'center', font: '"Jua",sans-serif' });
+        g.globalAlpha = 1;
+        g.fillStyle = 'rgba(196,181,253,.35)';
+        g.beginPath(); g.arc(cx, r.y + 12, 1.7, 0, 6.2832); g.fill();
+        g.beginPath(); g.arc(cx, r.y + r.h - 12, 1.7, 0, 6.2832); g.fill();
+      } else {
+        var gl = g.createLinearGradient(r.x, r.y, r.x, r.y + r.h);
+        gl.addColorStop(0, rgba(f.col, 0.34));
+        gl.addColorStop(1, rgba(f.col, 0.10));
+        A.rr(g, r.x, r.y, r.w, r.h, 12);
+        g.fillStyle = gl;
+        g.fill();
+        g.save();
+        g.shadowColor = f.col;
+        g.shadowBlur = c.done ? 14 : 7;
+        A.rr(g, r.x, r.y, r.w, r.h, 12);
+        g.strokeStyle = c.done ? '#fde047' : rgba(f.col, 0.85);
+        g.lineWidth = c.done ? 2.2 : 1.6;
+        g.stroke();
+        g.restore();
+        A.text(g, f.ic, cx, cy + 13, { size: 34, align: 'center' });
+        if (c.done) {
+          g.fillStyle = 'rgba(253,224,71,.9)';
+          g.beginPath(); g.arc(r.x + r.w - 11, r.y + 11, 4.6, 0, 6.2832); g.fill();
+          g.fillStyle = '#3b1e00';
+          A.text(g, '✓', r.x + r.w - 11, r.y + 14, { size: 7.5, color: '#3b1e00', align: 'center' });
+        }
+      }
+      g.restore();
+    }
+
+    function drawCursor(g) {
+      if (!S.cursorOn || !S.cursor || S.phase !== 'play' || S.over) return;
+      var i = S.cursor.y * N + S.cursor.x;
+      var r = cardRect(i);
+      var p = 0.55 + 0.45 * Math.sin(S.t * 6);
+      g.save();
+      g.globalAlpha = p;
+      g.strokeStyle = '#fde047';
+      g.lineWidth = 2.2;
+      g.setLineDash && g.setLineDash([5, 4]);
+      A.rr(g, r.x - 3, r.y - 3, r.w + 6, r.h + 6, 14);
+      g.stroke();
+      g.setLineDash && g.setLineDash([]);
+      g.restore();
+      g.globalAlpha = 1;
+    }
+
+    function drawSparks(g) {
+      for (var i = 0; i < S.sparks.length; i++) {
+        var s = S.sparks[i];
+        g.globalAlpha = Math.max(0, Math.min(1, s.life / s.max * 1.8));
+        g.fillStyle = s.c;
+        g.fillRect(s.x - s.s / 2, s.y - s.s / 2, s.s, s.s);
+      }
+      g.globalAlpha = 1;
+    }
+
+    function drawHud(g) {
+      var mid;
+      if (S.ready) mid = '🃏 4×4 · 8쌍';
+      else if (S.phase === 'memorize') mid = '👀 암기 타임';
+      else if (S.phase === 'closing') mid = '카드 뒤집는 중…';
+      else if (S.over) mid = S.clear ? '🎉 올 클리어' : '⏱ 시간 종료';
+      else mid = S.combo > 1 ? '🔥 COMBO x' + S.combo : '🃏 짝을 맞춰요';
+      var right = '';
+      if (S.phase === 'play' && !S.over) right = '⏱ ' + Math.max(0, S.left).toFixed(1) + 's';
+      else if (S.phase === 'memorize') right = '👀 ' + Math.max(0, S.memoLeft).toFixed(1) + 's';
+      else if (S.over) right = S.clear ? '클리어' : '종료';
+      MG.hud(g, a, { label: '점수', score: S.score, mid: mid, right: right });
+
+      /* 암기 게이지 / 남은 시간 게이지 */
+      if (!S.ready) {
+        var pct, col;
+        if (S.phase === 'memorize') { pct = S.memoLeft / MEMO; col = '#22d3ee'; }
+        else if (S.phase === 'closing') { pct = 1 - Math.min(1, S.closeT / CLOSE_T); col = '#38bdf8'; }
+        else { pct = Math.max(0, S.left / LIMIT); col = S.left > 20 ? '#4ade80' : S.left > 8 ? '#fbbf24' : '#f87171'; }
+        g.fillStyle = 'rgba(8,12,22,.85)';
+        g.fillRect(GX, 46, W - GX * 2, 5);
+        if (pct > 0) {
+          A.rr(g, GX, 46, Math.max(4, (W - GX * 2) * pct), 5, 2.5);
+          g.fillStyle = col;
+          g.fill();
+        }
+      }
+
+      /* 상태 띠 */
+      var line, lc;
+      if (S.ready) { line = '🃏 16장 · 8쌍 · 60초'; lc = '#a5b4fc'; }
+      else if (S.phase === 'memorize') { line = '👀 암기 타임 ' + Math.max(0, S.memoLeft).toFixed(1) + '초 — 16장이 모두 앞면!'; lc = '#67e8f9'; }
+      else if (S.phase === 'closing') { line = '카드가 뒤집히는 중…'; lc = '#93c5fd'; }
+      else if (S.over) { line = S.clear ? '🎉 8쌍 완성!' : '⏱ 60초 종료'; lc = S.clear ? '#fde047' : '#fca5a5'; }
+      else { line = '🃏 ' + S.matched + '/8쌍 · 시도 ' + S.attempts + '회 · COMBO x' + S.combo; lc = S.combo > 1 ? '#fde047' : '#c7d6ef'; }
+      A.panel(g, GX, 54, W - GX * 2, 24, { r: 12, fill: 'rgba(10,16,30,.86)', stroke: rgba(lc, 0.4) });
+      A.text(g, line, 180, 70, { size: 10.5, color: lc, align: 'center', font: '"Jua",sans-serif' });
+    }
+
+    function drawTexts(g) {
+      if (S.ready) return;
+      /* 보드 아래 배너가 떠 있는 동안은 칩·기록 줄을 잠시 감춘다 (배너와 겹쳐 보이지 않게) */
+      var hiding = S.bannerT > 0 && S.bannerAt > 300;
+      if (!hiding) {
+      var chipCol = S.combo > 1 ? '#fde047' : '#94a3b8';
+      A.panel(g, GX, 424, 160, 30, { r: 10, fill: 'rgba(24,18,48,.9)', stroke: rgba(chipCol, 0.42) });
+      A.text(g, '🔥 COMBO x' + S.combo, GX + 80, 444, { size: 12, color: chipCol, align: 'center', font: '"Jua",sans-serif' });
+      A.panel(g, 184, 424, 160, 30, { r: 10, fill: 'rgba(16,24,40,.9)', stroke: 'rgba(150,190,255,.28)' });
+      A.text(g, '🃏 ' + S.matched + '/8쌍', 264, 444, { size: 12, color: '#a7f3d0', align: 'center', font: '"Jua",sans-serif' });
+
+      A.text(g, '매칭 점수 ' + S.matchPts + ' · 최고 COMBO x' + S.bestCombo, 180, 474, { size: 10, color: '#93a4c4', align: 'center' });
+      var best = null;
+      try { best = a.best(); } catch (e) { best = null; }
+      A.text(g, '🏅 ' + (best == null ? '—' : Math.round(best) + '점'), 180, 492, { size: 10, color: '#93c5fd', align: 'center' });
+      }
+
+      if (S.over) {
+        var big = S.clear ? '🎉 올 클리어!' : '⏱ 시간 종료';
+        var bc = S.clear ? '#fde047' : '#fca5a5';
+        A.text(g, big, 180, 528, { size: 20, color: bc, align: 'center', font: '"Jua",sans-serif' });
+        A.text(g, (S.clear ? '8쌍을 모두 맞췄어요' : S.matched + '쌍을 맞췄어요') + ' · 결과 화면으로 넘어갑니다…', 180, 550, { size: 10, color: '#93a4c4', align: 'center' });
+      } else {
+        A.text(g, '카드를 눌러 뒤집고, 같은 아이콘 2장을 맞추면 금빛으로 고정돼요', 180, 522, { size: 9.5, color: '#93a4c4', align: 'center' });
+        A.text(g, '연속 매칭 COMBO ×N = +100 × N · 다른 카드면 0.55초 뒤 다시 뒤집힘', 180, 540, { size: 9.5, color: '#7f93b3', align: 'center' });
+        A.text(g, '⌨️ 방향키·WASD 커서 · Enter/Space 뒤집기 · 8쌍 올 클리어 = +300 + 시간·시도 보너스', 180, 558, { size: 9, color: '#6b7f9f', align: 'center' });
+        A.text(g, '🪙 끝나면 펫 코인 +10 / +20 / +35 (하루 상한 60)', 180, 576, { size: 9, color: '#5b6f92', align: 'center' });
+      }
+
+      if (S.msgT > 0 && S.msg && S.bannerT <= 0) {
+        g.globalAlpha = Math.min(1, S.msgT * 2.2);
+        var tw = Math.min(330, S.msg.length * 8 + 34);
+        A.rr(g, 180 - tw / 2, 296, tw, 24, 12);
+        g.fillStyle = 'rgba(4,8,18,.94)';
+        g.fill();
+        g.strokeStyle = S.msgCol;
+        g.lineWidth = 1.3;
+        g.stroke();
+        A.text(g, S.msg, 180, 313, { size: 11.5, color: S.msgCol, align: 'center', font: '"Jua",sans-serif' });
+        g.globalAlpha = 1;
+      }
+    }
+
+    function drawBanner(g) {
+      if (S.bannerT <= 0 || !S.banner) return;
+      g.globalAlpha = Math.min(1, S.bannerT / 0.35);
+      var y = S.bannerAt || 200;
+      var h = y > 300 ? 60 : 68;
+      var x = 24, w = 312;
+      A.panel(g, x, y, w, h, { r: 16, fill: 'rgba(10,16,30,.995)', stroke: S.bannerCol });
+      g.save();
+      g.shadowColor = S.bannerCol;
+      g.shadowBlur = 18;
+      A.rr(g, x, y, w, h, 16);
+      g.strokeStyle = rgba(S.bannerCol, 0.9);
+      g.lineWidth = 2;
+      g.stroke();
+      g.restore();
+      A.text(g, S.banner, 180, y + (h > 62 ? 32 : 28), { size: h > 62 ? 21 : 19, color: S.bannerCol, align: 'center', font: '"Jua",sans-serif' });
+      if (S.bannerSub) A.text(g, S.bannerSub, 180, y + (h > 62 ? 54 : 48), { size: 10, color: '#fef3c7', align: 'center' });
+      g.globalAlpha = 1;
+    }
+
+    function drawReady(g) {
+      g.fillStyle = 'rgba(3,6,12,.95)';
+      g.fillRect(0, 44, W, H - 44);
+      A.panel(g, GX, 56, W - GX * 2, 512, { r: 18, fill: 'rgba(14,12,32,.98)', stroke: rgba('#a78bfa', 0.5) });
+      A.text(g, '🃏 메모리 짝 맞추기', 180, 100, { size: 25, color: '#c4b5fd', align: 'center', font: '"Jua",sans-serif' });
+      A.text(g, '4×4 카드 16장 = 8쌍 · 60초', 180, 122, { size: 11, color: '#a8bdd8', align: 'center' });
+
+      /* 미리 보여 주는 카드 아이콘 줄 */
+      for (var k = 0; k < 8; k++) {
+        var bx = GX + 6 + k * 38;
+        A.rr(g, bx, 138, 32, 32, 8);
+        g.fillStyle = rgba(FACES[k].col, 0.22);
+        g.fill();
+        g.strokeStyle = rgba(FACES[k].col, 0.7);
+        g.lineWidth = 1;
+        g.stroke();
+        A.text(g, FACES[k].ic, bx + 16, 155 + 6, { size: 16, align: 'center' });
+      }
+
+      A.text(g, '👀 시작하면 2.5초 동안 16장이 모두 앞면 — 그동안 위치를 외우세요', 180, 192, { size: 10, color: '#67e8f9', align: 'center' });
+      A.text(g, '곧 스르륵 뒤집히고 그때부터 60초 타이머가 돌아갑니다', 180, 210, { size: 10, color: '#67e8f9', align: 'center' });
+
+      A.text(g, '🔄 카드를 누르면 돌아가는 플립 애니메이션 — 같은 아이콘 2장이면', 180, 240, { size: 10, color: '#c7d6ef', align: 'center' });
+      A.text(g, '금빛·네온 글로우로 고정되고, 다르면 0.55초 보여 준 뒤 다시 뒤집혀요', 180, 258, { size: 10, color: '#c7d6ef', align: 'center' });
+      A.text(g, '🔥 연속 매칭 COMBO ×N — +100 × N점 (틀리면 콤보 0으로)', 180, 284, { size: 10.5, color: '#fde047', align: 'center' });
+      A.text(g, '🎉 8쌍 올 클리어 = +300 · 남은 시간 ×20 · 최소 시도 (16−시도) ×50', 180, 304, { size: 10, color: '#fde68a', align: 'center' });
+      A.text(g, '⏱ 60초가 끝나면 그때까지 맞춘 쌍으로 점수를 드려요', 180, 322, { size: 9.5, color: '#93a4c4', align: 'center' });
+      A.text(g, '⌨️ 방향키/WASD 커서 · Enter/Space 뒤집기', 180, 348, { size: 10, color: '#a5f3fc', align: 'center' });
+      A.text(g, '🪙 끝나면 펫 코인 +10 / +20 / +35 (하루 상한 60)', 180, 372, { size: 10, color: '#93a4c4', align: 'center' });
+
+      var best = null;
+      try { best = a.best(); } catch (e) { best = null; }
+      if (best != null) A.text(g, '🏅 최고 기록 ' + Math.round(best) + '점', 180, 402, { size: 11, color: '#fbbf24', align: 'center' });
+
+      g.globalAlpha = 0.62 + 0.38 * Math.sin(S.t * 4);
+      A.text(g, '▶ 탭해서 시작', 180, 442, { size: 18, color: '#c4b5fd', align: 'center', font: '"Jua",sans-serif' });
+      g.globalAlpha = 1;
+      A.text(g, '⌨️ 스페이스 · 엔터로 시작', 180, 466, { size: 9, color: '#5b6f92', align: 'center' });
+      var d = loadDaily();
+      var today = d.d === dayKey() ? d.c : 0;
+      A.text(g, '🪙 오늘 받은 메모리 코인 ' + today + ' / ' + DAILY_CAP, 180, 496, { size: 9, color: '#46566f', align: 'center' });
+      A.text(g, '같은 시드면 카드 배치도 완전히 같습니다', 180, 522, { size: 9, color: '#46566f', align: 'center' });
+    }
+  }
+
+  /* ==========================================================================
+     등록 — 기존 'memory' 슬롯을 덮어쓴다 (기록·봇·방 대전 호환 유지)
+     ========================================================================== */
+  MG.def({
+    id: ID,
+    name: '메모리 짝 맞추기',
+    emoji: '🃏',
+    tag: '두뇌',
+    desc: '4×4 · 2.5초 암기 · 60초 · COMBO ×N',
+    unit: '점',
+    record: {
+      type: 'high',
+      fmt: function (v) { return Math.round(v) + '점'; }
+    },
+    create: create
+  });
+
+  /* 목록 순서: 개방 11호로 맨 뒤(10호 다음)에 — v5.30 잠금 모듈의 reorder 가 앞으로 당긴다 */
+  try {
+    if (MG.order) {
+      var rest = MG.order.filter(function (x) { return x && x !== ID; });
+      var at = rest.indexOf('gomoku');
+      if (at >= 0) rest.splice(at + 1, 0, ID);
+      else rest.push(ID);
+      MG.order = rest;
+    }
+  } catch (e) {}
+
+  try { console.log('[v550] 🃏 메모리 짝 맞추기 등록 · order', (MG.order || []).length); } catch (e) {}
+
+  /* 테스트/검증용 공개 훅 */
+  root.JW550 = {
+    id: ID,
+    key: KEY,
+    cap: DAILY_CAP,
+    grid: { n: N, card: CARD, gap: GAP, x: GX, y: GY },
+    memo: MEMO,
+    limit: LIMIT,
+    wrong: WRONG_T,
     tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
     daily: function () { return loadDaily(); },
     state: function () {
