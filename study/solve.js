@@ -128,7 +128,7 @@
     btn.textContent = '채점하기';
     btn.disabled = false;
     $('#padPanel').classList.add('pad-hidden');
-    if (window.SBPad) window.SBPad.clear(true);
+    if (window.SBPad) window.SBPad.clear();
     startClock();
   }
 
