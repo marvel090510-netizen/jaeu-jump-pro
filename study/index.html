@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#f6f7fb" />
+<title>📚 재우의 스터디 뱅크 — 문제은행·변형문제·오답노트</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="app" id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo" aria-hidden="true">📚</span>
+      <div class="brand-text">
+        <h1>재우의 스터디 뱅크</h1>
+        <p>문제은행 · 변형문제 · 오답노트 · 시험지</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="btnBackup" title="JSON 백업" aria-label="JSON 백업">⤓<span class="btn-label">백업</span></button>
+      <button class="icon-btn" id="btnRestore" title="JSON 복원" aria-label="JSON 복원">⤒<span class="btn-label">복원</span></button>
+      <button class="icon-btn" id="btnFocus" title="집중 모드" aria-label="집중 모드">🎯</button>
+      <button class="icon-btn" id="btnTheme" title="다크 모드 전환" aria-label="다크 모드 전환"><span id="themeIcon">🌙</span></button>
+      <input type="file" id="restoreInput" accept="application/json,.json" hidden />
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="주요 기능">
+    <button class="tab is-active" data-tab="bank"><span>🗂️</span>문제은행</button>
+    <button class="tab" data-tab="solve"><span>✏️</span>문제 풀기</button>
+    <button class="tab" data-tab="flash"><span>🃏</span>암기</button>
+    <button class="tab" data-tab="variant"><span>🔄</span>변형 문제</button>
+    <button class="tab" data-tab="exam"><span>📄</span>시험지 제작</button>
+    <button class="tab" data-tab="pdf"><span>📑</span>PDF 뷰어</button>
+    <button class="tab" data-tab="wrong"><span>❌</span>오답노트</button>
+    <button class="tab" data-tab="timer"><span>⏱️</span>타이머</button>
+    <button class="tab" data-tab="stats"><span>📊</span>통계</button>
+  </nav>
+
+  <main class="views" id="views">
+
+    <!-- ================= 문제은행 ================= -->
+    <section class="view is-active" id="view-bank" aria-labelledby="tab-bank">
+      <div class="view-head">
+        <div>
+          <h2>문제은행</h2>
+          <p class="view-sub">모은 문제를 과목·단원·난이도로 정리하고 바로 풀어 보세요.</p>
+        </div>
+        <button class="btn btn-primary" id="btnAddProblem">＋ 문제 등록</button>
+      </div>
+
+      <div class="dday-card" id="ddayCard">
+        <div class="dday-main">
+          <div class="dday-num" id="ddayNum">D-?</div>
+          <div class="dday-info">
+            <strong id="ddayName">시험일을 등록해 보세요</strong>
+            <span id="ddayDate">D-day와 오늘의 목표를 함께 관리해요</span>
+            <button class="dday-edit" id="btnDdayEdit">⚙️ 시험일 · 목표 설정</button>
+          </div>
+        </div>
+        <div class="goal-wrap">
+          <div class="goal-top"><span>오늘의 목표</span><span id="goalCount">0 / 20문제</span></div>
+          <div class="progress"><div class="progress-bar" id="goalBar"></div></div>
+          <div class="goal-foot"><span id="goalMsg">한 문제부터 시작해 볼까요?</span><span id="goalStreak">🔥 0일 연속</span></div>
+        </div>
+        <div class="dday-edit-row" id="ddayEditRow" hidden>
+          <label class="field"><span>시험 이름</span><input id="ddayNameInput" type="text" placeholder="예) 2학기 기말고사" /></label>
+          <label class="field"><span>시험일</span><input id="ddayDateInput" type="date" /></label>
+          <label class="field"><span>하루 목표 문제 수</span><input id="ddayGoalInput" type="number" min="1" max="300" value="20" /></label>
+          <div class="mini-actions"><button class="btn btn-primary btn-sm" id="btnDdaySave">저장</button><button class="btn btn-sm" id="btnDdayCancel">취소</button></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span aria-hidden="true">🔍</span>
+          <input type="search" id="bankSearch" placeholder="문제·단원·출처 검색" aria-label="문제 검색" />
+          <button class="clear-btn" id="bankSearchClear" aria-label="검색어 지우기" hidden>✕</button>
+        </div>
+        <div class="select-row">
+          <label class="sr-only" for="bankDifficulty">난이도</label>
+          <select id="bankDifficulty">
+            <option value="all">난이도 전체</option>
+            <option value="하">하</option>
+            <option value="중">중</option>
+            <option value="상">상</option>
+          </select>
+          <label class="sr-only" for="bankStatus">상태</label>
+          <select id="bankStatus">
+            <option value="all">상태 전체</option>
+            <option value="unsolved">미풀이</option>
+            <option value="correct">맞힘</option>
+            <option value="wrong">틀림</option>
+          </select>
+          <label class="sr-only" for="bankType">유형</label>
+          <select id="bankType">
+            <option value="all">유형 전체</option>
+            <option value="mc">객관식</option>
+            <option value="short">주관식</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-block">
+        <div class="filter-label">연령·학년</div>
+        <div class="chips level-chips" id="bankLevels" role="group" aria-label="연령·학년 필터"></div>
+      </div>
+      <div class="filter-block">
+        <div class="filter-label">과목</div>
+        <div class="chips subject-chips" id="bankSubjects" role="group" aria-label="과목 필터"></div>
+        <div style="margin-top:7px">
+          <button class="chip chip-star" id="chipStar" aria-pressed="false">⭐ 즐겨찾기만 보기</button>
+        </div>
+      </div>
+
+      <div class="summary-row" id="bankSummary"></div>
+      <div class="card-list" id="bankList"></div>
+      <div class="empty-state" id="bankEmpty" hidden>
+        <div class="empty-emoji">🗂️</div>
+        <h3>조건에 맞는 문제가 없어요</h3>
+        <p>필터를 풀거나 새 문제를 등록해 보세요.</p>
+        <button class="btn btn-primary" data-action="add">＋ 문제 등록</button>
+      </div>
+    </section>
+
+    <!-- ================= 문제 풀기 ================= -->
+    <section class="view" id="view-solve">
+      <div class="view-head">
+        <div>
+          <h2>문제 풀기</h2>
+          <p class="view-sub">바로 채점하고, 틀린 문제는 오답노트에 자동으로 담겨요.</p>
+        </div>
+      </div>
+
+      <div class="submode-bar" id="solveSubmodes">
+        <button class="submode is-active" data-sub="practice">✏️ 연습 모드</button>
+        <button class="submode" data-sub="omr">📝 OMR 실전 모의</button>
+      </div>
+
+      <div id="practiceWrap">
+      <div id="solveSetup" class="panel">
+        <div class="field-grid">
+          <label class="field">
+            <span>연령·학년</span>
+            <select id="solveLevel"></select>
+          </label>
+          <label class="field">
+            <span>과목</span>
+            <select id="solveSubject"><option value="all">전체 과목</option></select>
+          </label>
+          <label class="field">
+            <span>난이도</span>
+            <select id="solveDifficulty">
+              <option value="all">전체</option><option value="하">하</option><option value="중">중</option><option value="상">상</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>문항 수</span>
+            <select id="solveCount">
+              <option value="5">5문제</option>
+              <option value="10" selected>10문제</option>
+              <option value="20">20문제</option>
+              <option value="0">전체</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>순서</span>
+            <select id="solveOrder">
+              <option value="random">무작위</option>
+              <option value="new">최신 등록순</option>
+              <option value="wrong">오답 우선</option>
+            </select>
+          </label>
+        </div>
+        <div class="check-row">
+          <label class="check"><input type="checkbox" id="solveWrongOnly" /> <span>틀린 문제만 풀기</span></label>
+          <label class="check"><input type="checkbox" id="solveTimerOn" checked /> <span>문항별 풀이 시간 재기</span></label>
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-primary btn-lg" id="btnStartSolve">▶ 풀기 시작</button>
+          <span class="muted" id="solvePoolInfo"></span>
+        </div>
+      </div>
+
+      <div id="solveStage" class="panel solve-stage" hidden>
+        <div class="solve-top">
+          <button class="btn btn-ghost btn-sm" id="btnSolveQuit">✕ 그만두기</button>
+          <span class="solve-progress-text" id="solveProgressText">1 / 10</span>
+          <div class="mini-actions">
+            <button class="btn btn-ghost btn-sm" id="btnTogglePad">✍️ 필기</button>
+            <span class="solve-clock" id="solveClock">00:00</span>
+          </div>
+        </div>
+        <div class="progress"><div class="progress-bar" id="solveProgressBar"></div></div>
+
+        <div class="question-head">
+          <span class="badge" id="solveSubjectBadge">수학</span>
+          <span class="badge badge-soft" id="solveUnitBadge">수2</span>
+          <span class="badge badge-diff" id="solveDiffBadge">중</span>
+          <span class="badge badge-soft" id="solveTypeBadge">객관식</span>
+        </div>
+        <div class="question-body" id="solveBody"></div>
+        <div class="question-image" id="solveImage" hidden><img alt="문제 사진" /></div>
+
+        <div class="choices" id="solveChoices"></div>
+        <div class="short-answer" id="solveShort" hidden>
+          <label for="solveShortInput">답</label>
+          <input id="solveShortInput" type="text" placeholder="답을 입력하세요" autocomplete="off" />
+        </div>
+
+        <div class="pad-panel pad-hidden" id="padPanel">
+          <div class="pad-head">
+            <span class="pad-title">✍️ 손글씨 풀이 (펜·애플펜슬·손가락)</span>
+            <div class="pad-tools">
+              <button class="pad-tool pen-dot is-active" data-pen="pen" data-color="#1a1a1a" style="color:#1a1a1a">검정</button>
+              <button class="pad-tool pen-dot" data-pen="pen" data-color="#d3394a" style="color:#d3394a">빨강</button>
+              <button class="pad-tool pen-dot" data-pen="pen" data-color="#2b6cf0" style="color:#2b6cf0">파랑</button>
+              <button class="pad-tool is-active" data-width="3">보통</button>
+              <button class="pad-tool" data-width="6">굵게</button>
+              <button class="pad-tool" data-pen="eraser">지우개</button>
+            </div>
+          </div>
+          <div class="pad-canvas-wrap"><canvas id="padCanvas"></canvas></div>
+          <div class="pad-foot">
+            <span>태블릿에서는 펜으로, 폰에서는 손가락으로 써 보세요.</span>
+            <div class="mini-actions">
+              <button class="pad-tool" id="btnPadUndo">되돌리기</button>
+              <button class="pad-tool" id="btnPadClear">전체 지우기</button>
+              <button class="pad-tool" id="btnPadSave">PNG 저장</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="solve-actions" id="solveActions">
+          <button class="btn btn-primary btn-lg" id="btnSubmitAnswer">채점하기</button>
+        </div>
+
+        <div class="feedback" id="solveFeedback" hidden></div>
+      </div>
+
+      <div id="solveResult" class="panel" hidden>
+        <div class="result-hero">
+          <div class="result-emoji" id="resultEmoji">🎉</div>
+          <h3 id="resultTitle">수고했어요!</h3>
+          <p id="resultSub"></p>
+        </div>
+        <div class="result-grid" id="resultGrid"></div>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="btnSolveAgain">다시 풀기</button>
+          <button class="btn" data-goto="wrong">오답노트 보기</button>
+          <button class="btn btn-ghost" id="btnSolveClose">닫기</button>
+        </div>
+      </div>
+      </div><!-- /practiceWrap -->
+
+      <div id="omrWrap" hidden>
+        <div class="panel" id="omrSetup">
+          <div class="field-grid">
+            <label class="field"><span>연령·학년</span><select id="omrLevel"></select></label>
+            <label class="field"><span>과목</span><select id="omrSubject"><option value="all">전체 과목</option></select></label>
+            <label class="field"><span>문항 수</span><input id="omrCount" type="number" min="5" max="50" value="20" /></label>
+            <label class="field"><span>시험 시간</span>
+              <select id="omrMinutes">
+                <option value="80">2028 수능 국어 80분</option>
+                <option value="100">2028 수능 수학 100분</option>
+                <option value="70">2028 수능 영어 70분</option>
+                <option value="30">2028 수능 한국사·탐구 30분</option>
+                <option value="45">중등 45분</option>
+                <option value="50">고등 50분</option>
+                <option value="custom">직접 입력</option>
+              </select>
+            </label>
+          </div>
+          <div class="field-grid" id="omrCustomWrap" hidden>
+            <label class="field"><span>직접 입력 (분)</span><input id="omrCustomMin" type="number" min="1" max="300" value="60" /></label>
+          </div>
+          <div class="check-row">
+            <label class="check"><input type="checkbox" id="omrWrongFirst" /> <span>오답 위주로 구성</span></label>
+            <label class="check"><input type="checkbox" id="omrShuffle" checked /> <span>보기 순서 섞기</span></label>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-primary btn-lg" id="btnStartOmr">📝 OMR 시험 시작</button>
+            <span class="muted" id="omrPoolInfo"></span>
+          </div>
+          <p class="muted small">객관식 문제만 출제돼요. 마킹한 뒤 한 번에 채점하면 단원별 정답률까지 나옵니다.</p>
+        </div>
+
+        <div class="panel" id="omrStage" hidden>
+          <div class="omr-wrap">
+            <div class="omr-head">
+              <div>
+                <strong id="omrTitle">실전 모의고사</strong>
+                <div class="muted small" id="omrSub">답을 OMR에 마킹하세요</div>
+              </div>
+              <div style="text-align:right">
+                <div class="omr-timer" id="omrTimer">80:00</div>
+                <div class="muted small" id="omrMarked">0 / 20 마킹</div>
+              </div>
+            </div>
+            <div class="omr-legend"><span>● 표시 = 마킹</span><span>채점 후 초록 = 정답, 빨강 = 오답</span></div>
+            <div class="omr-grid" id="omrGrid"></div>
+            <div class="panel-actions">
+              <button class="btn btn-primary btn-lg" id="btnGradeOmr">채점하기</button>
+              <button class="btn btn-ghost" id="btnQuitOmr">그만두기</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="omrResult" hidden>
+          <div class="result-hero">
+            <div class="result-emoji" id="omrEmoji">📝</div>
+            <h3 id="omrResultTitle">채점 결과</h3>
+            <p id="omrResultSub"></p>
+          </div>
+          <div class="result-grid" id="omrResultGrid"></div>
+          <div class="panel-head" style="margin-top:18px"><h3>단원별 정답률</h3></div>
+          <div class="unit-bars" id="omrUnitBars"></div>
+          <div class="panel-actions">
+            <button class="btn btn-primary" id="btnOmrRetryWrong">틀린 문제 다시 풀기</button>
+            <button class="btn" data-goto="wrong">오답노트 보기</button>
+            <button class="btn btn-ghost" id="btnOmrClose">닫기</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 암기(플래시카드) ================= -->
+    <section class="view" id="view-flash">
+      <div class="view-head">
+        <div>
+          <h2>플래시카드 암기</h2>
+          <p class="view-sub">앞면을 보고 답을 떠올린 뒤, 뒤집어 확인하고 반복 간격을 정해요.</p>
+        </div>
+      </div>
+      <div class="panel" id="flashSetup">
+        <div class="field-grid three">
+          <label class="field"><span>연령·학년</span><select id="flashLevel"></select></label>
+          <label class="field"><span>과목</span><select id="flashSubject"><option value="all">전체 과목</option></select></label>
+          <label class="field"><span>학습 범위</span>
+            <select id="flashMode">
+              <option value="due">오늘 복습할 카드</option>
+              <option value="all">전체 카드</option>
+              <option value="star">⭐ 즐겨찾기 카드</option>
+              <option value="wrong">오답 카드</option>
+            </select>
+          </label>
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-primary btn-lg" id="btnStartFlash">🃏 암기 시작</button>
+          <span class="muted" id="flashInfo"></span>
+        </div>
+        <p class="muted small">알아요를 누르면 1→3→7→21→60일 간격으로 다시 나와요. 모르겠어요는 오늘 다시.</p>
+      </div>
+      <div class="fc-wrap" id="fcWrap" hidden>
+        <div class="fc-progress">
+          <span id="fcProgress">1 / 10</span>
+          <span id="fcScore">알아요 0 · 모르겠어요 0</span>
+        </div>
+        <div class="fc-scene">
+          <div class="fc-card" id="fcCard" tabindex="0" role="button" aria-label="카드를 눌러 뒤집기">
+            <div class="fc-face front">
+              <div class="fc-tag" id="fcTagFront"></div>
+              <div class="fc-text" id="fcFront"></div>
+              <div class="fc-flip-hint">카드를 누르면 정답이 보여요</div>
+            </div>
+            <div class="fc-face back">
+              <div class="fc-tag" id="fcTagBack"></div>
+              <div class="fc-answer" id="fcAnswer"></div>
+              <div class="fc-solution" id="fcSolution"></div>
+              <div class="fc-flip-hint">다시 누르면 문제로 돌아가요</div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-actions" style="justify-content:center;margin-bottom:8px">
+          <button class="tts-btn" id="btnFcSpeak">🔊 읽어 주기</button>
+          <button class="btn btn-sm btn-ghost" id="btnFcSkip">다음 카드 →</button>
+          <button class="btn btn-sm btn-ghost" id="btnFcQuit">그만두기</button>
+        </div>
+        <div class="fc-actions">
+          <button class="fc-btn unknown" id="btnFcUnknown">😵 모르겠어요</button>
+          <button class="fc-btn known" id="btnFcKnown">😎 알아요</button>
+        </div>
+      </div>
+      <div class="empty-state" id="fcEmpty" hidden>
+        <div class="empty-emoji">🃏</div>
+        <h3>복습할 카드가 없어요</h3>
+        <p>문제를 등록하거나 ‘전체 카드’로 시작해 보세요.</p>
+        <button class="btn btn-primary" data-goto="bank">문제은행 가기</button>
+      </div>
+    </section>
+
+    <!-- ================= 변형 문제 ================= -->
+    <section class="view" id="view-variant">
+      <div class="view-head">
+        <div>
+          <h2>변형 문제 생성기</h2>
+          <p class="view-sub">같은 문제를 숫자·빈칸·보기 순서를 바꿔 다시 만들어 암기를 막아요.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="field-grid">
+          <label class="field">
+            <span>변형 방식</span>
+            <select id="variantMode">
+              <option value="number">🔢 수학·숫자 변형</option>
+              <option value="blank">🔤 영어 빈칸 뚫기</option>
+              <option value="shuffle">🔀 보기 순서 섞기</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>문제 가져오기</span>
+            <select id="variantSource"><option value="manual">직접 입력</option></select>
+          </label>
+        </div>
+
+        <div class="variant-input" id="variantInputWrap">
+          <label class="field">
+            <span>문제 본문</span>
+            <textarea id="variantBody" rows="4" placeholder="예) 함수 f(x)=x³-3x²+4x-1 에 대하여 f'(2)의 값을 구하시오."></textarea>
+          </label>
+          <label class="field">
+            <span>객관식 보기 (한 줄에 하나, 비우면 주관식)</span>
+            <textarea id="variantChoices" rows="5" placeholder="① 1&#10;② 2&#10;③ 3&#10;④ 4&#10;⑤ 5"></textarea>
+          </label>
+          <div class="field-grid three">
+            <label class="field"><span>연령·학년</span>
+              <select id="variantLevel">
+                <option>초등</option><option>중등</option><option selected>고등</option><option>수능·N수</option><option>대학·성인</option>
+              </select>
+            </label>
+            <label class="field"><span>과목</span>
+              <select id="variantSubject">
+                <option>수학</option><option>영어</option><option>국어</option><option>과학</option>
+                <option>사회·역사</option><option>한국사</option><option>제2외국어·한문</option><option>코딩·IT</option><option>자격증·일반상식</option><option>기타</option>
+              </select>
+            </label>
+            <label class="field"><span>정답 (보기 번호 또는 답)</span><input id="variantAnswer" type="text" placeholder="예) 4 또는 ④" /></label>
+          </div>
+        </div>
+
+        <div class="panel-actions">
+          <button class="btn btn-primary btn-lg" id="btnGenerateVariant">🔄 변형 문제 만들기</button>
+          <span class="muted" id="variantHint"></span>
+        </div>
+      </div>
+
+      <div class="panel" id="variantResultPanel" hidden>
+        <div class="panel-head">
+          <h3>변형 결과</h3>
+          <span class="badge badge-soft" id="variantModeBadge"></span>
+        </div>
+        <div class="variant-out">
+          <div class="variant-label">문제</div>
+          <div class="question-body" id="variantOutBody"></div>
+          <div class="variant-label" id="variantOutChoicesLabel" hidden>보기</div>
+          <ol class="variant-choices" id="variantOutChoices"></ol>
+          <div class="answer-box" id="variantOutAnswer"></div>
+          <div class="variant-note" id="variantOutNote"></div>
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="btnSaveVariant">＋ 문제은행에 저장</button>
+          <button class="btn" id="btnCopyVariant">📋 복사</button>
+          <button class="btn btn-ghost" id="btnRegenerateVariant">🎲 다시 만들기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 시험지 제작 ================= -->
+    <section class="view" id="view-exam">
+      <div class="view-head">
+        <div>
+          <h2>나만의 시험지 제작기</h2>
+          <p class="view-sub">문제를 골라 A4 시험지로 만들고 바로 인쇄·PDF 저장하세요.</p>
+        </div>
+      </div>
+
+      <div class="exam-layout">
+        <div class="panel">
+          <div class="field-grid">
+            <label class="field"><span>시험지 제목</span><input id="examTitle" type="text" value="재우의 스터디 뱅크 모의고사" /></label>
+            <label class="field"><span>부제 (학교/학년)</span><input id="examSubtitle" type="text" value="고2 · 2026학년도 2학기 대비" /></label>
+          </div>
+          <div class="field-grid">
+            <label class="field"><span>레이아웃</span>
+              <select id="examLayout"><option value="1">1단 (한 줄에 한 문제)</option><option value="2">2단 (신문형)</option></select>
+            </label>
+            <label class="field"><span>정답·해설지</span>
+              <select id="examAnswers">
+                <option value="separate">분리 (다음 장에 따로)</option>
+                <option value="same">같은 문서 뒤에 포함</option>
+                <option value="none">출력 안 함</option>
+              </select>
+            </label>
+          </div>
+          <div class="check-row">
+            <label class="check"><input type="checkbox" id="examNameLine" checked /> <span>이름·반 칸 넣기</span></label>
+            <label class="check"><input type="checkbox" id="examPointLine" checked /> <span>배점 표시</span></label>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="panel-head">
+            <h3>문제 담기 <span class="muted" id="examPickCount">0개</span></h3>
+            <div class="mini-actions">
+              <button class="btn btn-sm" id="btnExamSelectAll">전체</button>
+              <button class="btn btn-sm" id="btnExamSelectNone">해제</button>
+              <button class="btn btn-sm btn-primary" id="btnExamRandom">🎲 랜덤 출제</button>
+            </div>
+          </div>
+          <div class="random-row">
+            <label class="field"><span>랜덤 문항 수</span><input id="examRandomCount" type="number" min="1" max="50" value="10" /></label>
+            <label class="field"><span>연령·학년</span><select id="examRandomLevel"></select></label>
+            <label class="field"><span>과목</span><select id="examRandomSubject"><option value="all">전체</option></select></label>
+            <label class="check"><input type="checkbox" id="examRandomWrong" /> <span>오답 위주</span></label>
+          </div>
+          <div class="card-list pick-list" id="examPickList"></div>
+        </div>
+
+        <div class="panel exam-side">
+          <h3>출력 미리보기</h3>
+          <p class="muted small">아래 영역이 A4 종이에 그대로 인쇄됩니다.</p>
+          <div class="mini-preview" id="examMiniPreview"></div>
+          <div class="panel-actions">
+            <button class="btn btn-primary btn-lg" id="btnPrintExam">🖨️ 인쇄 / PDF 저장</button>
+          </div>
+          <p class="muted small">인쇄 대화상자에서 ‘대상: PDF로 저장’을 고르면 PDF 파일이 됩니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PDF 뷰어 ================= -->
+    <section class="view" id="view-pdf">
+      <div class="view-head">
+        <div>
+          <h2>PDF 뷰어 &amp; 페이지 프린트</h2>
+          <p class="view-sub">교재 PDF를 올려 페이지를 골라 인쇄하고, 페이지마다 메모를 남기세요.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="drop-zone" id="pdfDrop">
+          <div class="drop-emoji">📑</div>
+          <strong>PDF 파일을 끌어다 놓거나 눌러서 선택</strong>
+          <span class="muted small">파일은 서버로 올라가지 않고 이 기기 브라우저 안에서만 열려요.</span>
+          <input type="file" id="pdfInput" accept="application/pdf,.pdf" hidden />
+        </div>
+        <div class="pdf-toolbar" id="pdfToolbar" hidden>
+          <div class="pdf-name" id="pdfName"></div>
+          <div class="mini-actions">
+            <button class="btn btn-sm" id="btnPdfSelectAll">전체 선택</button>
+            <button class="btn btn-sm" id="btnPdfSelectNone">선택 해제</button>
+            <button class="btn btn-sm btn-primary" id="btnPdfPrint">🖨️ 선택 페이지 인쇄</button>
+            <button class="btn btn-sm btn-ghost" id="btnPdfClose">✕ 닫기</button>
+          </div>
+        </div>
+        <div class="pdf-empty" id="pdfEmpty">아직 PDF를 열지 않았어요.</div>
+        <div class="pdf-pages" id="pdfPages"></div>
+        <div class="panel" id="pdfPageDetail" hidden style="margin-top:14px">
+          <div class="panel-head">
+            <h3>선택한 페이지 텍스트</h3>
+            <span class="muted small" id="pdfDetailNo"></span>
+          </div>
+          <textarea id="pdfText" rows="8" placeholder="이 페이지에서 추출한 텍스트가 여기에 보여요. 자유롭게 고쳐도 됩니다."></textarea>
+          <div class="panel-actions">
+            <button class="btn btn-primary" id="btnPdfMakeVariant">✨ 이 페이지로 변형 문제 만들기</button>
+            <button class="btn" id="btnPdfSaveProblem">📥 문제은행에 바로 저장</button>
+            <button class="btn btn-ghost" id="btnPdfPrintPage">🖨️ 이 페이지만 인쇄</button>
+          </div>
+          <p class="muted small">스캔본처럼 글자가 없는 PDF는 페이지 이미지가 문제 사진으로 첨부돼요.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 오답노트 ================= -->
+    <section class="view" id="view-wrong">
+      <div class="view-head">
+        <div>
+          <h2>오답노트</h2>
+          <p class="view-sub">틀린 문제만 모았어요. 다시 풀어 맞히면 ‘해결됨’ 배지가 붙어요.</p>
+        </div>
+        <button class="btn" id="btnPrintWrong">🖨️ 오답노트 인쇄</button>
+      </div>
+      <div class="chips" id="wrongFilters" role="group" aria-label="오답 필터">
+        <button class="chip is-active" data-wrong="open">복습 필요</button>
+        <button class="chip" data-wrong="resolved">해결됨</button>
+        <button class="chip" data-wrong="all">전체</button>
+      </div>
+      <div class="summary-row" id="wrongSummary"></div>
+      <div class="card-list" id="wrongList"></div>
+      <div class="empty-state" id="wrongEmpty" hidden>
+        <div class="empty-emoji">✨</div>
+        <h3>오답이 없어요</h3>
+        <p>문제를 풀다 틀리면 여기에 자동으로 쌓여요.</p>
+        <button class="btn btn-primary" data-goto="solve">문제 풀러 가기</button>
+      </div>
+    </section>
+
+    <!-- ================= 타이머 ================= -->
+    <section class="view" id="view-timer">
+      <div class="view-head">
+        <div>
+          <h2>모의고사 타이머</h2>
+          <p class="view-sub">과목별 실제 시험 시간으로 집중력을 맞춰 보세요.</p>
+        </div>
+      </div>
+      <div class="panel timer-panel">
+        <div class="preset-group">
+          <div class="filter-label">2028 수능 (개편 체계)</div>
+          <div class="preset-row" id="timerPresets">
+            <button class="preset" data-min="80" data-label="2028 수능 국어"><strong>국어</strong><span>80분</span></button>
+            <button class="preset" data-min="100" data-label="2028 수능 수학"><strong>수학</strong><span>100분</span></button>
+            <button class="preset" data-min="70" data-label="2028 수능 영어"><strong>영어</strong><span>70분</span></button>
+            <button class="preset" data-min="30" data-label="2028 수능 한국사"><strong>한국사</strong><span>30분</span></button>
+            <button class="preset" data-min="30" data-label="2028 수능 통합사회"><strong>통합사회</strong><span>30분</span></button>
+            <button class="preset" data-min="30" data-label="2028 수능 통합과학"><strong>통합과학</strong><span>30분</span></button>
+          </div>
+        </div>
+        <div class="preset-group">
+          <div class="filter-label">학년별 · 자격증</div>
+          <div class="preset-row">
+            <button class="preset" data-min="40" data-label="초등 40분"><strong>초등</strong><span>40분</span></button>
+            <button class="preset" data-min="45" data-label="중등 45분"><strong>중등</strong><span>45분</span></button>
+            <button class="preset" data-min="50" data-label="고등 50분"><strong>고등</strong><span>50분</span></button>
+            <button class="preset" data-min="60" data-label="자격증 60분"><strong>자격증</strong><span>60분</span></button>
+            <button class="preset" data-min="custom" data-label="커스텀"><strong>커스텀</strong><span>직접 입력</span></button>
+          </div>
+        </div>
+        <div class="custom-min" id="customMinWrap" hidden>
+          <label class="field"><span>분</span><input type="number" id="customMin" min="1" max="300" value="50" /></label>
+          <button class="btn" id="btnApplyCustom">적용</button>
+        </div>
+        <div class="timer-face">
+          <div class="timer-label" id="timerLabel">수학 100분</div>
+          <div class="timer-display" id="timerDisplay">100:00</div>
+          <div class="timer-track"><div class="timer-bar" id="timerBar"></div></div>
+        </div>
+        <div class="panel-actions center">
+          <button class="btn btn-primary btn-lg" id="btnTimerStart">▶ 시작</button>
+          <button class="btn" id="btnTimerPause">⏸ 일시정지</button>
+          <button class="btn btn-ghost" id="btnTimerReset">↺ 초기화</button>
+        </div>
+        <div class="session-list">
+          <h3>최근 타이머 기록</h3>
+          <div id="timerLog" class="muted small">아직 기록이 없어요.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 통계 ================= -->
+    <section class="view" id="view-stats">
+      <div class="view-head">
+        <div>
+          <h2>학습 통계</h2>
+          <p class="view-sub">정답률과 연속 학습일로 지금 페이스를 확인하세요.</p>
+        </div>
+      </div>
+      <div class="stat-cards" id="statCards"></div>
+      <div class="panel">
+        <div class="panel-head"><h3>과목별 정답률</h3><span class="muted small" id="statRateInfo"></span></div>
+        <div id="statSubjects" class="stat-bars"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>최근 14일 학습량</h3></div>
+        <div class="spark" id="statSpark"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>문항별 평균 풀이 시간</h3></div>
+        <div id="statTime" class="muted small"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-foot">
+    <span>재우의 스터디 뱅크 · 데이터는 이 브라우저에만 저장돼요</span>
+    <button class="link-btn" id="btnBackupFoot">JSON 백업</button>
+  </footer>
+</div>
+
+<!-- ============ 문제 등록/수정 모달 ============ -->
+<div class="modal-backdrop" id="problemModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="problemModalTitle">
+    <div class="modal-head">
+      <h3 id="problemModalTitle">문제 등록</h3>
+      <button class="icon-btn" id="btnProblemClose" aria-label="닫기">✕</button>
+    </div>
+    <form id="problemForm" class="modal-body">
+      <input type="hidden" id="pfId" />
+      <div class="field-grid three">
+        <label class="field"><span>연령·학년</span>
+          <select id="pfLevel">
+            <option>초등</option><option>중등</option><option selected>고등</option><option>수능·N수</option><option>대학·성인</option>
+          </select>
+        </label>
+        <label class="field"><span>과목</span>
+          <select id="pfSubject" required>
+            <option>수학</option><option>영어</option><option>국어</option><option>과학</option>
+            <option>사회·역사</option><option>한국사</option><option>제2외국어·한문</option><option>코딩·IT</option><option>자격증·일반상식</option><option>기타</option>
+          </select>
+        </label>
+        <label class="field"><span>난이도</span>
+          <select id="pfDifficulty"><option>하</option><option selected>중</option><option>상</option></select>
+        </label>
+      </div>
+      <div class="field-grid">
+        <label class="field"><span>2022 개정 세부과목 <em class="muted">(고등·수능)</em></span>
+          <select id="pfCurriculum"><option value="">— 직접 입력 —</option></select>
+        </label>
+        <label class="field"><span>단원 / 세부과목</span><input id="pfUnit" type="text" placeholder="예) 미적분Ⅰ · 다항함수의 미분법" /></label>
+      </div>
+      <label class="field"><span>문제 본문</span>
+        <textarea id="pfBody" rows="4" required placeholder="문제 내용을 입력하세요"></textarea>
+      </label>
+      <div class="field">
+        <span>사진 첨부 (선택)</span>
+        <div class="image-pick">
+          <button type="button" class="btn" id="btnPickImage">📷 사진 선택</button>
+          <input type="file" id="pfImage" accept="image/*" hidden />
+          <div class="image-preview" id="pfImagePreview" hidden>
+            <img alt="첨부한 문제 사진" />
+            <button type="button" class="btn btn-sm btn-ghost" id="btnRemoveImage">✕ 사진 빼기</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <span>유형</span>
+        <div class="seg" id="pfTypeSeg" role="group">
+          <button type="button" class="seg-btn is-active" data-type="mc">객관식 (5지선다)</button>
+          <button type="button" class="seg-btn" data-type="short">주관식</button>
+        </div>
+      </div>
+      <div id="pfChoiceWrap">
+        <div class="field-grid five" id="pfChoiceInputs">
+          <label class="field"><span>①</span><input data-choice="0" type="text" /></label>
+          <label class="field"><span>②</span><input data-choice="1" type="text" /></label>
+          <label class="field"><span>③</span><input data-choice="2" type="text" /></label>
+          <label class="field"><span>④</span><input data-choice="3" type="text" /></label>
+          <label class="field"><span>⑤</span><input data-choice="4" type="text" /></label>
+        </div>
+        <label class="field"><span>정답 번호</span>
+          <select id="pfAnswerIndex">
+            <option value="0">①</option><option value="1">②</option><option value="2">③</option><option value="3">④</option><option value="4">⑤</option>
+          </select>
+        </label>
+      </div>
+      <div id="pfShortWrap" hidden>
+        <label class="field"><span>정답</span><input id="pfShortAnswer" type="text" placeholder="예) 4 또는 20 m/s" /></label>
+      </div>
+      <label class="field"><span>해설</span><textarea id="pfSolution" rows="3" placeholder="풀이 과정을 적어 두면 채점 뒤에 보여요."></textarea></label>
+      <div class="field-grid">
+        <label class="field"><span>출처 태그</span><input id="pfSource" type="text" placeholder="예) 2023 고2 학평 변형" /></label>
+        <label class="field"><span>태그 (쉼표로 구분)</span><input id="pfTags" type="text" placeholder="미분, 접선" /></label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btnProblemCancel">취소</button>
+        <button type="submit" class="btn btn-primary" id="btnProblemSave">저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ 인쇄 영역 ============ -->
+<div class="print-root" id="printRoot" aria-hidden="true"></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<button class="btn btn-primary" id="focusExit">🎯 집중 모드 종료</button>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="solve.js"></script>
+<script src="learn.js"></script>
+<script src="create.js"></script>
+</body>
+</html>
