@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.55 정식판 (화면 표시 버전은 아래 BUILD = 'v5.55')
+   muse-v5-9 game.js — v5.56 정식판 (화면 표시 버전은 아래 BUILD = 'v5.56')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -62682,7 +62682,7 @@ if (typeof module !== 'undefined' && module.exports) {
    - v5.52: 개방 13종 — 🫧 네온 버블 슈터(bubble) 전면 개편.
    - v5.53: 개방 14종 — 🦖 네온 다이노 런(dino) 전면 개편. 나머지 11종은 '🔒 준비 중'.
    - v5.54: 개방 15종 — 🧠 네온 시퀀스(simon) 전면 개편. 나머지 10종은 '🔒 준비 중'.
-   - v5.55: 개방 16종 — 🎣 타이밍 대어 낚시(fishing) 전면 개편. 나머지 9종은 '🔒 준비 중'.
+   - v5.56: 개방 17종 — 🎯 네온 다트(dart) 전면 개편. 나머지 8종은 '🔒 준비 중'.
    - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 16종은 목록 맨 앞에
      ✨ NEW · PLAYABLE 강조 카드로 배치한다.
    ========================================================================== */
@@ -62708,7 +62708,8 @@ if (typeof module !== 'undefined' && module.exports) {
   var OPEN14 = 'dino';            /* 개방 14호 (🦖 네온 다이노 런 · v5.53 개편) */
   var OPEN15 = 'simon';           /* 개방 15호 (🧠 네온 시퀀스 · v5.54 개편) */
   var OPEN16 = 'fishing';         /* 개방 16호 (🎣 타이밍 대어 낚시 · v5.55 개편) */
-  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1, mines: 1, tetris: 1, gomoku: 1, memory: 1, pong: 1, bubble: 1, dino: 1, simon: 1, fishing: 1 };
+  var OPEN17 = 'dart';            /* 개방 17호 (🎯 네온 다트 · v5.56 개편) */
+  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1, mines: 1, tetris: 1, gomoku: 1, memory: 1, pong: 1, bubble: 1, dino: 1, simon: 1, fishing: 1, dart: 1 };
   root.JW530MGLOCK = true;
   root.JW530MG_OPEN = OPEN;
   root.JW530MG_OPEN2 = OPEN2;
@@ -62726,12 +62727,13 @@ if (typeof module !== 'undefined' && module.exports) {
   root.JW530MG_OPEN14 = OPEN14;
   root.JW530MG_OPEN15 = OPEN15;
   root.JW530MG_OPEN16 = OPEN16;
+  root.JW530MG_OPEN17 = OPEN17;
   root.JW530MG_OPENS = OPENS;
 
   var doc = document;
   var $ = function (id) { return doc.getElementById(id); };
   var LOCK_MSG = '🔒 이 미니게임은 준비 중이에요';
-  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 · 🎣 타이밍 대어 낚시 16종이 열려 있어요';
+  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 · 🎣 타이밍 대어 낚시 · 🎯 네온 다트 17종이 열려 있어요';
 
   function MG() { return root.JW48MG; }
   function isLocked(id) { return !!id && !OPENS[id]; }
@@ -62846,7 +62848,13 @@ if (typeof module !== 'undefined' && module.exports) {
       '  background:linear-gradient(180deg,#a7f3f0,#22d3ee);border-color:#0e7490;color:#032630;',
       '  box-shadow:0 0 12px rgba(34,211,238,.6),0 2px 0 rgba(0,0,0,.4);}',
       '.v530new.v530new16{box-shadow:inset 0 0 0 2px rgba(34,211,238,.68),0 0 18px rgba(56,189,248,.45),0 3px 0 #05030a !important;}',
-      /* 열다섯 개방 카드의 줄서기: 15호 → 14호 → 13호 → … → 1호 → 잠금 10종 */
+      /* 17호 개방 카드 (🎯 네온 다트 · v5.56) — 로즈/크림슨 네온 */
+      '.v530new.v530new17::after{content:"🎯 NEW · PLAYABLE";',
+      '  background:linear-gradient(180deg,#ffd3dd,#fb7185);border-color:#9f1239;color:#3f0419;',
+      '  box-shadow:0 0 12px rgba(251,113,133,.6),0 2px 0 rgba(0,0,0,.4);}',
+      '.v530new.v530new17{box-shadow:inset 0 0 0 2px rgba(251,113,133,.62),0 0 18px rgba(225,29,72,.42),0 3px 0 #05030a !important;}',
+      /* 열일곱 개방 카드의 줄서기: 17호 → 16호 → 15호 → … → 1호 → 잠금 8종 */
+      '#v48mgCards .v530new.v530new17{order:-17 !important;}',
       '#v48mgCards .v530new.v530new16{order:-16 !important;}',
       '#v48mgCards .v530new.v530new15{order:-15 !important;}',
       '#v48mgCards .v530new.v530new14{order:-14 !important;}',
@@ -62863,7 +62871,7 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v48mgCards .v530new.v530new7{order:-3 !important;}',
       '#v48mgCards .v530new.v530new8{order:-2 !important;}',
       '#v48mgCards .v530new.v530new9{order:-1 !important;}',
-      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag,.v530new.v530new6 .tag,.v530new.v530new7 .tag,.v530new.v530new8 .tag,.v530new.v530new9 .tag,.v530new.v530new10 .tag,.v530new.v530new11 .tag,.v530new.v530new12 .tag,.v530new.v530new13 .tag,.v530new.v530new14 .tag,.v530new.v530new15 .tag,.v530new.v530new16 .tag{display:none !important;}',
+      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag,.v530new.v530new6 .tag,.v530new.v530new7 .tag,.v530new.v530new8 .tag,.v530new.v530new9 .tag,.v530new.v530new10 .tag,.v530new.v530new11 .tag,.v530new.v530new12 .tag,.v530new.v530new13 .tag,.v530new.v530new14 .tag,.v530new.v530new15 .tag,.v530new.v530new16 .tag,.v530new.v530new17 .tag{display:none !important;}',
       /* 잠금 안내 띠 */
       /* v5.41: flex 로 두면 글자 마디마다 칸이 생겨 세로로 쪼개진다 — block 으로 바꿔 줄바꿈만 되게 */
       '#v530MgNote{display:block;padding:6px 8px;margin:0 0 6px;border-radius:9px;',
@@ -62903,7 +62911,7 @@ if (typeof module !== 'undefined' && module.exports) {
       if (!id) return;
       if (isLocked(id)) {
         if (!el.__v530l) { el.__v530l = 1; el.classList.add('v530lock'); el.setAttribute('aria-disabled', 'true'); }
-        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); el.classList.remove('v530new8'); el.classList.remove('v530new9'); el.classList.remove('v530new10'); el.classList.remove('v530new11'); el.classList.remove('v530new12'); el.classList.remove('v530new13'); el.classList.remove('v530new14'); el.classList.remove('v530new15'); el.classList.remove('v530new16'); }
+        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new17'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); el.classList.remove('v530new8'); el.classList.remove('v530new9'); el.classList.remove('v530new10'); el.classList.remove('v530new11'); el.classList.remove('v530new12'); el.classList.remove('v530new13'); el.classList.remove('v530new14'); el.classList.remove('v530new15'); el.classList.remove('v530new16'); }
       } else {
         if (!el.__v530n) { el.__v530n = 1; el.classList.add('v530new'); el.removeAttribute('aria-disabled'); }
         if (id === OPEN && !el.classList.contains('v530new1')) el.classList.add('v530new1');
@@ -62938,6 +62946,8 @@ if (typeof module !== 'undefined' && module.exports) {
         else if (el.classList.contains('v530new15')) el.classList.remove('v530new15');
         if (id === OPEN16) { if (!el.classList.contains('v530new16')) el.classList.add('v530new16'); }
         else if (el.classList.contains('v530new16')) el.classList.remove('v530new16');
+        if (id === OPEN17) { if (!el.classList.contains('v530new17')) el.classList.add('v530new17'); }
+        else if (el.classList.contains('v530new17')) el.classList.remove('v530new17');
         if (el.__v530l) { el.__v530l = 0; el.classList.remove('v530lock'); }
       }
     });
@@ -62950,7 +62960,7 @@ if (typeof module !== 'undefined' && module.exports) {
     var sub = $('v48mgSub');
     var m = MG();
     if (sub && m && m.order) {
-      var want = '16종 플레이 가능 · ' + Math.max(0, m.order.length - 16) + '종 준비 중';
+      var want = '17종 플레이 가능 · ' + Math.max(0, m.order.length - 17) + '종 준비 중';
       if (sub.textContent !== want) sub.textContent = want;
     }
     /* 미니게임 목록 상단 안내 */
@@ -62958,7 +62968,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (hub && !$('v530MgNote')) {
       var n = doc.createElement('div');
       n.id = 'v530MgNote';
-      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> · <b>💣 스피드 지뢰찾기</b> · <b>🧱 대전 테트리스</b> · <b>⚫ 스피드 오목</b> · <b>🃏 메모리 짝 맞추기</b> · <b>🏓 하이퍼 네온 핑퐁</b> · <b>🫧 네온 버블 슈터</b> · <b>🦖 네온 다이노 런</b> · <b>🧠 네온 시퀀스</b> · <b>🎣 타이밍 대어 낚시</b> 16종을 지금 플레이할 수 있어요 · 나머지 9종은 다음 업데이트에서 순서대로 열려요';
+      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> · <b>💣 스피드 지뢰찾기</b> · <b>🧱 대전 테트리스</b> · <b>⚫ 스피드 오목</b> · <b>🃏 메모리 짝 맞추기</b> · <b>🏓 하이퍼 네온 핑퐁</b> · <b>🫧 네온 버블 슈터</b> · <b>🦖 네온 다이노 런</b> · <b>🧠 네온 시퀀스</b> · <b>🎣 타이밍 대어 낚시</b> · <b>🎯 네온 다트</b> 17종을 지금 플레이할 수 있어요 · 나머지 8종은 다음 업데이트에서 순서대로 열려요';
       hub.insertBefore(n, hub.firstChild);
     }
     /* 멀티 방 설정 안내 문구 (25종 → 1종 개방) */
@@ -62966,7 +62976,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (sList) {
       var hint = sList.previousElementSibling;
       if (hint && String(hint.className || '').indexOf('v48mg-hint') >= 0) {
-        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 · 🎣 타이밍 대어 낚시 16종이 열려 있어요 · 나머지 9종은 준비 중';
+        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 · 🎣 타이밍 대어 낚시 · 🎯 네온 다트 17종이 열려 있어요 · 나머지 8종은 준비 중';
         if (hint.textContent !== want2) hint.textContent = want2;
       }
     }
@@ -63035,9 +63045,9 @@ if (typeof module !== 'undefined' && module.exports) {
   function reorder() {
     var m = MG();
     if (!m || !m.order || !m.order.length) return;
-    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7 && m.order[7] === OPEN8 && m.order[8] === OPEN9 && m.order[9] === OPEN10 && m.order[10] === OPEN11 && m.order[11] === OPEN12 && m.order[12] === OPEN13 && m.order[13] === OPEN14 && m.order[14] === OPEN15 && m.order[15] === OPEN16) return;
+    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7 && m.order[7] === OPEN8 && m.order[8] === OPEN9 && m.order[9] === OPEN10 && m.order[10] === OPEN11 && m.order[11] === OPEN12 && m.order[12] === OPEN13 && m.order[13] === OPEN14 && m.order[14] === OPEN15 && m.order[15] === OPEN16 && m.order[16] === OPEN17) return;
     var rest = m.order.filter(function (x) { return x && !OPENS[x]; });
-    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7, OPEN8, OPEN9, OPEN10, OPEN11, OPEN12, OPEN13, OPEN14, OPEN15, OPEN16].concat(rest);
+    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7, OPEN8, OPEN9, OPEN10, OPEN11, OPEN12, OPEN13, OPEN14, OPEN15, OPEN16, OPEN17].concat(rest);
   }
 
   /* 카드가 새로 그려지는 즉시 배지를 다시 칠한다 (innerHTML 재생성 대응) */
@@ -63056,7 +63066,7 @@ if (typeof module !== 'undefined' && module.exports) {
   setTimeout(paint, 600);
   setTimeout(paint, 1600);
   setInterval(function () { try { reorder(); paint(); } catch (e) {} }, 900);
-  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7 + ', ' + OPEN8 + ', ' + OPEN9 + ', ' + OPEN10 + ', ' + OPEN11 + ', ' + OPEN12 + ', ' + OPEN13 + ', ' + OPEN14 + ', ' + OPEN15 + ', ' + OPEN16);
+  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7 + ', ' + OPEN8 + ', ' + OPEN9 + ', ' + OPEN10 + ', ' + OPEN11 + ', ' + OPEN12 + ', ' + OPEN13 + ', ' + OPEN14 + ', ' + OPEN15 + ', ' + OPEN16 + ', ' + OPEN17);
 })(window);
 
 
@@ -69538,7 +69548,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.55';
+  var BUILD = 'v5.56';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81463,7 +81473,10 @@ if (typeof module !== 'undefined' && module.exports) {
       { id: 'm_simon700', icon: '🎯', title: '네온 시퀀스 700점', desc: '한 판에서 700점 이상', need: 1, coin: 70, unit: '점', mg: 'simon' },
       /* v5.55: 🎣 타이밍 대어 낚시 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
       { id: 'm_fish1', icon: '🎣', title: '대어 낚시 1판', desc: '🎣 타이밍 대어 낚시 한 판', need: 1, coin: 50, unit: '판', mg: 'fishing' },
-      { id: 'm_fish600', icon: '🐋', title: '대어 낚시 600점', desc: '한 판에서 600점 이상', need: 1, coin: 70, unit: '점', mg: 'fishing' }
+      { id: 'm_fish600', icon: '🐋', title: '대어 낚시 600점', desc: '한 판에서 600점 이상', need: 1, coin: 70, unit: '점', mg: 'fishing' },
+      /* v5.56: 🎯 네온 다트 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
+      { id: 'm_dart1', icon: '🎯', title: '네온 다트 1판', desc: '🎯 네온 다트: 불스아이 챌린지 한 판', need: 1, coin: 50, unit: '판', mg: 'dart' },
+      { id: 'm_dart300', icon: '🎯', title: '네온 다트 300점', desc: '한 판에서 300점 이상', need: 1, coin: 70, unit: '점', mg: 'dart' }
     ]
   };
   var BY_ID = {};
@@ -81659,6 +81672,9 @@ if (typeof module !== 'undefined' && module.exports) {
         /* v5.55: 🎣 타이밍 대어 낚시 — 1판 / 600점 */
         if (mine('m_fish1')) changed = bump('m_fish1', 1) || changed;
         if (mine('m_fish600') && (Number(data.score) || 0) >= 600) changed = bump('m_fish600', 1) || changed;
+        /* v5.56: 🎯 네온 다트 — 1판 / 300점 */
+        if (mine('m_dart1')) changed = bump('m_dart1', 1) || changed;
+        if (mine('m_dart300') && (Number(data.score) || 0) >= 300) changed = bump('m_dart300', 1) || changed;
       }
       if (changed) {
         save();
@@ -86467,7 +86483,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (!s || !s.cleared || typeof s.cleared !== 'object') return 0;
     return Object.keys(s.cleared).length;
   }
-  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048', 'mines', 'tetris', 'gomoku', 'memory', 'pong', 'bubble', 'dino', 'simon', 'fishing'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46·v5.47·v5.48·v5.49·v5.50·v5.51·v5.52·v5.53·v5.54·v5.55 개방 16종 */
+  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048', 'mines', 'tetris', 'gomoku', 'memory', 'pong', 'bubble', 'dino', 'simon', 'fishing', 'dart'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46·v5.47·v5.48·v5.49·v5.50·v5.51·v5.52·v5.53·v5.54·v5.55·v5.56 개방 17종 */
   function mgCount() {
     var best = ls('jw48mg_best_v1', {}) || {};
     try { if (!best || !Object.keys(best).length) { if (root.JW48MG && root.JW48MG.best) best = root.JW48MG.best; } } catch (e) {}
@@ -86509,7 +86525,7 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'combo10',cat: '기록', ic: '🔥', name: '콤보 파이터',      desc: '최고 콤보 10 이상',           goal: 10,   coin: 40, cur: bestCombo },
     { id: 'combo25',cat: '기록', ic: '💥', name: '피버 마스터',      desc: '최고 콤보 25 이상',           goal: 25,   coin: 80, cur: bestCombo },
     { id: 'story1', cat: '기록', ic: '📖', name: '스토리 도전자',    desc: '스토리 1스테이지 클리어',      goal: 1,    coin: 50, cur: storyCount },
-    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 16종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
+    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 17종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
     { id: 'pet3',   cat: '수집', ic: '🐾', name: '펫 친구',          desc: '펫 3종 이상 보유',            goal: 3,    coin: 50, cur: petCount },
     { id: 'theme5', cat: '수집', ic: '🎨', name: '테마 컬렉터',      desc: '테마 아이템 5종 이상 보유',    goal: 5,    coin: 60, cur: themeCount },
     { id: 'check1', cat: '습관', ic: '📅', name: '개근 시작',        desc: '총 출석 1일 이상',            goal: 1,    coin: 30, cur: checkinDays }
@@ -101862,6 +101878,1171 @@ if (typeof module !== 'undefined' && module.exports) {
       return { id: f.id, name: f.name, e: f.e, s: f.s, fight: f.fight, w: f.w.slice(), col: f.col };
     }),
     tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
+    daily: function () { return loadDaily(); },
+    state: function () {
+      var c = MG.cur;
+      if (!c || c.id !== ID || !c.inst || !c.inst.state) return null;
+      return c.inst.state();
+    }
+  };
+})(window);
+
+
+/* ===== v556 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.56 : 🎯 네온 다트 — 불스아이 챌린지 — 미니게임 17호 ('dart' 슬롯 전면 개편)
+   --------------------------------------------------------------------------
+   v4.8 프로토타입('딱 한 번 점프 다트' · 각도/파워 게이지)은 지우지 않고 그 위에 덮어쓴다.
+   같은 'dart' 슬롯을 쓰므로 기록·봇 대전·방 대전·같은 시드가 그대로 호환된다.
+
+   · 다트판 : 표준 시계방향 20섹터(20-1-18-4-13-6-10-15-2-17-3-19-7-16-8-11-14-9-12-5),
+              더블 링(×2) · 트리플 링(×3) · 아우터 불(25) · 이너 불스아이(50).
+              네온 다크 아케이드 배색 + 꽂힌 다트 핀 표시.
+   · 조작   : 2단 정밀 조준 — ① 세로선이 좌우 왕복할 때 탭 → X 고정
+              ② 가로선이 상하 왕복할 때 탭 → Y 고정 후 즉시 발사.
+              캔버스 아무 곳이나 탭 · 하단 큰 [🎯 조준 고정 / 발사] 버튼 · Space/Enter.
+   · 승부   : 총 9발 = 3라운드 × 3발. 라운드 2·3에는 바람(→/← · 풍속)이 불어
+              착탄점이 살짝 밀린다.
+   · 보너스 : 이너 불스아이 명중 🎯 BULLSEYE! +50,
+              한 라운드 3발 모두 트리플/불(25·50)이면 🔥 HAT TRICK +150.
+   · 연동   : 스킨 색 → 조준선·다트 몸통·히트 스파크, 꼬리 잔상 색 → 다트 궤적·날개·링.
+              펫 코인 🥇+35(350점~) / 🥈+20(200점~) / 🥉+10 (하루 상한 60, 'jw556_dart').
+              🎯 오늘의 미션 '네온 다트 1판(+50)' · '네온 다트 300점(+70)'.
+              🏆 업적 '미니게임 올라운더'도 개방 17종 기준으로 센다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var MG = root.JW48MG, V = root.JW43;
+  if (!MG || !V) return;
+
+  var ID = 'dart';
+  var W = 360, H = 600, HUDH = 44;
+  var DAILY_CAP = 60;
+  var KEY = 'jw556_dart';
+  var NDART = 9, PER_ROUND = 3;
+  var CX = 180, CY = 298, R = 124, AIM_R = R + 10;
+  var BTN_Y = 498, BTN_H = 64;
+  var THROW_T = 0.17, SETTLE_T = 0.9;
+  var CHIP_Y = 446, CHIP_H = 34;
+  var SECT = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
+  var GM = { bull: 0.072, obull: 0.172, tri0: 0.560, tri1: 0.642, dbl0: 0.918 };
+  var ROSE = '#fb7185', CYAN = '#22d3ee';
+
+  var TIERS = [
+    { s: 350, coin: 35, name: '🥇 GOLD', col: '#fde047' },
+    { s: 200, coin: 20, name: '🥈 SILVER', col: '#e2e8f0' },
+    { s: 0, coin: 10, name: '🥉 BRONZE', col: '#fdba74' }
+  ];
+
+  /* 스킨별 네온 색 (낚시·시퀀스·다이노와 같은 표) */
+  var SKINCOL = {
+    jaeu: '#5eead4', cat: '#fb923c', frog: '#4ade80', robot: '#38bdf8', ghost: '#c4b5fd',
+    rabbit: '#f9a8d4', panda: '#e2e8f0', fox: '#fb923c', demon: '#f87171', alien: '#a3e635',
+    wizard: '#a78bfa', knight: '#fbbf24'
+  };
+
+  var A = MG.arts({});
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function r2(v) { return Math.round(v * 100) / 100; }
+  function tone(f, d, v, t, f2) { try { V.beep(f, d || 0.05, v || 0.08, t || 'square', f2 || null); } catch (e) {} }
+  function seq(list, step, vol, dur, type) {
+    for (var i = 0; i < list.length; i++) (function (i) {
+      setTimeout(function () { tone(list[i], dur || 0.1, vol || 0.08, type || 'sine', null); }, i * step);
+    })(i);
+  }
+  function hex2rgb(h) {
+    h = String(h || '#22d3ee').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return [parseInt(h.slice(0, 2), 16) || 0, parseInt(h.slice(2, 4), 16) || 0, parseInt(h.slice(4, 6), 16) || 0];
+  }
+  function rgba(h, a) { var c = hex2rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function mixHex(a, b, t) {
+    var x = hex2rgb(a), y = hex2rgb(b);
+    var f = function (i) { return Math.round(x[i] + (y[i] - x[i]) * t); };
+    var s = function (n) { n = clamp(n, 0, 255); return (n < 16 ? '0' : '') + n.toString(16); };
+    return '#' + s(f(0)) + s(f(1)) + s(f(2));
+  }
+
+  /* ---------------------------------------------------------------- 저장 */
+  function lsGet(k, d) { try { return V.lsGet(k, d); } catch (e) { return d; } }
+  function lsSet(k, v) { try { V.lsSet(k, v); } catch (e) {} }
+  function dayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function loadDaily() {
+    var s = lsGet(KEY, null);
+    if (!s || typeof s !== 'object') s = { d: '', c: 0 };
+    if (typeof s.c !== 'number' || !isFinite(s.c) || s.c < 0) s.c = 0;
+    return s;
+  }
+  function addCoins(n) {
+    n = Math.round(Number(n) || 0);
+    if (n <= 0) return true;
+    try {
+      if (root.JW529 && root.JW529.addCoins) { root.JW529.addCoins(n); return true; }
+      if (root.JW529 && root.JW529.coins && root.JW529.st) {
+        root.JW529.coins((Number(root.JW529.st().coins) || 0) + n);
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  function tierOf(score) {
+    for (var i = 0; i < TIERS.length; i++) if (score >= TIERS[i].s) return TIERS[i];
+    return TIERS[TIERS.length - 1];
+  }
+  function grantCoins(score) {
+    var want = tierOf(score).coin;
+    var d = loadDaily();
+    var used = d.d === dayKey() ? d.c : 0;
+    var left = Math.max(0, DAILY_CAP - used);
+    var gain = Math.min(want, left);
+    var ok = true;
+    if (gain > 0) {
+      if (!addCoins(gain)) { gain = 0; ok = false; }
+      else lsSet(KEY, { d: dayKey(), c: used + gain });
+    }
+    return { gain: gain, want: want, used: used + gain, cap: DAILY_CAP, fail: !ok };
+  }
+
+  /* ---------------------------------------------------------------- 판정 기하 */
+  /* 중심 기준 px 오프셋(dx,dy) → {kind, sector, mult, pts} */
+  function judgeAt(dx, dy) {
+    var d = Math.sqrt(dx * dx + dy * dy);
+    if (!isFinite(d) || d > R) return { kind: 'miss', sector: 0, mult: 0, pts: 0, label: 'MISS' };
+    if (d <= R * GM.bull) return { kind: 'bull', sector: 50, mult: 1, pts: 50, label: 'BULL 50' };
+    if (d <= R * GM.obull) return { kind: 'obull', sector: 25, mult: 1, pts: 25, label: 'OUT BULL 25' };
+    var deg = (Math.atan2(dy, dx) * 180 / Math.PI + 90 + 720) % 360;      /* 위=0 · 시계방향 */
+    var idx = Math.floor((deg + 9) / 18) % 20;
+    if (idx < 0) idx += 20;
+    var num = SECT[idx];
+    if (d >= R * GM.tri0 && d <= R * GM.tri1) return { kind: 'triple', sector: num, mult: 3, pts: num * 3, label: 'T' + num + ' ' + (num * 3) };
+    if (d >= R * GM.dbl0) return { kind: 'double', sector: num, mult: 2, pts: num * 2, label: 'D' + num + ' ' + (num * 2) };
+    return { kind: 'single', sector: num, mult: 1, pts: num, label: 'S' + num + ' ' + num };
+  }
+
+  /* ---------------------------------------------------------------- 게임 본체 */
+  function create(a) {
+    var RND = a.rng || Math.random;
+    var MR = Math.random;
+
+    var S = {
+      ready: true, over: false, done: false, win: null,
+      t: 0,
+      phase: 'aimX',                      /* aimX | aimY | throw | settle | over */
+      round: 1, dart: 0, dartInRound: 0,
+      score: 0, basePts: 0, bonusPts: 0,
+      bullN: 0, hatN: 0, triples: 0,
+      aimP: 0, aimV: 1, aimSpd: 1.42,
+      lockX: 0, lockY: 0,
+      windDir: 0, windPow: 0,
+      throwT: 0, settleT: 0, shakeT: 0,
+      pins: [], roundHits: [], hats: [],
+      lastHit: null, lastGain: 0,
+      impact: null, flight: null,
+      sparks: [], rings: [], texts: [],
+      msg: '', msgT: 0, msgCol: '#a5f3fc',
+      banner: '', bannerSub: '', bannerT: 0, bannerCol: CYAN, bannerAt: 96,
+      flash: 0, flashCol: '#ffffff', shake: 0,
+      overWhy: '', overT: 0,
+      coinGain: 0, coinUsed: 0, coinTier: null,
+      skinCol: '#5eead4', trailCol: '#5eead4',
+      botTarget: 0, stars: []
+    };
+
+    /* -------------------------------------------------------------- 색 */
+    function skinColor() {
+      var id = '';
+      try { var st = V.st(); id = (st && st.me && st.me.skin) || ''; } catch (e) {}
+      return SKINCOL[id] || '#5eead4';
+    }
+    function trailColor() {
+      var col = null;
+      try {
+        var st = root.JW529 && root.JW529.st ? root.JW529.st() : null;
+        var id = (st && st.trail) || '';
+        if (id && id !== 't_cloud' && id !== 'none') {
+          var list = (root.JW529.trails || []);
+          for (var i = 0; i < list.length; i++) if (list[i].id === id) col = list[i].col || null;
+        }
+      } catch (e) {}
+      return col;
+    }
+    function refreshColors() {
+      S.skinCol = skinColor();
+      S.trailCol = trailColor() || S.skinCol;
+    }
+
+    /* -------------------------------------------------------------- 연출 */
+    function burst(x, y, n, col, spd) {
+      for (var i = 0; i < n; i++) {
+        if (S.sparks.length > 150) break;
+        var ang = MR() * 6.283;
+        var v = (spd || 150) * (0.3 + MR());
+        S.sparks.push({
+          x: x, y: y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v - 30,
+          life: 0.28 + MR() * 0.4, max: 0.68, c: col, s: MR() < 0.4 ? 3 : 1.8
+        });
+      }
+    }
+    function ring(x, y, col, rad, spd) {
+      S.rings.push({ x: x, y: y, r: rad || 8, life: 0.5, max: 0.5, c: col, spd: spd || 170 });
+    }
+    function say(t, col) { S.msg = t; S.msgT = 1.8; S.msgCol = col || '#a5f3fc'; }
+    function banner(t, sub, col, dur, at) {
+      S.banner = t; S.bannerSub = sub || ''; S.bannerCol = col || CYAN;
+      S.bannerT = dur || 1.1; S.bannerAt = at || 96;
+    }
+    function addText(x, y, txt, col) { S.texts.push({ x: x, y: y, txt: txt, c: col || '#fde047', t: 0, dur: 0.95 }); }
+    function shake(v) { S.shake = Math.max(S.shake, v); }
+
+    /* -------------------------------------------------------------- 점수 */
+    function recompute() {
+      S.score = Math.round(S.basePts + S.bonusPts);
+      a.setScore(S.score);
+    }
+
+    /* -------------------------------------------------------------- 바람 */
+    function rollWind(round) {
+      if (round <= 1) { S.windDir = 0; S.windPow = 0; return; }
+      S.windDir = RND() < 0.5 ? -1 : 1;
+      S.windPow = round === 2 ? (1 + Math.floor(RND() * 4)) : (2 + Math.floor(RND() * 5));
+    }
+    function windPx() { return S.windDir * S.windPow * 2.4; }
+    function windText() {
+      if (!S.windPow) return '무풍';
+      return (S.windDir > 0 ? '→' : '←') + ' ' + S.windPow;
+    }
+
+    /* -------------------------------------------------------------- 시작 */
+    function reset() {
+      S.ready = true; S.over = false; S.done = false; S.win = null;
+      S.t = 0;
+      S.phase = 'aimX'; S.round = 1; S.dart = 0; S.dartInRound = 0;
+      S.score = 0; S.basePts = 0; S.bonusPts = 0;
+      S.bullN = 0; S.hatN = 0; S.triples = 0;
+      S.aimP = -1; S.aimV = 1; S.aimSpd = 1.42;
+      S.lockX = 0; S.lockY = 0;
+      S.windDir = 0; S.windPow = 0;
+      S.throwT = 0; S.settleT = 0;
+      S.pins = []; S.roundHits = []; S.hats = [];
+      S.lastHit = null; S.lastGain = 0;
+      S.impact = null; S.flight = null;
+      S.sparks = []; S.rings = []; S.texts = [];
+      S.msg = ''; S.msgT = 0;
+      S.banner = ''; S.bannerSub = ''; S.bannerT = 0;
+      S.flash = 0; S.shake = 0; S.overWhy = ''; S.overT = 0;
+      S.coinGain = 0; S.coinUsed = 0; S.coinTier = null;
+      refreshColors();
+      S.stars = [];
+      for (var i = 0; i < 26; i++) {
+        S.stars.push({ x: RND() * W, y: HUDH + RND() * (H - HUDH), r: 0.5 + RND() * 1.2, ph: RND() * 6.283, spd: 0.3 + RND() * 0.8 });
+      }
+      rollWind(1);
+      S.botTarget = a.bot ? Math.round(190 + RND() * 230) : 0;
+      a.vsLine(a.bot ? '🤖 봇 ' + S.botTarget + '점' : '');
+      a.setScore(0); a.setStatus(''); a.setTime(null);
+    }
+
+    function begin() {
+      if (!S.ready) return;
+      S.ready = false;
+      S.t = 0;
+      S.phase = 'aimX';
+      S.dart = 0; S.dartInRound = 0; S.round = 1;
+      S.aimP = -1; S.aimV = 1; S.aimSpd = 1.42;
+      refreshColors();
+      rollWind(1);
+      banner('🎯 네온 다트!', '세로선 → X 고정 · 가로선 → 발사 · 9발', CYAN, 1.5, 92);
+      seq([523, 659, 784], 70, 0.09, 0.12, 'triangle');
+    }
+
+    /* -------------------------------------------------------------- 발사 */
+    function lockX() {
+      if (S.phase !== 'aimX') return;
+      S.lockX = S.aimP;
+      S.phase = 'aimY';
+      S.aimP = MR() < 0.5 ? -1 : 1;
+      S.aimV = S.aimP < 0 ? 1 : -1;
+      tone(660, 0.05, 0.07, 'square', 880);
+      addText(CX + S.lockX * AIM_R, CY - R - 26, 'X ✓', S.skinCol);
+    }
+    function fire() {
+      if (S.phase !== 'aimY') return;
+      S.lockY = S.aimP;
+      S.phase = 'throw';
+      S.throwT = 0;
+      S.impact = {
+        x: CX + S.lockX * AIM_R + windPx(),
+        y: CY + S.lockY * AIM_R
+      };
+      S.flight = { x0: CX, y0: 486 };
+      tone(420, 0.06, 0.08, 'square', 300);
+    }
+
+    /* 착탄 판정 + 점수 */
+    function resolve() {
+      var p = S.impact || { x: CX, y: CY };
+      var hit = judgeAt(p.x - CX, p.y - CY);
+      S.lastHit = hit;
+      var col = hit.kind === 'miss' ? '#64748b'
+        : hit.kind === 'bull' ? ROSE
+        : hit.kind === 'obull' ? '#f472b6'
+        : hit.kind === 'triple' ? S.trailCol : S.skinCol;
+
+      var gain = hit.pts;
+      S.basePts += gain;
+      var bonus = 0;
+      var tag = '';
+
+      if (hit.kind === 'bull') {
+        bonus += 50;
+        S.bullN++;
+        tag = '🎯 BULLSEYE! +50';
+        banner('🎯 BULLSEYE! +50', '이너 불스아이 명중 · 50점 + 보너스 50', ROSE, 1.25, 96);
+        burst(p.x, p.y, 26, ROSE, 250);
+        burst(p.x, p.y, 14, S.trailCol, 190);
+        ring(p.x, p.y, ROSE, 10, 260);
+        seq([1046, 1318, 1568, 2093], 55, 0.1, 0.1, 'square');
+        shake(6);
+        S.flash = 0.34; S.flashCol = ROSE;
+      } else if (hit.kind === 'obull') {
+        tag = '아우터 불 25';
+        burst(p.x, p.y, 14, '#f472b6', 200);
+        ring(p.x, p.y, '#f472b6', 8, 210);
+        seq([880, 1174], 55, 0.09, 0.1, 'square');
+        shake(3);
+      } else if (hit.kind === 'triple') {
+        S.triples++;
+        tag = '트리플 ×3';
+        burst(p.x, p.y, 18, S.trailCol, 220);
+        ring(p.x, p.y, S.skinCol, 8, 220);
+        seq([784, 1046], 55, 0.09, 0.1, 'square');
+        shake(4);
+      } else if (hit.kind === 'double') {
+        tag = '더블 ×2';
+        burst(p.x, p.y, 13, S.skinCol, 190);
+        ring(p.x, p.y, S.trailCol, 7, 200);
+        seq([700, 932], 55, 0.08, 0.1, 'square');
+        shake(3);
+      } else if (hit.kind === 'single') {
+        burst(p.x, p.y, 8, S.skinCol, 150);
+        ring(p.x, p.y, S.skinCol, 6, 170);
+        tone(520, 0.07, 0.07, 'triangle', 660);
+      } else {
+        tag = '빗나감';
+        burst(p.x, p.y, 8, '#64748b', 120);
+        tone(200, 0.16, 0.08, 'sawtooth', 140);
+        say('💨 판 밖으로 — 조준을 조금 안쪽으로', '#fca5a5');
+      }
+
+      S.roundHits.push({
+        label: hit.label, pts: hit.pts, kind: hit.kind,
+        col: col, tag: tag
+      });
+      S.pins.push({ x: p.x, y: p.y, col: col, kind: hit.kind });
+
+      /* 한 라운드 3발 = 트리플/불(25·50) 뿐이면 HAT TRICK */
+      if (S.roundHits.length === PER_ROUND) {
+        var all = true;
+        for (var i = 0; i < S.roundHits.length; i++) {
+          var k = S.roundHits[i].kind;
+          if (!(k === 'triple' || k === 'bull' || k === 'obull')) all = false;
+        }
+        if (all) {
+          bonus += 150;
+          S.hatN++;
+          tag = '🔥 HAT TRICK +150';
+          banner('🔥 HAT TRICK +150!', '라운드 3발 모두 트리플·불 명중', '#fbbf24', 1.5, 96);
+          burst(CX, CY, 30, '#fbbf24', 280);
+          ring(CX, CY, '#fde047', 16, 320);
+          seq([784, 1046, 1318, 1568, 2093], 55, 0.1, 0.11, 'square');
+          shake(8);
+          S.flash = 0.4; S.flashCol = '#fde047';
+        }
+      }
+
+      if (bonus) S.bonusPts += bonus;
+      S.lastGain = gain + bonus;
+      recompute();
+      addText(p.x, p.y - 20, '+' + S.lastGain, bonus ? '#fde047' : col);
+      a.setStatus('+' + S.lastGain);
+      if (!S.bannerT) {
+        var ttl = hit.kind === 'miss' ? '😵 빗나감'
+          : hit.kind === 'bull' ? '🎯 불스아이 50'
+          : hit.kind === 'obull' ? '아우터 불 25'
+          : hit.kind === 'triple' ? '트리플 ' + hit.sector + ' × 3'
+          : hit.kind === 'double' ? '더블 ' + hit.sector + ' × 2'
+          : hit.sector + '점';
+        banner(ttl, '이번 발 +' + S.lastGain + '점 · ' + (S.dart + 1) + '/9발', col, 0.9, 96);
+      }
+      S.phase = 'settle';
+      S.settleT = 0;
+    }
+
+    function newRound() {
+      S.round++;
+      S.dartInRound = 0;
+      S.roundHits = [];
+      S.pins = [];
+      rollWind(S.round);
+      S.aimSpd = clamp(1.42 + 0.14 * (S.round - 1), 1.42, 1.9);
+      S.phase = 'aimX';
+      S.aimP = -1; S.aimV = 1;
+      banner('ROUND ' + S.round + (S.windPow ? ' · 바람 ' + windText() : ''),
+        S.windPow ? '바람이 착탄점을 밀어요 — 보정해서 던지세요' : '3발 더 · 트리플·불로 HAT TRICK 노려요',
+        S.windPow ? '#fbbf24' : CYAN, 1.35, 96);
+      seq([523, 698, 880], 65, 0.09, 0.11, 'triangle');
+    }
+
+    function afterSettle() {
+      S.dart++;
+      S.dartInRound++;
+      if (S.dart >= NDART) { finishNow('done'); return; }
+      if (S.dartInRound >= PER_ROUND) { newRound(); return; }
+      S.phase = 'aimX';
+      S.aimP = -1; S.aimV = 1;
+      S.aimSpd = clamp(1.42 + 0.04 * S.dart, 1.42, 1.78);
+    }
+
+    /* -------------------------------------------------------------- 끝 */
+    function finishNow(why) {
+      if (S.done) return;
+      S.done = true; S.over = true;
+      S.overWhy = why || 'done';
+      S.overT = 0;
+      S.phase = 'over';
+      S.score = Math.round(S.basePts + S.bonusPts);
+      S.win = a.bot ? (S.score >= S.botTarget) : null;
+      var t = tierOf(S.score);
+      S.coinTier = t;
+      var g = grantCoins(S.score);
+      S.coinGain = g.gain; S.coinUsed = g.used;
+      a.setScore(S.score);
+      seq([523, 466, 392, 311], 70, 0.09, 0.14, 'triangle');
+      var note = [];
+      note.push('🎯 9발 완료 · 트리플 ' + S.triples + ' · 불스아이 ' + S.bullN + (S.hatN ? ' · HAT TRICK ' + S.hatN : ''));
+      note.push('다트 ' + Math.round(S.basePts) + ' + 보너스 ' + Math.round(S.bonusPts) + ' = ' + S.score);
+      if (a.bot) note.push('🤖 봇 ' + S.botTarget + '점 · ' + (S.score >= S.botTarget ? '승리!' : '패배'));
+      if (g.fail) note.push('🪙 펫 코인 저장소를 찾지 못했어요');
+      else if (g.gain > 0) note.push(t.name + ' · 🪙 펫 코인 +' + g.gain + ' (오늘 ' + g.used + '/' + g.cap + ')');
+      else note.push(t.name + ' · 🪙 오늘 코인 상한(' + g.cap + ')을 다 받았어요');
+      a.over(S.win, note.join('\n'));
+    }
+
+    /* -------------------------------------------------------------- 업데이트 */
+    function stepFx(dt) {
+      var i;
+      for (i = S.sparks.length - 1; i >= 0; i--) {
+        var sp = S.sparks[i];
+        sp.life -= dt;
+        if (sp.life <= 0) { S.sparks.splice(i, 1); continue; }
+        sp.vy += 300 * dt;
+        sp.x += sp.vx * dt;
+        sp.y += sp.vy * dt;
+      }
+      for (i = S.rings.length - 1; i >= 0; i--) {
+        var rg = S.rings[i];
+        rg.life -= dt;
+        if (rg.life <= 0) { S.rings.splice(i, 1); continue; }
+        rg.r += (rg.spd || 170) * dt;
+      }
+      for (i = S.texts.length - 1; i >= 0; i--) {
+        var tx = S.texts[i];
+        tx.t += dt;
+        if (tx.t >= tx.dur) S.texts.splice(i, 1);
+      }
+      for (i = 0; i < S.stars.length; i++) {
+        var st = S.stars[i];
+        st.y -= st.spd * 4 * dt;
+        if (st.y < HUDH) { st.y = H; st.x = MR() * W; }
+      }
+      if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 2.4);
+      if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 26);
+      if (S.msgT > 0) S.msgT = Math.max(0, S.msgT - dt);
+      if (S.bannerT > 0) S.bannerT = Math.max(0, S.bannerT - dt);
+    }
+
+    function update(dt) {
+      S.t += dt;
+      stepFx(dt);
+      if (S.ready) return;
+      if (S.over) { S.overT += dt; return; }
+
+      if (S.phase === 'aimX' || S.phase === 'aimY') {
+        S.aimP += S.aimV * S.aimSpd * dt;
+        if (S.aimP >= 1) { S.aimP = 1; S.aimV = -1; tone(880, 0.02, 0.02, 'sine', null); }
+        if (S.aimP <= -1) { S.aimP = -1; S.aimV = 1; tone(880, 0.02, 0.02, 'sine', null); }
+        return;
+      }
+      if (S.phase === 'throw') {
+        S.throwT += dt;
+        if (S.throwT >= THROW_T) resolve();
+        return;
+      }
+      if (S.phase === 'settle') {
+        S.settleT += dt;
+        if (S.settleT >= SETTLE_T) afterSettle();
+        return;
+      }
+    }
+
+    /* -------------------------------------------------------------- 입력 */
+    function act() {
+      if (S.ready) { begin(); return; }
+      if (S.over) return;
+      if (S.phase === 'aimX') { lockX(); return; }
+      if (S.phase === 'aimY') { fire(); return; }
+      if (S.phase === 'throw' || S.phase === 'settle') {
+        if (S.msgT <= 0) say('잠깐만요 · 다트가 날아가는 중', '#93a4c4');
+        return;
+      }
+    }
+
+    var api = {
+      start: reset,
+      stop: function () { S.done = true; S.over = true; },
+      begin: begin,
+      update: update,
+
+      pointer: function (e) {
+        if (!e) return;
+        /* 셸이 캔버스 버튼을 먼저 처리하므로, 여기서는 버튼 밖 탭만 받는다 */
+        if (e.type === 'up' && !e.moved) act();
+      },
+
+      key: function (k, down, ev) {
+        if (ev && window.__jwTypingTarget && window.__jwTypingTarget(ev)) return;
+        if (!down) return;
+        if (ev && ev.repeat) return;
+        if (k === 'space' || k === 'enter' || k === 'up') act();
+      },
+
+      draw: function (g) {
+        drawBg(g);
+        var shk = S.shake;
+        if (shk > 0) {
+          g.save();
+          g.translate((MR() - 0.5) * shk, (MR() - 0.5) * shk * 0.7);
+        }
+        drawBoard(g);
+        drawPins(g);
+        drawAim(g);
+        drawFlight(g);
+        drawFx(g);
+        if (shk > 0) g.restore();
+        drawHud(g);
+        drawTop(g);
+        drawChips(g);
+        drawButton(g);
+        drawMessages(g);
+        if (S.flash > 0) {
+          g.fillStyle = rgba(S.flashCol, S.flash * 0.22);
+          g.fillRect(0, 0, W, H);
+        }
+        if (S.ready) drawReady(g);
+        else if (S.over) {
+          g.globalAlpha = Math.min(1, 0.16 + S.overT * 0.2);
+          g.fillStyle = '#03060e';
+          g.fillRect(0, 0, W, H);
+          g.globalAlpha = 1;
+        }
+      },
+
+      /* 테스트/검증용 */
+      state: function () {
+        return {
+          ready: S.ready, over: S.over, done: S.done, win: S.win,
+          phase: S.phase, overWhy: S.overWhy,
+          t: r2(S.t), time: r2(S.t),
+          round: S.round, dart: S.dart, dartInRound: S.dartInRound,
+          score: S.score, basePts: Math.round(S.basePts), bonusPts: Math.round(S.bonusPts),
+          bullN: S.bullN, hatN: S.hatN, triples: S.triples,
+          aimP: r2(S.aimP), aimV: S.aimV, aimSpd: r2(S.aimSpd),
+          lockX: r2(S.lockX), lockY: r2(S.lockY),
+          windDir: S.windDir, windPow: S.windPow, windPx: r2(windPx()),
+          pins: S.pins.length,
+          roundHits: S.roundHits.map(function (h) { return { label: h.label, pts: h.pts, kind: h.kind }; }),
+          lastHit: S.lastHit ? { kind: S.lastHit.kind, sector: S.lastHit.sector, mult: S.lastHit.mult, pts: S.lastHit.pts, label: S.lastHit.label } : null,
+          lastGain: S.lastGain,
+          impact: S.impact ? { x: r2(S.impact.x), y: r2(S.impact.y) } : null,
+          coinGain: S.coinGain, coinUsed: S.coinUsed, botTarget: S.botTarget,
+          banner: S.banner, msg: S.msg,
+          skinCol: S.skinCol, trailCol: S.trailCol
+        };
+      }
+    };
+
+    /* -------------------------------------------------------------- 검증 훅 (QA 전용) */
+    try {
+      if (/(^|[?&])qa=/.test(String((root.location && root.location.search) || ''))) {
+        api.__qa = {
+          begin: function () { begin(); return api.state(); },
+          state: function () { return api.state(); },
+          tick: function (dt) { api.update(dt == null ? 0.016 : dt); return api.state(); },
+          ticks: function (n, dt) { for (var i = 0; i < (n | 0); i++) api.update(dt == null ? 0.016 : dt); return api.state(); },
+          judge: function (dx, dy) { return judgeAt(Number(dx) || 0, Number(dy) || 0); },
+          R: function () { return R; },
+          setAim: function (v) { S.aimP = clamp(Number(v) || 0, -1, 1); return api.state(); },
+          lockX: function (v) { if (v != null) S.aimP = clamp(Number(v), -1, 1); lockX(); return api.state(); },
+          fire: function (v) { if (v != null) S.aimP = clamp(Number(v), -1, 1); fire(); return api.state(); },
+          /* 두 축을 한 번에 고정하고 착탄까지 즉시 처리 */
+          throwAt: function (nx, ny) {
+            S.phase = 'aimX'; S.aimP = clamp(Number(nx) || 0, -1, 1); lockX();
+            S.aimP = clamp(Number(ny) || 0, -1, 1); fire();
+            S.throwT = THROW_T; resolve();
+            return api.state();
+          },
+          setWind: function (dir, pow) { S.windDir = Number(dir) || 0; S.windPow = Math.max(0, Number(pow) || 0); return api.state(); },
+          setRound: function (r, wind) { S.round = Math.max(1, Math.min(3, Number(r) || 1)); rollWind(S.round); if (wind) { S.windDir = wind[0]; S.windPow = wind[1]; } return api.state(); },
+          settleNow: function () { S.phase = 'settle'; S.settleT = SETTLE_T; afterSettle(); return api.state(); },
+          finish: function (why) { finishNow(why || 'done'); return api.state(); },
+          score: function (n) { S.basePts = Number(n) || 0; recompute(); return api.state(); }
+        };
+      }
+    } catch (e) {}
+
+    /* -------------------------------------------------------------- 그리기 : 배경 */
+    function drawBg(g) {
+      g.fillStyle = '#05070f';
+      g.fillRect(0, 0, W, H);
+      var bg = g.createRadialGradient(CX, CY, 30, CX, CY, 320);
+      bg.addColorStop(0, '#0c1728');
+      bg.addColorStop(0.55, '#080d18');
+      bg.addColorStop(1, '#04060c');
+      g.fillStyle = bg;
+      g.fillRect(0, HUDH, W, H - HUDH);
+
+      /* 별·먼지 */
+      for (var i = 0; i < S.stars.length; i++) {
+        var st = S.stars[i];
+        var tw = 0.35 + 0.45 * (0.5 + 0.5 * Math.sin(S.t * st.spd * 2 + st.ph));
+        g.fillStyle = rgba('#93c5fd', 0.16 * tw);
+        g.beginPath();
+        g.arc(st.x, st.y, st.r, 0, 6.283);
+        g.fill();
+      }
+      /* 바닥 그리드 */
+      g.strokeStyle = 'rgba(56,189,248,.06)';
+      g.lineWidth = 1;
+      for (var gy = 500; gy < H; gy += 22) {
+        g.beginPath(); g.moveTo(0, gy); g.lineTo(W, gy); g.stroke();
+      }
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 다트판 */
+    function annulus(g, r0, r1, a0, a1) {
+      g.beginPath();
+      g.arc(CX, CY, r1, a0, a1, false);
+      g.arc(CX, CY, r0, a1, a0, true);
+      g.closePath();
+    }
+
+    function drawBoard(g) {
+      var i;
+      /* 바깥 후광 */
+      g.save();
+      g.shadowColor = rgba(S.trailCol, 0.5);
+      g.shadowBlur = 20;
+      g.beginPath();
+      g.arc(CX, CY, R + 2, 0, 6.283);
+      g.fillStyle = '#060a14';
+      g.fill();
+      g.restore();
+
+      for (i = 0; i < 20; i++) {
+        var a0 = (i * 18 - 9 - 90) * Math.PI / 180;
+        var a1 = a0 + 18 * Math.PI / 180;
+        /* 기본 섹터 */
+        g.beginPath();
+        g.arc(CX, CY, R * GM.dbl0, a0, a1, false);
+        g.lineTo(CX, CY);
+        g.closePath();
+        g.fillStyle = i % 2 ? '#08111f' : '#0d1c2e';
+        g.fill();
+        /* 트리플 링 */
+        annulus(g, R * GM.tri0, R * GM.tri1, a0, a1);
+        g.fillStyle = i % 2 ? 'rgba(251,113,133,.80)' : 'rgba(34,211,238,.74)';
+        g.fill();
+        /* 더블 링 */
+        annulus(g, R * GM.dbl0, R, a0, a1);
+        g.fillStyle = i % 2 ? 'rgba(251,113,133,.90)' : 'rgba(34,211,238,.84)';
+        g.fill();
+      }
+
+      /* 섹터 경계선 */
+      g.strokeStyle = 'rgba(148,163,184,.16)';
+      g.lineWidth = 0.8;
+      for (i = 0; i < 20; i++) {
+        var ang = (i * 18 - 9 - 90) * Math.PI / 180;
+        g.beginPath();
+        g.moveTo(CX + Math.cos(ang) * R * GM.obull, CY + Math.sin(ang) * R * GM.obull);
+        g.lineTo(CX + Math.cos(ang) * R, CY + Math.sin(ang) * R);
+        g.stroke();
+      }
+      /* 링 경계 */
+      g.strokeStyle = 'rgba(226,232,240,.22)';
+      g.lineWidth = 1;
+      [GM.dbl0, GM.tri1, GM.tri0, GM.obull].forEach(function (f) {
+        g.beginPath();
+        g.arc(CX, CY, R * f, 0, 6.283);
+        g.stroke();
+      });
+
+      /* 아우터 불 */
+      g.beginPath();
+      g.arc(CX, CY, R * GM.obull, 0, 6.283);
+      g.fillStyle = 'rgba(34,211,238,.16)';
+      g.fill();
+      g.strokeStyle = rgba(CYAN, 0.55);
+      g.lineWidth = 1;
+      g.stroke();
+      /* 이너 불스아이 */
+      g.save();
+      g.shadowColor = ROSE;
+      g.shadowBlur = 12;
+      g.beginPath();
+      g.arc(CX, CY, R * GM.bull, 0, 6.283);
+      g.fillStyle = ROSE;
+      g.fill();
+      g.restore();
+
+      /* 섹터 숫자 */
+      for (i = 0; i < 20; i++) {
+        var d = i * 18;
+        var rad = (-90 + d) * Math.PI / 180;
+        var nx = CX + Math.cos(rad) * (R + 14);
+        var ny = CY + Math.sin(rad) * (R + 14);
+        var big = (d % 36 === 0);
+        A.text(g, String(SECT[i]), nx, ny + 3.2, {
+          size: big ? 9.5 : 8, color: big ? '#e2e8f0' : '#64748b', align: 'center'
+        });
+      }
+
+      /* 중앙 조준 십자 (은은하게) */
+      g.strokeStyle = 'rgba(148,163,184,.10)';
+      g.lineWidth = 1;
+      g.beginPath(); g.moveTo(CX - R, CY); g.lineTo(CX + R, CY); g.stroke();
+      g.beginPath(); g.moveTo(CX, CY - R); g.lineTo(CX, CY + R); g.stroke();
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 꽂힌 핀 */
+    function drawDartAt(g, x, y, sc, col, col2, alpha) {
+      var L = 24 * (sc || 1);
+      var ang = -0.66;
+      var ex = x + Math.cos(ang) * L;
+      var ey = y + Math.sin(ang) * L;
+      g.save();
+      g.globalAlpha = alpha == null ? 1 : alpha;
+      /* 몸통 */
+      g.strokeStyle = col;
+      g.lineWidth = 2.8 * (sc || 1);
+      g.shadowColor = col;
+      g.shadowBlur = 6;
+      g.beginPath(); g.moveTo(x, y); g.lineTo(ex, ey); g.stroke();
+      /* 날개 */
+      var wx = ex - Math.cos(ang + 1.9) * 6.5 * (sc || 1);
+      var wy = ey - Math.sin(ang + 1.9) * 6.5 * (sc || 1);
+      var ux = ex - Math.cos(ang - 1.9) * 6.5 * (sc || 1);
+      var uy = ey - Math.sin(ang - 1.9) * 6.5 * (sc || 1);
+      g.beginPath();
+      g.moveTo(ex, ey); g.lineTo(wx, wy); g.lineTo(ux, uy); g.closePath();
+      g.fillStyle = col2;
+      g.shadowColor = col2;
+      g.shadowBlur = 8;
+      g.fill();
+      /* 팁 */
+      g.beginPath(); g.arc(x, y, 2.6 * (sc || 1), 0, 6.283);
+      g.fillStyle = '#f8fafc';
+      g.shadowBlur = 4;
+      g.fill();
+      g.restore();
+    }
+
+    function drawPins(g) {
+      for (var i = 0; i < S.pins.length; i++) {
+        var p = S.pins[i];
+        var age = S.pins.length - i;
+        drawDartAt(g, p.x, p.y, age === 1 ? 1.12 : 0.95, p.col, S.trailCol, age === 1 ? 1 : 0.66);
+      }
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 조준선 */
+    function drawAim(g) {
+      if (S.ready || S.over) return;
+      var lx = CX + S.lockX * AIM_R;
+
+      if (S.phase === 'aimY' || S.phase === 'throw' || S.phase === 'settle') {
+        /* 고정된 X선 */
+        g.save();
+        g.strokeStyle = rgba(S.skinCol, S.phase === 'aimY' ? 0.5 : 0.28);
+        g.lineWidth = 1.4;
+        g.setLineDash([5, 4]);
+        g.beginPath(); g.moveTo(lx, CY - R - 18); g.lineTo(lx, CY + R + 18); g.stroke();
+        g.restore();
+      }
+
+      if (S.phase === 'aimX') {
+        var x = CX + S.aimP * AIM_R;
+        g.save();
+        g.shadowColor = S.skinCol;
+        g.shadowBlur = 12;
+        g.strokeStyle = rgba(S.skinCol, 0.95);
+        g.lineWidth = 2;
+        g.beginPath(); g.moveTo(x, CY - R - 18); g.lineTo(x, CY + R + 18); g.stroke();
+        g.restore();
+        /* 끝단 마커 */
+        g.fillStyle = rgba(S.skinCol, 0.9);
+        g.beginPath(); g.arc(x, CY - R - 20, 2.6, 0, 6.283); g.fill();
+        g.beginPath(); g.arc(x, CY + R + 20, 2.6, 0, 6.283); g.fill();
+      } else if (S.phase === 'aimY') {
+        var y = CY + S.aimP * AIM_R;
+        g.save();
+        g.shadowColor = S.trailCol;
+        g.shadowBlur = 12;
+        g.strokeStyle = rgba(S.trailCol, 0.95);
+        g.lineWidth = 2;
+        g.beginPath(); g.moveTo(CX - R - 18, y); g.lineTo(CX + R + 18, y); g.stroke();
+        g.restore();
+        g.fillStyle = rgba(S.trailCol, 0.9);
+        g.beginPath(); g.arc(CX - R - 20, y, 2.6, 0, 6.283); g.fill();
+        g.beginPath(); g.arc(CX + R + 20, y, 2.6, 0, 6.283); g.fill();
+        /* 교차점 미리보기 */
+        g.save();
+        g.globalAlpha = 0.55;
+        g.beginPath(); g.arc(lx, y, 4.5, 0, 6.283);
+        g.strokeStyle = '#f8fafc'; g.lineWidth = 1.2; g.stroke();
+        g.restore();
+      }
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 나는 다트 */
+    function drawFlight(g) {
+      if (S.phase !== 'throw' || !S.impact) return;
+      var k = clamp(S.throwT / THROW_T, 0, 1);
+      var x = CX + (S.impact.x - CX) * k;
+      var y = 486 + (S.impact.y - 486) * k - Math.sin(k * Math.PI) * 26;
+      /* 궤적 */
+      for (var i = 1; i <= 6; i++) {
+        var kk = Math.max(0, k - i * 0.05);
+        var tx = CX + (S.impact.x - CX) * kk;
+        var ty = 486 + (S.impact.y - 486) * kk - Math.sin(kk * Math.PI) * 26;
+        g.globalAlpha = 0.34 * (1 - i / 7);
+        g.beginPath();
+        g.arc(tx, ty, 3.2 - i * 0.3, 0, 6.283);
+        g.fillStyle = S.skinCol;
+        g.fill();
+      }
+      g.globalAlpha = 1;
+      drawDartAt(g, x, y, 1.25, S.skinCol, S.trailCol, 1);
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 이펙트 */
+    function drawFx(g) {
+      var i;
+      for (i = 0; i < S.sparks.length; i++) {
+        var sp = S.sparks[i];
+        var a = clamp(sp.life / sp.max, 0, 1);
+        g.globalAlpha = a;
+        g.fillStyle = sp.c;
+        g.beginPath();
+        g.arc(sp.x, sp.y, sp.s, 0, 6.283);
+        g.fill();
+      }
+      for (i = 0; i < S.rings.length; i++) {
+        var rg = S.rings[i];
+        var a2 = clamp(rg.life / rg.max, 0, 1);
+        g.globalAlpha = a2 * 0.85;
+        g.strokeStyle = rg.c;
+        g.lineWidth = 2 * a2 + 0.6;
+        g.beginPath();
+        g.arc(rg.x, rg.y, rg.r, 0, 6.283);
+        g.stroke();
+      }
+      g.globalAlpha = 1;
+      for (i = 0; i < S.texts.length; i++) {
+        var tx = S.texts[i];
+        var a3 = clamp(1 - tx.t / tx.dur, 0, 1);
+        g.globalAlpha = a3;
+        A.text(g, tx.txt, tx.x, tx.y - tx.t * 26, {
+          size: 15, color: tx.c, align: 'center', font: '"Jua",sans-serif'
+        });
+      }
+      g.globalAlpha = 1;
+    }
+
+    /* -------------------------------------------------------------- 그리기 : HUD */
+    function drawHud(g) {
+      g.fillStyle = 'rgba(5,9,18,.96)';
+      g.fillRect(0, 0, W, HUDH);
+      g.fillStyle = rgba(S.trailCol, 0.28);
+      g.fillRect(0, HUDH - 1, W, 1);
+
+      A.text(g, 'SCORE', 12, 14, { size: 8, color: '#7f93b3' });
+      A.text(g, String(S.score), 12, 36, { size: 21, color: '#f8fafc' });
+
+      A.text(g, '발', 148, 14, { size: 8, color: '#7f93b3', align: 'center' });
+      A.text(g, Math.min(NDART, S.dart + 1) + ' / ' + NDART, 148, 35,
+        { size: 15, color: '#e2e8f0', align: 'center' });
+
+      A.text(g, 'HAT TRICK', 246, 14, { size: 8, color: '#7f93b3', align: 'center' });
+      A.text(g, S.hatN ? '🔥 ' + S.hatN : '—', 246, 35,
+        { size: 13, color: S.hatN ? '#fbbf24' : '#475569', align: 'center' });
+
+      A.text(g, 'BULL', 340, 14, { size: 8, color: '#7f93b3', align: 'right' });
+      A.text(g, S.bullN ? '🎯 ' + S.bullN : '—', 340, 35,
+        { size: 13, color: S.bullN ? ROSE : '#475569', align: 'right' });
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 상단 스트립 (라운드·바람) */
+    function drawTop(g) {
+      A.panel(g, 10, 52, W - 20, 40, { r: 12, fill: 'rgba(6,12,24,.9)', stroke: 'rgba(140,180,240,.18)' });
+
+      A.text(g, 'ROUND', 24, 66, { size: 7.5, color: '#7f93b3' });
+      A.text(g, S.round + ' / 3', 24, 84, { size: 13, color: '#f8fafc' });
+      for (var i = 0; i < 3; i++) {
+        g.beginPath();
+        g.arc(74 + i * 11, 79, 3.4, 0, 6.283);
+        g.fillStyle = i < S.round ? (i === S.round - 1 ? S.trailCol : rgba(S.trailCol, 0.45)) : 'rgba(148,163,184,.2)';
+        g.fill();
+      }
+
+      var windOn = S.windPow > 0;
+      A.text(g, 'WIND', 190, 66, { size: 7.5, color: '#7f93b3', align: 'center' });
+      A.text(g, windText(), 190, 85, {
+        size: 13, color: windOn ? '#fbbf24' : '#475569', align: 'center'
+      });
+      if (windOn) {
+        for (var k = 0; k < S.windPow; k++) {
+          g.beginPath();
+          g.arc(214 + k * 7, 81, 2.2, 0, 6.283);
+          g.fillStyle = rgba('#fbbf24', 0.85);
+          g.fill();
+        }
+      }
+
+      A.text(g, '남은 발', 320, 66, { size: 7.5, color: '#7f93b3', align: 'right' });
+      A.text(g, String(Math.max(0, NDART - S.dart)), 320, 84, { size: 13, color: '#e2e8f0', align: 'right' });
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 라운드 다트 칩 */
+    function drawChips(g) {
+      var w = 104, gap = 8;
+      var x0 = (W - (3 * w + 2 * gap)) / 2;
+      for (var i = 0; i < PER_ROUND; i++) {
+        var x = x0 + i * (w + gap);
+        var hit = S.roundHits[i];
+        A.rr(g, x, CHIP_Y, w, CHIP_H, 9);
+        g.fillStyle = hit ? rgba(hit.col, 0.12) : 'rgba(8,14,26,.82)';
+        g.fill();
+        g.strokeStyle = hit ? rgba(hit.col, 0.55) : 'rgba(140,180,240,.16)';
+        g.lineWidth = 1;
+        A.rr(g, x, CHIP_Y, w, CHIP_H, 9);
+        g.stroke();
+        A.text(g, 'DART ' + (i + 1), x + 8, CHIP_Y + 13, { size: 7.5, color: '#7f93b3' });
+        A.text(g, hit ? hit.label : '—', x + 8, CHIP_Y + 27, {
+          size: 11, color: hit ? hit.col : '#334155'
+        });
+      }
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 하단 버튼 */
+    function drawButton(g) {
+      var x = 12, y = BTN_Y, w = W - 24, h = BTN_H;
+      var label, sub, col, on;
+      if (S.ready) { label = '▶ 탭해서 시작'; sub = 'Space · Enter'; col = S.skinCol; on = false; }
+      else if (S.phase === 'aimX') {
+        label = '🎯 X축 고정'; sub = '좌우로 움직이는 세로선 — 지금 탭!';
+        col = S.skinCol; on = true;
+      } else if (S.phase === 'aimY') {
+        label = '🎯 발사!'; sub = '상하로 움직이는 가로선 — 탭하면 바로 발사';
+        col = S.trailCol; on = true;
+      } else if (S.phase === 'throw') {
+        label = '💥 던지는 중'; sub = '', col = '#64748b', on = false;
+      } else if (S.phase === 'settle') {
+        label = '✅ +' + S.lastGain + '점'; sub = '다음 다트 준비', col = '#34d399', on = false;
+      } else { label = '🏁 끝'; sub = '', col = '#94a3b8', on = false; }
+
+      /* 셸 판정용 등록 (그 위에 우리 버튼을 다시 그린다) */
+      A.btn('v556dartTap', x, y, w, h, '', { size: 1, fn: act });
+
+      g.save();
+      g.shadowColor = col;
+      g.shadowBlur = on ? 18 : 6;
+      A.rr(g, x, y, w, h, 16);
+      var bg = g.createLinearGradient(0, y, 0, y + h);
+      bg.addColorStop(0, rgba(col, on ? 0.34 : 0.14));
+      bg.addColorStop(1, rgba(col, on ? 0.14 : 0.05));
+      g.fillStyle = bg;
+      g.fill();
+      g.strokeStyle = rgba(col, on ? 0.95 : 0.42);
+      g.lineWidth = on ? 2.2 : 1.3;
+      A.rr(g, x, y, w, h, 16);
+      g.stroke();
+      g.restore();
+      A.text(g, label, W / 2, y + 28, {
+        size: 20, color: on ? '#f8fafc' : mixHex(col, '#ffffff', 0.25),
+        align: 'center', font: '"Jua",sans-serif'
+      });
+      if (sub) A.text(g, sub, W / 2, y + 48, { size: 9, color: '#9fb3d1', align: 'center' });
+
+      A.text(g, '폰: 캔버스 아무 곳이나 탭 = 조준 고정 · 두 번 탭이면 발사', W / 2, 574, { size: 8.5, color: '#5b6f92', align: 'center' });
+      A.text(g, '⌨️ Space · Enter — 입력창에선 키를 가로채지 않아요', W / 2, 588, { size: 8, color: '#46566f', align: 'center' });
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 배너·메시지 */
+    function drawMessages(g) {
+      if (S.bannerT > 0 && S.banner) {
+        g.globalAlpha = Math.min(1, S.bannerT / 0.3);
+        var by = S.bannerAt || 96, bh = 46, bx = 14, bw = W - 28;
+        A.panel(g, bx, by, bw, bh, { r: 14, fill: 'rgba(5,10,20,.97)', stroke: S.bannerCol });
+        g.save();
+        g.shadowColor = S.bannerCol;
+        g.shadowBlur = 16;
+        A.rr(g, bx, by, bw, bh, 14);
+        g.strokeStyle = rgba(S.bannerCol, 0.9);
+        g.lineWidth = 2;
+        g.stroke();
+        g.restore();
+        A.text(g, S.banner, W / 2, by + 25, { size: 16, color: S.bannerCol, align: 'center', font: '"Jua",sans-serif' });
+        if (S.bannerSub) A.text(g, S.bannerSub, W / 2, by + 40, { size: 8.5, color: '#fef3c7', align: 'center' });
+        g.globalAlpha = 1;
+      } else if (S.msgT > 0 && S.msg) {
+        g.globalAlpha = Math.min(1, S.msgT * 2);
+        var mw = Math.min(336, S.msg.length * 7.4 + 26);
+        A.rr(g, W / 2 - mw / 2, 430, mw, 24, 12);
+        g.fillStyle = 'rgba(4,8,18,.94)';
+        g.fill();
+        g.strokeStyle = rgba(S.msgCol, 0.45);
+        g.lineWidth = 1;
+        A.rr(g, W / 2 - mw / 2, 430, mw, 24, 12);
+        g.stroke();
+        A.text(g, S.msg, W / 2, 446, { size: 9.5, color: S.msgCol, align: 'center' });
+        g.globalAlpha = 1;
+      }
+    }
+
+    /* -------------------------------------------------------------- 그리기 : 준비 화면 */
+    function drawReady(g) {
+      g.fillStyle = 'rgba(3,6,14,.94)';
+      g.fillRect(0, HUDH, W, H - HUDH);
+      A.panel(g, 12, 54, W - 24, 530, { r: 18, fill: 'rgba(6,14,24,.98)', stroke: rgba(CYAN, 0.55) });
+
+      A.text(g, '🎯 네온 다트', W / 2, 92, { size: 26, color: '#67e8f9', align: 'center', font: '"Jua",sans-serif' });
+      A.text(g, '불스아이 챌린지 · 2단 정밀 조준 · 9발', W / 2, 113, { size: 10.5, color: '#a8bdd8', align: 'center' });
+
+      var steps = [
+        { y: 138, t: '1) 세로선이 좌우로 움직여요 — 탭해서 X 고정', s: '캔버스 아무 곳이나 탭 · 하단 버튼도 OK' },
+        { y: 170, t: '2) 이어 가로선이 상하로 — 탭하면 바로 발사!', s: '두 번 탭 = 한 발 · Space/Enter 도 같아요' },
+        { y: 202, t: '3) 라운드 2·3은 바람이 붑니다', s: '→ ← 방향과 풍속만큼 착탄점이 밀려요' }
+      ];
+      for (var i = 0; i < steps.length; i++) {
+        var sp = steps[i];
+        A.panel(g, 22, sp.y - 14, W - 44, 30, { r: 9, fill: 'rgba(12,24,40,.85)', stroke: 'rgba(103,232,249,.18)' });
+        g.save();
+        g.shadowColor = i === 2 ? '#fbbf24' : CYAN;
+        g.shadowBlur = 6;
+        g.beginPath();
+        g.arc(36, sp.y, 8, 0, 6.283);
+        g.fillStyle = i === 2 ? 'rgba(251,191,36,.22)' : 'rgba(34,211,238,.2)';
+        g.fill();
+        g.strokeStyle = i === 2 ? 'rgba(251,191,36,.85)' : 'rgba(34,211,238,.85)';
+        g.lineWidth = 1.2;
+        g.stroke();
+        g.restore();
+        A.text(g, String(i + 1), 36, sp.y + 3.6, { size: 10, color: i === 2 ? '#fde68a' : '#a5f3fc', align: 'center' });
+        A.text(g, sp.t, 52, sp.y - 1, { size: 9.5, color: '#dbeafe' });
+        A.text(g, sp.s, 52, sp.y + 11, { size: 8, color: '#7f93b3' });
+      }
+
+      /* 판 구성 */
+      A.text(g, '🎯 다트판 구성', W / 2, 238, { size: 10, color: '#fde68a', align: 'center' });
+      var rows = [
+        ['더블 링', '×2', '바깥 링'],
+        ['트리플 링', '×3', '가운데 링'],
+        ['아우터 불', '25', '가운데 넓은 원'],
+        ['이너 불스아이', '50', '한가운데 점']
+      ];
+      for (var r = 0; r < rows.length; r++) {
+        var ry = 256 + r * 17;
+        A.text(g, rows[r][0], 44, ry, { size: 9, color: '#cbd5e1' });
+        A.text(g, rows[r][1], 190, ry, { size: 9.5, color: '#22d3ee', align: 'center' });
+        A.text(g, rows[r][2], 240, ry, { size: 8.5, color: '#64748b' });
+      }
+      A.text(g, '🎯 불스아이 명중 +50 · 🔥 한 라운드 3발 모두 트리플·불이면 HAT TRICK +150', W / 2, 333,
+        { size: 8.5, color: '#fbbf24', align: 'center' });
+
+      A.text(g, '👆 폰·태블릿: 캔버스 아무 곳이나 탭 (두 번 탭 = 한 발)', W / 2, 356, { size: 9.5, color: '#a5f3fc', align: 'center' });
+      A.text(g, '⌨️ Space · Enter : 탭과 똑같이 X 고정 → 발사', W / 2, 372, { size: 9.5, color: '#a5f3fc', align: 'center' });
+      A.text(g, '🎨 스킨 색 = 조준선·다트 몸통 · 꼬리 잔상 색 = 궤적·날개·히트 링', W / 2, 390, { size: 9, color: '#93c5fd', align: 'center' });
+      A.text(g, '🪙 펫 코인 +10(0~) / +20(200~) / +35(350~) · 하루 상한 60', W / 2, 408, { size: 9, color: '#93a4c4', align: 'center' });
+      A.text(g, '🎯 오늘의 미션: 네온 다트 1판(+50) · 300점(+70)', W / 2, 426, { size: 9, color: '#93a4c4', align: 'center' });
+
+      var best = null;
+      try { best = a.best(); } catch (e) { best = null; }
+      if (best != null) A.text(g, '🏅 최고 기록 ' + Math.round(best) + '점', W / 2, 450, { size: 11.5, color: '#fbbf24', align: 'center' });
+
+      g.globalAlpha = 0.6 + 0.4 * Math.sin(S.t * 4);
+      A.text(g, '▶ 탭해서 다트 시작', W / 2, 480, { size: 19, color: '#67e8f9', align: 'center', font: '"Jua",sans-serif' });
+      g.globalAlpha = 1;
+      A.text(g, '⌨️ Space · Enter 로도 시작', W / 2, 500, { size: 9, color: '#5b6f92', align: 'center' });
+
+      var d = loadDaily();
+      var today = d.d === dayKey() ? d.c : 0;
+      A.text(g, '🪙 오늘 받은 다트 코인 ' + today + ' / ' + DAILY_CAP, W / 2, 530, { size: 9, color: '#46566f', align: 'center' });
+      A.text(g, '같은 시드면 바람도 같습니다 · 봇 대전은 점수로 승부', W / 2, 548, { size: 9, color: '#46566f', align: 'center' });
+    }
+
+    return api;
+  }
+
+  /* ==========================================================================
+     등록 — 기존 'dart' 슬롯(v4.8 프로토타입)을 덮어쓴다 (기록·봇·방 대전 호환 유지)
+     ========================================================================== */
+  MG.def({
+    id: ID,
+    name: '네온 다트',
+    emoji: '🎯',
+    tag: '아케이드',
+    desc: '불스아이 챌린지 · X→Y 2단 정밀 조준 · 9발 + 바람',
+    unit: '점',
+    record: {
+      type: 'high',
+      fmt: function (v) { return Math.round(v) + '점'; }
+    },
+    create: create
+  });
+
+  /* 목록 순서: 개방 17호 — v5.30 잠금 모듈의 reorder 가 맨 앞으로 당긴다 */
+  try {
+    if (MG.order) {
+      var rest = MG.order.filter(function (x) { return x && x !== ID; });
+      var at = rest.indexOf('fishing');
+      if (at >= 0) rest.splice(at + 1, 0, ID);
+      else rest.push(ID);
+      MG.order = rest;
+    }
+  } catch (e) {}
+
+  try { console.log('[v556] 🎯 네온 다트 등록 · order', (MG.order || []).length); } catch (e) {}
+
+  /* 테스트/검증용 공개 훅 */
+  root.JW556 = {
+    id: ID,
+    key: KEY,
+    cap: DAILY_CAP,
+    darts: NDART,
+    perRound: PER_ROUND,
+    board: { cx: CX, cy: CY, r: R, aimR: AIM_R },
+    geom: GM,
+    sect: SECT.slice(),
+    btn: { y: BTN_Y, h: BTN_H },
+    chips: { y: CHIP_Y, h: CHIP_H },
+    tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
+    judge: judgeAt,
     daily: function () { return loadDaily(); },
     state: function () {
       var c = MG.cur;
