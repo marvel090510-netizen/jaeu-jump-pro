@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.53 정식판 (화면 표시 버전은 아래 BUILD = 'v5.53')
+   muse-v5-9 game.js — v5.54 정식판 (화면 표시 버전은 아래 BUILD = 'v5.54')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -47013,6 +47013,13 @@ extends CanvasLayer
       case 'Space': return 'space';
       case 'Enter': case 'NumpadEnter': return 'enter';
       case 'Escape': return 'esc';
+      /* v5.54: 🧠 네온 시퀀스 — 1·2·3·4(숫자)와 Q 를 패드 키로 쓴다.
+         (W·A·S 는 이미 up/left/down 으로 오므로 게임 쪽에서 e.code 로 갈라 쓴다) */
+      case 'Digit1': case 'Numpad1': return 'n1';
+      case 'Digit2': case 'Numpad2': return 'n2';
+      case 'Digit3': case 'Numpad3': return 'n3';
+      case 'Digit4': case 'Numpad4': return 'n4';
+      case 'KeyQ': return 'q';
       case 'KeyZ': return 'z';
       case 'KeyX': return 'x';
       case 'KeyC': return 'c';
@@ -47025,6 +47032,11 @@ extends CanvasLayer
       case ' ': return 'space';
       case 'Enter': return 'enter';
       case 'Escape': return 'esc';
+      case '1': return 'n1';
+      case '2': return 'n2';
+      case '3': return 'n3';
+      case '4': return 'n4';
+      case 'q': case 'Q': return 'q';
       case 'z': case 'Z': return 'z';
       case 'x': case 'X': return 'x';
       case 'c': case 'C': return 'c';
@@ -62669,6 +62681,7 @@ if (typeof module !== 'undefined' && module.exports) {
    - v5.51: 개방 12종으로 확장 — 🏓 하이퍼 네온 핑퐁(pong) 전면 개편.
    - v5.52: 개방 13종 — 🫧 네온 버블 슈터(bubble) 전면 개편.
    - v5.53: 개방 14종 — 🦖 네온 다이노 런(dino) 전면 개편. 나머지 11종은 '🔒 준비 중'.
+   - v5.54: 개방 15종 — 🧠 네온 시퀀스(simon) 전면 개편. 나머지 10종은 '🔒 준비 중'.
    - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 14종은 목록 맨 앞에
      ✨ NEW · PLAYABLE 강조 카드로 배치한다.
    ========================================================================== */
@@ -62692,7 +62705,8 @@ if (typeof module !== 'undefined' && module.exports) {
   var OPEN12 = 'pong';            /* 개방 12호 (🏓 하이퍼 네온 핑퐁 · v5.51 개편) */
   var OPEN13 = 'bubble';          /* 개방 13호 (🫧 네온 버블 슈터 · v5.52 개편) */
   var OPEN14 = 'dino';            /* 개방 14호 (🦖 네온 다이노 런 · v5.53 개편) */
-  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1, mines: 1, tetris: 1, gomoku: 1, memory: 1, pong: 1, bubble: 1, dino: 1 };
+  var OPEN15 = 'simon';           /* 개방 15호 (🧠 네온 시퀀스 · v5.54 개편) */
+  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1, mines: 1, tetris: 1, gomoku: 1, memory: 1, pong: 1, bubble: 1, dino: 1, simon: 1 };
   root.JW530MGLOCK = true;
   root.JW530MG_OPEN = OPEN;
   root.JW530MG_OPEN2 = OPEN2;
@@ -62708,12 +62722,13 @@ if (typeof module !== 'undefined' && module.exports) {
   root.JW530MG_OPEN12 = OPEN12;
   root.JW530MG_OPEN13 = OPEN13;
   root.JW530MG_OPEN14 = OPEN14;
+  root.JW530MG_OPEN15 = OPEN15;
   root.JW530MG_OPENS = OPENS;
 
   var doc = document;
   var $ = function (id) { return doc.getElementById(id); };
   var LOCK_MSG = '🔒 이 미니게임은 준비 중이에요';
-  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 14종이 열려 있어요';
+  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 15종이 열려 있어요';
 
   function MG() { return root.JW48MG; }
   function isLocked(id) { return !!id && !OPENS[id]; }
@@ -62818,7 +62833,13 @@ if (typeof module !== 'undefined' && module.exports) {
       '  background:linear-gradient(180deg,#d9ffcf,#5eead4);border-color:#0f766e;color:#03302a;',
       '  box-shadow:0 0 12px rgba(163,230,53,.55),0 2px 0 rgba(0,0,0,.4);}',
       '.v530new.v530new14{box-shadow:inset 0 0 0 2px rgba(163,230,53,.62),0 0 18px rgba(52,211,153,.4),0 3px 0 #05030a !important;}',
-      /* 열네 개방 카드의 줄서기: 14호 → 13호 → 12호 → … → 1호 → 잠금 11종 */
+      /* 15호 개방 카드 (🧠 네온 시퀀스 · v5.54) */
+      '.v530new.v530new15::after{content:"🧠 NEW · PLAYABLE";',
+      '  background:linear-gradient(180deg,#e9d5ff,#a855f7);border-color:#6b21a8;color:#2b0a4a;',
+      '  box-shadow:0 0 12px rgba(168,85,247,.55),0 2px 0 rgba(0,0,0,.4);}',
+      '.v530new.v530new15{box-shadow:inset 0 0 0 2px rgba(168,85,247,.64),0 0 18px rgba(232,121,249,.42),0 3px 0 #05030a !important;}',
+      /* 열다섯 개방 카드의 줄서기: 15호 → 14호 → 13호 → … → 1호 → 잠금 10종 */
+      '#v48mgCards .v530new.v530new15{order:-15 !important;}',
       '#v48mgCards .v530new.v530new14{order:-14 !important;}',
       '#v48mgCards .v530new.v530new13{order:-13 !important;}',
       '#v48mgCards .v530new.v530new12{order:-12 !important;}',
@@ -62833,7 +62854,7 @@ if (typeof module !== 'undefined' && module.exports) {
       '#v48mgCards .v530new.v530new7{order:-3 !important;}',
       '#v48mgCards .v530new.v530new8{order:-2 !important;}',
       '#v48mgCards .v530new.v530new9{order:-1 !important;}',
-      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag,.v530new.v530new6 .tag,.v530new.v530new7 .tag,.v530new.v530new8 .tag,.v530new.v530new9 .tag,.v530new.v530new10 .tag,.v530new.v530new11 .tag,.v530new.v530new12 .tag,.v530new.v530new13 .tag,.v530new.v530new14 .tag{display:none !important;}',
+      '.v530new.v530new2 .tag,.v530new.v530new3 .tag,.v530new.v530new4 .tag,.v530new.v530new5 .tag,.v530new.v530new6 .tag,.v530new.v530new7 .tag,.v530new.v530new8 .tag,.v530new.v530new9 .tag,.v530new.v530new10 .tag,.v530new.v530new11 .tag,.v530new.v530new12 .tag,.v530new.v530new13 .tag,.v530new.v530new14 .tag,.v530new.v530new15 .tag{display:none !important;}',
       /* 잠금 안내 띠 */
       /* v5.41: flex 로 두면 글자 마디마다 칸이 생겨 세로로 쪼개진다 — block 으로 바꿔 줄바꿈만 되게 */
       '#v530MgNote{display:block;padding:6px 8px;margin:0 0 6px;border-radius:9px;',
@@ -62873,7 +62894,7 @@ if (typeof module !== 'undefined' && module.exports) {
       if (!id) return;
       if (isLocked(id)) {
         if (!el.__v530l) { el.__v530l = 1; el.classList.add('v530lock'); el.setAttribute('aria-disabled', 'true'); }
-        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); el.classList.remove('v530new8'); el.classList.remove('v530new9'); el.classList.remove('v530new10'); el.classList.remove('v530new11'); el.classList.remove('v530new12'); el.classList.remove('v530new13'); el.classList.remove('v530new14'); }
+        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); el.classList.remove('v530new8'); el.classList.remove('v530new9'); el.classList.remove('v530new10'); el.classList.remove('v530new11'); el.classList.remove('v530new12'); el.classList.remove('v530new13'); el.classList.remove('v530new14'); el.classList.remove('v530new15'); }
       } else {
         if (!el.__v530n) { el.__v530n = 1; el.classList.add('v530new'); el.removeAttribute('aria-disabled'); }
         if (id === OPEN && !el.classList.contains('v530new1')) el.classList.add('v530new1');
@@ -62904,6 +62925,8 @@ if (typeof module !== 'undefined' && module.exports) {
         else if (el.classList.contains('v530new13')) el.classList.remove('v530new13');
         if (id === OPEN14) { if (!el.classList.contains('v530new14')) el.classList.add('v530new14'); }
         else if (el.classList.contains('v530new14')) el.classList.remove('v530new14');
+        if (id === OPEN15) { if (!el.classList.contains('v530new15')) el.classList.add('v530new15'); }
+        else if (el.classList.contains('v530new15')) el.classList.remove('v530new15');
         if (el.__v530l) { el.__v530l = 0; el.classList.remove('v530lock'); }
       }
     });
@@ -62916,7 +62939,7 @@ if (typeof module !== 'undefined' && module.exports) {
     var sub = $('v48mgSub');
     var m = MG();
     if (sub && m && m.order) {
-      var want = '14종 플레이 가능 · ' + Math.max(0, m.order.length - 14) + '종 준비 중';
+      var want = '15종 플레이 가능 · ' + Math.max(0, m.order.length - 15) + '종 준비 중';
       if (sub.textContent !== want) sub.textContent = want;
     }
     /* 미니게임 목록 상단 안내 */
@@ -62924,7 +62947,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (hub && !$('v530MgNote')) {
       var n = doc.createElement('div');
       n.id = 'v530MgNote';
-      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> · <b>💣 스피드 지뢰찾기</b> · <b>🧱 대전 테트리스</b> · <b>⚫ 스피드 오목</b> · <b>🃏 메모리 짝 맞추기</b> · <b>🏓 하이퍼 네온 핑퐁</b> · <b>🫧 네온 버블 슈터</b> · <b>🦖 네온 다이노 런</b> 14종을 지금 플레이할 수 있어요 · 나머지 11종은 다음 업데이트에서 순서대로 열려요';
+      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> · <b>💣 스피드 지뢰찾기</b> · <b>🧱 대전 테트리스</b> · <b>⚫ 스피드 오목</b> · <b>🃏 메모리 짝 맞추기</b> · <b>🏓 하이퍼 네온 핑퐁</b> · <b>🫧 네온 버블 슈터</b> · <b>🦖 네온 다이노 런</b> · <b>🧠 네온 시퀀스</b> 15종을 지금 플레이할 수 있어요 · 나머지 10종은 다음 업데이트에서 순서대로 열려요';
       hub.insertBefore(n, hub.firstChild);
     }
     /* 멀티 방 설정 안내 문구 (25종 → 1종 개방) */
@@ -62932,7 +62955,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (sList) {
       var hint = sList.previousElementSibling;
       if (hint && String(hint.className || '').indexOf('v48mg-hint') >= 0) {
-        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 14종이 열려 있어요 · 나머지 11종은 준비 중';
+        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 15종이 열려 있어요 · 나머지 10종은 준비 중';
         if (hint.textContent !== want2) hint.textContent = want2;
       }
     }
@@ -63001,9 +63024,9 @@ if (typeof module !== 'undefined' && module.exports) {
   function reorder() {
     var m = MG();
     if (!m || !m.order || !m.order.length) return;
-    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7 && m.order[7] === OPEN8 && m.order[8] === OPEN9 && m.order[9] === OPEN10 && m.order[10] === OPEN11 && m.order[11] === OPEN12 && m.order[12] === OPEN13 && m.order[13] === OPEN14) return;
+    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7 && m.order[7] === OPEN8 && m.order[8] === OPEN9 && m.order[9] === OPEN10 && m.order[10] === OPEN11 && m.order[11] === OPEN12 && m.order[12] === OPEN13 && m.order[13] === OPEN14 && m.order[14] === OPEN15) return;
     var rest = m.order.filter(function (x) { return x && !OPENS[x]; });
-    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7, OPEN8, OPEN9, OPEN10, OPEN11, OPEN12, OPEN13, OPEN14].concat(rest);
+    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7, OPEN8, OPEN9, OPEN10, OPEN11, OPEN12, OPEN13, OPEN14, OPEN15].concat(rest);
   }
 
   /* 카드가 새로 그려지는 즉시 배지를 다시 칠한다 (innerHTML 재생성 대응) */
@@ -63022,7 +63045,7 @@ if (typeof module !== 'undefined' && module.exports) {
   setTimeout(paint, 600);
   setTimeout(paint, 1600);
   setInterval(function () { try { reorder(); paint(); } catch (e) {} }, 900);
-  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7 + ', ' + OPEN8 + ', ' + OPEN9 + ', ' + OPEN10 + ', ' + OPEN11 + ', ' + OPEN12 + ', ' + OPEN13 + ', ' + OPEN14);
+  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7 + ', ' + OPEN8 + ', ' + OPEN9 + ', ' + OPEN10 + ', ' + OPEN11 + ', ' + OPEN12 + ', ' + OPEN13 + ', ' + OPEN14 + ', ' + OPEN15);
 })(window);
 
 
@@ -69504,7 +69527,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.53';
+  var BUILD = 'v5.54';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81423,7 +81446,10 @@ if (typeof module !== 'undefined' && module.exports) {
       { id: 'm_bubble800', icon: '🎯', title: '버블 슈터 800점', desc: '한 판에서 800점 이상', need: 1, coin: 70, unit: '점', mg: 'bubble' },
       /* v5.53: 🦖 네온 다이노 런 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
       { id: 'm_dino1', icon: '🦖', title: '다이노 런 1판', desc: '🦖 네온 다이노 런 한 판', need: 1, coin: 50, unit: '판', mg: 'dino' },
-      { id: 'm_dino600', icon: '🎯', title: '다이노 런 600점', desc: '한 판에서 600점 이상', need: 1, coin: 70, unit: '점', mg: 'dino' }
+      { id: 'm_dino600', icon: '🎯', title: '다이노 런 600점', desc: '한 판에서 600점 이상', need: 1, coin: 70, unit: '점', mg: 'dino' },
+      /* v5.54: 🧠 네온 시퀀스 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
+      { id: 'm_simon1', icon: '🧠', title: '네온 시퀀스 1판', desc: '🧠 네온 시퀀스 한 판', need: 1, coin: 50, unit: '판', mg: 'simon' },
+      { id: 'm_simon700', icon: '🎯', title: '네온 시퀀스 700점', desc: '한 판에서 700점 이상', need: 1, coin: 70, unit: '점', mg: 'simon' }
     ]
   };
   var BY_ID = {};
@@ -81613,6 +81639,9 @@ if (typeof module !== 'undefined' && module.exports) {
         /* v5.53: 🦖 네온 다이노 런 — 1판 / 600점 */
         if (mine('m_dino1')) changed = bump('m_dino1', 1) || changed;
         if (mine('m_dino600') && (Number(data.score) || 0) >= 600) changed = bump('m_dino600', 1) || changed;
+        /* v5.54: 🧠 네온 시퀀스 — 1판 / 700점 */
+        if (mine('m_simon1')) changed = bump('m_simon1', 1) || changed;
+        if (mine('m_simon700') && (Number(data.score) || 0) >= 700) changed = bump('m_simon700', 1) || changed;
       }
       if (changed) {
         save();
@@ -86421,7 +86450,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (!s || !s.cleared || typeof s.cleared !== 'object') return 0;
     return Object.keys(s.cleared).length;
   }
-  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048', 'mines', 'tetris', 'gomoku', 'memory', 'pong', 'bubble', 'dino'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46·v5.47·v5.48·v5.49·v5.50·v5.51·v5.52·v5.53 개방 14종 */
+  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048', 'mines', 'tetris', 'gomoku', 'memory', 'pong', 'bubble', 'dino', 'simon'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46·v5.47·v5.48·v5.49·v5.50·v5.51·v5.52·v5.53·v5.54 개방 15종 */
   function mgCount() {
     var best = ls('jw48mg_best_v1', {}) || {};
     try { if (!best || !Object.keys(best).length) { if (root.JW48MG && root.JW48MG.best) best = root.JW48MG.best; } } catch (e) {}
@@ -86463,7 +86492,7 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'combo10',cat: '기록', ic: '🔥', name: '콤보 파이터',      desc: '최고 콤보 10 이상',           goal: 10,   coin: 40, cur: bestCombo },
     { id: 'combo25',cat: '기록', ic: '💥', name: '피버 마스터',      desc: '최고 콤보 25 이상',           goal: 25,   coin: 80, cur: bestCombo },
     { id: 'story1', cat: '기록', ic: '📖', name: '스토리 도전자',    desc: '스토리 1스테이지 클리어',      goal: 1,    coin: 50, cur: storyCount },
-    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 14종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
+    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 15종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
     { id: 'pet3',   cat: '수집', ic: '🐾', name: '펫 친구',          desc: '펫 3종 이상 보유',            goal: 3,    coin: 50, cur: petCount },
     { id: 'theme5', cat: '수집', ic: '🎨', name: '테마 컬렉터',      desc: '테마 아이템 5종 이상 보유',    goal: 5,    coin: 60, cur: themeCount },
     { id: 'check1', cat: '습관', ic: '📅', name: '개근 시작',        desc: '총 출석 1일 이상',            goal: 1,    coin: 30, cur: checkinDays }
@@ -99168,6 +99197,1178 @@ if (typeof module !== 'undefined' && module.exports) {
     speedMax: SPDMAX,
     btn: { y: BTN_Y, h: BTN_H },
     phases: PALS.map(function (p) { return { id: p.id, label: p.label }; }),
+    tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
+    daily: function () { return loadDaily(); },
+    state: function () {
+      var c = MG.cur;
+      if (!c || c.id !== ID || !c.inst || !c.inst.state) return null;
+      return c.inst.state();
+    }
+  };
+})(window);
+
+/* ==========================================================================
+   v5.54 : 🧠 네온 시퀀스 — 미니게임 15호 ('simon' 슬롯 전면 개편)
+   --------------------------------------------------------------------------
+   v4.8 프로토타입(💡 반짝 순서 외우기)은 지우지 않고 그 위에 덮어쓴다.
+   같은 'simon' 슬롯을 쓰므로 기록·봇 대전·방 대전·같은 시드가 그대로 호환된다.
+
+   · 보드      : 2×2 네온 패드 4개 — 시안 ◆(C5) · 마젠타 ●(E5) · 골드 ▲(G5) · 라임 ★(B5).
+                 패드마다 고유 음계를 V.beep 으로 울린다.
+   · 중앙 코어 : 👀 기억! / 👆 입력! / ⚡ 고속! 상태 링. 라운드 숫자와 남은 입력 시간을
+                 링의 아크로 함께 보여 준다.
+   · 조작      : 터치·마우스 = 패드 직접 탭/클릭 (패드 중심 110px 넉넉한 판정, 한 손·두 손 모두).
+                 시퀀스 재생 중에는 입력이 잠긴다.
+                 키보드 = 1·2·3·4 / Q·W·A·S / ↑·→·←·↓ (v5.41-r1 __jwTypingTarget 가드 준수).
+   · 규칙      : 60초 타임어택 + 라이프 3개(♥♥♥). 라운드 1은 3개 시퀀스로 시작해
+                 클리어할 때마다 길이가 1개씩 늘어난다.
+                 3라운드마다 ⚡ 고속 재생 웨이브 — 재생이 빨라지고 그 라운드 점수는 ×1.5.
+                 틀리면 라이프 1개를 잃고 같은 시퀀스를 한 번 더 보여 준 뒤 재도전한다.
+                 라이프 0 또는 60초 종료 → 결과창.
+   · 점수      : 정확 입력 +25(×배수) · 라운드 클리어 +100×라운드 · 남은 입력 시간
+                 스피드 보너스(초당 10점) · 5연속 콤보마다 +50(×배수).
+   · 연동      : 장착 스킨 색 → 중앙 코어 링, 꼬리 잔상 색 → 성공 파티클(SKINCOL / JW529.trails).
+                 펫 코인 🥇 +35(1400점~) / 🥈 +20(700점~) / 🥉 +10 (하루 상한 60, 키 'jw554_simon',
+                 JW529.addCoins 경유).
+                 🎯 오늘의 미션 '네온 시퀀스 1판(+50)' · '네온 시퀀스 700점(+70)' 자동 연동.
+                 🏆 업적 '미니게임 올라운더'도 개방 15종 기준으로 센다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var MG = root.JW48MG, V = root.JW43;
+  if (!MG || !V) return;
+
+  var ID = 'simon';
+  var W = 360, H = 600, HUDH = 44;
+  var DAILY_CAP = 60;
+  var KEY = 'jw554_simon';
+  var TIME_LIMIT = 60;              /* 60초 타임어택 */
+  var LIVES0 = 3;
+  var CORE = { x: 180, y: 259, r: 46 };
+
+  /* 패드 4개 — 시안 · 마젠타 · 골드 · 라임 / 각자 고유 음계 C5·E5·G5·B5 */
+  var PADS = [
+    { x: 18,  y: 96,  w: 150, h: 150, col: '#22d3ee', dark: '#0a2430', sym: 'diamond', note: 523,  keys: '1·Q' },
+    { x: 192, y: 96,  w: 150, h: 150, col: '#e879f9', dark: '#2a0f33', sym: 'dot',     note: 659,  keys: '2·W' },
+    { x: 18,  y: 272, w: 150, h: 150, col: '#fbbf24', dark: '#33230a', sym: 'tri',     note: 784,  keys: '3·A' },
+    { x: 192, y: 272, w: 150, h: 150, col: '#a3e635', dark: '#1c2b0c', sym: 'star',    note: 988,  keys: '4·S' }
+  ];
+  /* 터치 판정 반경 — 패드 중심에서 이 거리 안쪽이면 그 패드 */
+  var HIT_R = 110;
+
+  var TIERS = [
+    { s: 1400, coin: 35, name: '🥇 GOLD',   col: '#fde047' },
+    { s: 700,  coin: 20, name: '🥈 SILVER', col: '#e2e8f0' },
+    { s: 0,    coin: 10, name: '🥉 BRONZE', col: '#fdba74' }
+  ];
+
+  /* 스킨별 네온 색 (지렁이·오목·테트리스·핑퐁·버블·다이노와 같은 표) */
+  var SKINCOL = {
+    jaeu: '#5eead4', cat: '#fb923c', frog: '#4ade80', robot: '#38bdf8', ghost: '#c4b5fd',
+    rabbit: '#f9a8d4', panda: '#e2e8f0', fox: '#fb923c', demon: '#f87171', alien: '#a3e635',
+    wizard: '#a78bfa', knight: '#fbbf24'
+  };
+
+  var A = MG.arts({});
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function tone(f, d, v, t, f2) { try { V.beep(f, d || 0.05, v || 0.08, t || 'square', f2 || null); } catch (e) {} }
+  function seqNotes(list, step, vol, dur, type) {
+    for (var i = 0; i < list.length; i++) (function (i) {
+      setTimeout(function () { tone(list[i], dur || 0.1, vol || 0.08, type || 'sine', null); }, i * step);
+    })(i);
+  }
+  function hex2rgb(h) {
+    h = String(h || '#22d3ee').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return [parseInt(h.slice(0, 2), 16) || 0, parseInt(h.slice(2, 4), 16) || 0, parseInt(h.slice(4, 6), 16) || 0];
+  }
+  function rgba(h, a) { var c = hex2rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function mixHex(a, b, t) {
+    var x = hex2rgb(a), y = hex2rgb(b);
+    var f = function (i) { return Math.round(x[i] + (y[i] - x[i]) * t); };
+    var s = function (n) { n = clamp(n, 0, 255); return (n < 16 ? '0' : '') + n.toString(16); };
+    return '#' + s(f(0)) + s(f(1)) + s(f(2));
+  }
+
+  /* ---------------------------------------------------------------- 저장 */
+  function lsGet(k, d) { try { return V.lsGet(k, d); } catch (e) { return d; } }
+  function lsSet(k, v) { try { V.lsSet(k, v); } catch (e) {} }
+  function dayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function loadDaily() {
+    var s = lsGet(KEY, null);
+    if (!s || typeof s !== 'object') s = { d: '', c: 0 };
+    if (typeof s.c !== 'number' || !isFinite(s.c) || s.c < 0) s.c = 0;
+    return s;
+  }
+  function addCoins(n) {
+    n = Math.round(Number(n) || 0);
+    if (n <= 0) return true;
+    try {
+      if (root.JW529 && root.JW529.addCoins) { root.JW529.addCoins(n); return true; }
+      if (root.JW529 && root.JW529.coins && root.JW529.st) {
+        root.JW529.coins((Number(root.JW529.st().coins) || 0) + n);
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  function tierOf(score) {
+    for (var i = 0; i < TIERS.length; i++) if (score >= TIERS[i].s) return TIERS[i];
+    return TIERS[TIERS.length - 1];
+  }
+  function grantCoins(score) {
+    var want = tierOf(score).coin;
+    var d = loadDaily();
+    var used = d.d === dayKey() ? d.c : 0;
+    var left = Math.max(0, DAILY_CAP - used);
+    var gain = Math.min(want, left);
+    var ok = true;
+    if (gain > 0) {
+      if (!addCoins(gain)) { gain = 0; ok = false; }
+      else lsSet(KEY, { d: dayKey(), c: used + gain });
+    }
+    return { gain: gain, want: want, used: used + gain, cap: DAILY_CAP, fail: !ok };
+  }
+
+  /* ---------------------------------------------------------------- 모양 헬퍼 */
+  function starPath(g, x, y, r, rot) {
+    g.beginPath();
+    for (var i = 0; i < 10; i++) {
+      var a = rot + (i * Math.PI) / 5 - Math.PI / 2;
+      var rr = i % 2 ? r * 0.45 : r;
+      var px = x + Math.cos(a) * rr, py = y + Math.sin(a) * rr;
+      if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+    }
+    g.closePath();
+  }
+  function symbolPath(g, kind, x, y, r) {
+    if (kind === 'diamond') {
+      g.beginPath();
+      g.moveTo(x, y - r);
+      g.lineTo(x + r * 0.78, y);
+      g.lineTo(x, y + r);
+      g.lineTo(x - r * 0.78, y);
+      g.closePath();
+      return;
+    }
+    if (kind === 'dot') { g.beginPath(); g.arc(x, y, r * 0.84, 0, 6.2832); return; }
+    if (kind === 'tri') {
+      g.beginPath();
+      g.moveTo(x, y - r * 0.94);
+      g.lineTo(x + r * 0.92, y + r * 0.72);
+      g.lineTo(x - r * 0.92, y + r * 0.72);
+      g.closePath();
+      return;
+    }
+    starPath(g, x, y, r, 0);
+  }
+
+  /* ---------------------------------------------------------------- 게임 본체 */
+  function create(a) {
+    var RND = a.rng || Math.random;
+    var MR = Math.random;
+
+    var S = {
+      ready: true, over: false, done: false, win: null,
+      t: 0, timeLeft: TIME_LIMIT,
+      score: 0, padPts: 0, clearPts: 0, bonusPts: 0,
+      round: 1, lives: LIVES0,
+      seq: [], inputI: 0, phase: 'show',
+      showT: 0, showTotal: 1, showI: 0, showBeep: -1,
+      limit: 5, inputT: 0,
+      fast: false, mult: 1,
+      combo: 0, bestCombo: 0, taps: 0, hits: 0,
+      glow: [0, 0, 0, 0], flash: 0, flashCol: '#ffffff', shake: 0, beat: 0,
+      msg: '', msgT: 0, msgCol: '#c4b5fd', hintT: 0,
+      banner: '', bannerSub: '', bannerT: 0, bannerCol: '#c084fc', bannerAt: 300,
+      sparks: [], rings: [], texts: [],
+      coinGain: 0, coinUsed: 0, coinTier: null,
+      overWhy: '', overT: 0,
+      skinCol: '#5eead4', trailCol: '#5eead4',
+      botTarget: 0, clearT: 0, lastRoundGain: 0
+    };
+
+    /* -------------------------------------------------------------- 색 */
+    function skinColor() {
+      var id = '';
+      try { var st = V.st(); id = (st && st.me && st.me.skin) || ''; } catch (e) {}
+      return SKINCOL[id] || '#5eead4';
+    }
+    function trailColor() {
+      var col = null;
+      try {
+        var st = root.JW529 && root.JW529.st ? root.JW529.st() : null;
+        var id = (st && st.trail) || '';
+        if (id && id !== 't_cloud' && id !== 'none') {
+          var list = (root.JW529.trails || []);
+          for (var i = 0; i < list.length; i++) if (list[i].id === id) col = list[i].col || null;
+        }
+      } catch (e) {}
+      return col;
+    }
+    function refreshColors() {
+      S.skinCol = skinColor();
+      S.trailCol = trailColor() || S.skinCol;
+    }
+
+    /* -------------------------------------------------------------- 연출 */
+    function burst(x, y, n, col, spd) {
+      for (var i = 0; i < n; i++) {
+        if (S.sparks.length > 150) break;
+        var ang = MR() * 6.283;
+        var v = (spd || 150) * (0.3 + MR());
+        S.sparks.push({
+          x: x, y: y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v - 30,
+          life: 0.28 + MR() * 0.4, max: 0.68, c: col, s: MR() < 0.4 ? 3 : 1.8
+        });
+      }
+    }
+    function ring(x, y, col, rad, spd) {
+      S.rings.push({ x: x, y: y, r: rad || 8, life: 0.44, max: 0.44, c: col, spd: spd || 150 });
+    }
+    function say(t, col) { S.msg = t; S.msgT = 1.5; S.msgCol = col || '#c4b5fd'; }
+    function banner(t, sub, col, dur, at) {
+      S.banner = t; S.bannerSub = sub || ''; S.bannerCol = col || '#c084fc';
+      S.bannerT = dur || 1.1; S.bannerAt = at || 300;
+    }
+    function addText(x, y, txt, col) { S.texts.push({ x: x, y: y, txt: txt, c: col || '#fde047', t: 0, dur: 0.8 }); }
+    function shake(v) { S.shake = Math.max(S.shake, v); }
+
+    /* -------------------------------------------------------------- 점수 */
+    function recompute() {
+      S.score = S.padPts + S.clearPts + S.bonusPts;
+      a.setScore(Math.round(S.score));
+    }
+    function padGain() { return Math.round(25 * S.mult); }
+    function comboGain() { return Math.round(50 * S.mult); }
+    function clearGain(round) { return Math.round(100 * round * S.mult); }
+    function speedGain(remain) { return Math.round(Math.max(0, remain) * 10 * S.mult); }
+
+    /* -------------------------------------------------------------- 시퀀스 */
+    function pick() {
+      var n = S.seq.length;
+      var last = n > 0 ? S.seq[n - 1] : -1;
+      var prev = n > 1 ? S.seq[n - 2] : -1;
+      var v = Math.floor(RND() * 4) % 4;
+      var guard = 0;
+      /* 같은 패드가 세 번 연달아 나오면 외우기보다 반사신경이 되어 버린다 — 한 번만 피한다 */
+      while (v === last && v === prev && guard++ < 8) v = Math.floor(RND() * 4) % 4;
+      return v;
+    }
+    function seqLenFor(round) { return round + 2; }          /* 라운드 1 = 3개 */
+    function limitFor(len, fast) {
+      var base = 2.2 + len * 1.05;
+      return fast ? base * 0.82 : base;
+    }
+    function startShow(isRetry) {
+      S.phase = 'show';
+      S.showT = 0;
+      S.showI = 0;
+      S.showBeep = -1;
+      S.inputI = 0;
+      S.inputT = 0;
+      S.limit = limitFor(S.seq.length, S.fast);
+      var on = S.fast ? 0.30 : 0.46;
+      var off = S.fast ? 0.085 : 0.13;
+      S.showTotal = S.seq.length * (on + off) + 0.30;
+    }
+    function newRound() {
+      S.round++;
+      S.fast = (S.round % 3 === 0);
+      S.mult = S.fast ? 1.5 : 1;
+      S.seq.push(pick());
+      if (S.fast) {
+        banner('⚡ 고속 웨이브!', '재생이 빨라요 · 이 라운드 점수 ×1.5', '#a855f7', 1.35, 296);
+        seqNotes([784, 988, 1175], 55, 0.09, 0.1, 'sawtooth');
+        ring(CORE.x, CORE.y, '#a855f7', 20, 210);
+        burst(CORE.x, CORE.y, 16, '#a855f7', 200);
+      } else {
+        ring(CORE.x, CORE.y, S.skinCol, 16, 180);
+        tone(660, 0.07, 0.07, 'triangle', 880);
+      }
+      startShow(false);
+    }
+    function clearRound() {
+      var remain = Math.max(0, S.limit - S.inputT);
+      var sp = speedGain(remain);
+      var cl = clearGain(S.round);
+      S.bonusPts += sp;
+      S.clearPts += cl;
+      S.lastRoundGain = cl + sp;
+      recompute();
+      S.phase = 'clear';
+      S.clearT = 0;
+      banner('라운드 ' + S.round + ' 클리어!', '+' + cl + ' · 스피드 보너스 +' + sp, '#86efac', 1.0, 296);
+      burst(CORE.x, CORE.y, 18, S.skinCol, 220);
+      burst(CORE.x, CORE.y, 10, S.trailCol, 170);
+      ring(CORE.x, CORE.y, S.skinCol, 18, 220);
+      ring(CORE.x, CORE.y, S.trailCol, 10, 180);
+      seqNotes([659, 784, 988, 1319], 52, 0.09, 0.1, 'triangle');
+    }
+
+    /* -------------------------------------------------------------- 시작 */
+    function reset() {
+      S.ready = true; S.over = false; S.done = false; S.win = null;
+      S.t = 0; S.timeLeft = TIME_LIMIT;
+      S.score = 0; S.padPts = 0; S.clearPts = 0; S.bonusPts = 0;
+      S.round = 1; S.lives = LIVES0;
+      S.seq = []; S.inputI = 0; S.phase = 'show';
+      S.showT = 0; S.showTotal = 1; S.showI = 0; S.showBeep = -1;
+      S.limit = 5; S.inputT = 0;
+      S.fast = false; S.mult = 1;
+      S.combo = 0; S.bestCombo = 0; S.taps = 0; S.hits = 0;
+      S.glow = [0, 0, 0, 0]; S.flash = 0; S.shake = 0; S.beat = 0;
+      S.msg = ''; S.msgT = 0; S.hintT = 0;
+      S.banner = ''; S.bannerSub = ''; S.bannerT = 0; S.bannerAt = 300;
+      S.sparks = []; S.rings = []; S.texts = [];
+      S.coinGain = 0; S.coinUsed = 0; S.coinTier = null;
+      S.overWhy = ''; S.overT = 0; S.clearT = 0; S.lastRoundGain = 0;
+      refreshColors();
+      S.seq.push(pick()); S.seq.push(pick()); S.seq.push(pick());   /* 라운드 1 = 3개 */
+      startShow(false);
+      S.phase = 'show';
+      S.showT = 0; S.showTotal = 999;                              /* 시작 전엔 재생하지 않는다 */
+      S.botTarget = a.bot ? Math.round(900 + RND() * 900) : 0;
+      a.vsLine(a.bot ? '🤖 봇 ' + S.botTarget + '점' : '');
+      a.setScore(0); a.setStatus(''); a.setTime(null);
+    }
+
+    function begin() {
+      if (!S.ready) return;
+      S.ready = false;
+      S.t = 0; S.timeLeft = TIME_LIMIT;
+      refreshColors();
+      banner('🧠 네온 시퀀스!', '빛나는 순서를 그대로 눌러요 · 60초', '#c4b5fd', 1.25, 300);
+      seqNotes([523, 659, 784, 988], 60, 0.1, 0.12, 'triangle');
+      startShow(false);
+    }
+
+    /* -------------------------------------------------------------- 입력 */
+    function padAt(x, y) {
+      var best = -1, bd = HIT_R * HIT_R;
+      for (var i = 0; i < 4; i++) {
+        var p = PADS[i];
+        var cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+        var dx = x - cx, dy = y - cy;
+        var d = dx * dx + dy * dy;
+        if (d <= bd) { bd = d; best = i; }
+      }
+      return best;
+    }
+    function press(i) {
+      if (i < 0 || i > 3) return;
+      if (S.ready) { begin(); return; }
+      if (S.over) return;
+      if (S.phase === 'show') {
+        /* 재생 중 입력 잠금 — 눌러도 순서에 영향을 주지 않는다 */
+        S.glow[i] = Math.min(1, S.glow[i] + 0.5);
+        tone(240, 0.05, 0.04, 'sine', 200);
+        if (S.hintT <= 0) { say('👀 지금은 보는 중! 잠시만요', '#93a4c4'); S.hintT = 1.2; }
+        return;
+      }
+      if (S.phase !== 'input') return;
+
+      S.taps++;
+      S.glow[i] = 1;
+      S.beat = 1;
+      tone(PADS[i].note, 0.11, 0.1, 'sine', PADS[i].note * 1.5);
+
+      if (S.seq[S.inputI] !== i) { miss('wrong', i); return; }
+
+      /* 정답 */
+      S.hits++;
+      S.inputI++;
+      S.combo++;
+      if (S.combo > S.bestCombo) S.bestCombo = S.combo;
+      var g = padGain();
+      S.padPts += g;
+      recompute();
+      var p = PADS[i];
+      var cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+      burst(cx, cy, 5, mixHex(p.col, '#ffffff', 0.3), 120);
+      burst(cx, cy, 4, S.trailCol, 90);
+      ring(cx, cy, S.skinCol, 12, 190);
+      addText(cx, cy - 16, '+' + g, S.skinCol);
+      if (S.combo > 0 && S.combo % 5 === 0) {
+        var cg = comboGain();
+        S.bonusPts += cg;
+        recompute();
+        banner('🔥 콤보 ×' + S.combo + '!', '+' + cg + ' 보너스', '#fde047', 0.9, 302);
+        burst(CORE.x, CORE.y, 10, '#fde047', 170);
+        ring(CORE.x, CORE.y, '#fde047', 14, 200);
+        seqNotes([1046, 1318, 1568], 45, 0.08, 0.08, 'sine');
+      }
+      if (S.inputI >= S.seq.length) clearRound();
+    }
+
+    function miss(kind, pad) {
+      S.combo = 0;
+      S.lives--;
+      S.shake = 9;
+      S.flash = 0.5;
+      S.flashCol = '#f43f5e';
+      S.bannerT = 0;                 /* 오답 안내가 묻히지 않게 이전 배너를 내린다 */
+      if (pad >= 0 && pad <= 3) {
+        var p = PADS[pad];
+        burst(p.x + p.w / 2, p.y + p.h / 2, 12, '#f87171', 190);
+      }
+      tone(160, 0.3, 0.13, 'sawtooth', 80);
+      tone(120, 0.34, 0.1, 'square', 60);
+      if (S.lives <= 0) {
+        S.lives = 0;
+        S.phase = 'over';
+        say('💔 라이프를 다 잃었어요', '#fca5a5');
+        finishNow('lives');
+        return;
+      }
+      S.phase = 'show';
+      if (kind === 'timeout') say('⏱ 시간 초과! ❤ -1 · 같은 순서를 다시 보여 줄게요', '#fca5a5');
+      else say('❌ 틀렸어요! ❤ -1 · 같은 순서를 다시 보여 줄게요', '#fca5a5');
+      S.msgT = 2.0;
+      S.glow = [0, 0, 0, 0];
+      startShow(true);
+      S.msgT = 2.0;
+    }
+
+    /* -------------------------------------------------------------- 끝 */
+    function finishNow(why) {
+      if (S.done) return;
+      S.done = true; S.over = true;
+      S.overWhy = why || 'time';
+      S.overT = 0;
+      S.score = Math.round(S.score);
+      S.win = a.bot ? (S.score >= S.botTarget) : null;
+      var t = tierOf(S.score);
+      S.coinTier = t;
+      var g = grantCoins(S.score);
+      S.coinGain = g.gain; S.coinUsed = g.used;
+      a.setScore(S.score);
+      if (why === 'lives') seqNotes([392, 311, 247, 196], 90, 0.11, 0.16, 'sawtooth');
+      else seqNotes([523, 466, 392, 311], 70, 0.09, 0.14, 'triangle');
+      var note = [];
+      var whyTxt = why === 'lives' ? '💔 라이프 0' : '⏱ 60초 종료';
+      note.push(whyTxt + ' · ' + S.round + '라운드 · 최장 ' + S.seq.length + '개 · 콤보 ' + S.bestCombo);
+      var acc = S.taps > 0 ? Math.round(S.hits / S.taps * 100) : 100;
+      note.push('패드 ' + Math.round(S.padPts) + ' + 클리어 ' + Math.round(S.clearPts) +
+        ' + 보너스 ' + Math.round(S.bonusPts) + ' = ' + S.score);
+      note.push('정확도 ' + acc + '% (' + S.hits + '/' + S.taps + ')');
+      if (a.bot) note.push('🤖 봇 ' + S.botTarget + '점 · ' + (S.score >= S.botTarget ? '승리!' : '패배'));
+      if (g.fail) note.push('🪙 펫 코인 저장소를 찾지 못했어요');
+      else if (g.gain > 0) note.push(t.name + ' · 🪙 펫 코인 +' + g.gain + ' (오늘 ' + g.used + '/' + g.cap + ')');
+      else note.push(t.name + ' · 🪙 오늘 코인 상한(' + g.cap + ')을 다 받았어요');
+      a.over(S.win, note.join('\n'));
+    }
+
+    /* -------------------------------------------------------------- 업데이트 */
+    function stepFx(dt) {
+      var i;
+      for (i = S.sparks.length - 1; i >= 0; i--) {
+        var sp = S.sparks[i];
+        sp.life -= dt;
+        if (sp.life <= 0) { S.sparks.splice(i, 1); continue; }
+        sp.vy += 300 * dt;
+        sp.x += sp.vx * dt;
+        sp.y += sp.vy * dt;
+      }
+      for (i = S.rings.length - 1; i >= 0; i--) {
+        var rg = S.rings[i];
+        rg.life -= dt;
+        if (rg.life <= 0) { S.rings.splice(i, 1); continue; }
+        rg.r += (rg.spd || 150) * dt;
+      }
+      for (i = S.texts.length - 1; i >= 0; i--) {
+        var tx = S.texts[i];
+        tx.t += dt;
+        if (tx.t >= tx.dur) S.texts.splice(i, 1);
+      }
+      for (i = 0; i < 4; i++) if (S.glow[i] > 0) S.glow[i] = Math.max(0, S.glow[i] - dt * 3.4);
+      if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 2.4);
+      if (S.shake > 0) S.shake = Math.max(0, S.shake - dt * 26);
+      if (S.beat > 0) S.beat = Math.max(0, S.beat - dt * 3.4);
+      if (S.msgT > 0) S.msgT = Math.max(0, S.msgT - dt);
+      if (S.bannerT > 0) S.bannerT = Math.max(0, S.bannerT - dt);
+      if (S.hintT > 0) S.hintT = Math.max(0, S.hintT - dt);
+    }
+
+    function update(dt) {
+      S.t += dt;
+      stepFx(dt);
+      if (S.ready) return;
+      if (S.over) { S.overT += dt; return; }
+
+      /* 60초 타임어택 */
+      S.timeLeft = Math.max(0, TIME_LIMIT - S.t);
+      if (S.timeLeft <= 0) {
+        S.phase = 'over';
+        say('⏱ 60초 종료!', '#fca5a5');
+        finishNow('time');
+        return;
+      }
+
+      if (S.phase === 'show') {
+        var on = S.fast ? 0.30 : 0.46;
+        var off = S.fast ? 0.085 : 0.13;
+        var step = on + off;
+        S.showT += dt;
+        var idx = Math.floor(S.showT / step);
+        var inOn = (S.showT % step) < on;
+        if (idx < S.seq.length) {
+          S.showI = idx;
+          if (inOn) {
+            S.glow[S.seq[idx]] = 1;
+            S.beat = 1;
+            if (S.showBeep !== idx) {
+              S.showBeep = idx;
+              var p = PADS[S.seq[idx]];
+              tone(p.note, S.fast ? 0.13 : 0.18, 0.09, 'sine', p.note * 1.5);
+            }
+          }
+        }
+        if (S.showT >= S.showTotal) {
+          S.phase = 'input';
+          S.inputI = 0;
+          S.inputT = 0;
+          S.showI = S.seq.length;
+          S.glow = [0, 0, 0, 0];
+          tone(S.fast ? 1180 : 980, 0.09, 0.08, 'square', 1320);
+        }
+        return;
+      }
+
+      if (S.phase === 'input') {
+        S.inputT += dt;
+        if (S.inputT >= S.limit) miss('timeout', -1);
+        return;
+      }
+
+      if (S.phase === 'clear') {
+        S.clearT += dt;
+        if (S.clearT >= 0.85) newRound();
+        return;
+      }
+    }
+
+    var api = {
+      start: reset,
+      stop: function () { S.done = true; S.over = true; },
+      begin: begin,
+      update: update,
+
+      pointer: function (e) {
+        if (!e) return;
+        if (e.type !== 'down') return;      /* 누르는 즉시 — 리듬 게임 손맛 */
+        if (S.over) return;
+        var i = padAt(e.x, e.y);
+        if (i < 0) return;
+        press(i);
+      },
+
+      key: function (k, down, e) {
+        if (!down) return;
+        var i = padFromKey(k, e);
+        if (S.ready) {
+          if (i >= 0 || k === 'space' || k === 'enter') begin();
+          return;
+        }
+        if (S.over) return;
+        if (i >= 0) { press(i); return; }
+      },
+
+      draw: function (g) {
+        drawBg(g);
+        var shk = S.shake;
+        if (shk > 0) {
+          g.save();
+          g.translate((MR() - 0.5) * shk, (MR() - 0.5) * shk * 0.7);
+        }
+        drawBoard(g);
+        drawCore(g);
+        drawFx(g);
+        if (shk > 0) g.restore();
+        drawHud(g);
+        drawBottom(g);
+        if (S.flash > 0) {
+          g.fillStyle = rgba(S.flashCol, S.flash * 0.22);
+          g.fillRect(0, 0, W, H);
+        }
+        if (S.ready) drawReady(g);
+        else if (S.over) {
+          g.globalAlpha = Math.min(1, 0.16 + S.overT * 0.2);
+          g.fillStyle = '#04060e';
+          g.fillRect(0, 0, W, H);
+          g.globalAlpha = 1;
+        }
+      },
+
+      /* 테스트/검증용 */
+      state: function () {
+        return {
+          ready: S.ready, over: S.over, done: S.done, win: S.win,
+          phase: S.phase, overWhy: S.overWhy,
+          t: Math.round(S.t * 100) / 100, time: Math.round(S.t * 100) / 100,
+          timeLeft: Math.round(S.timeLeft * 10) / 10,
+          score: Math.round(S.score), padPts: Math.round(S.padPts),
+          clearPts: Math.round(S.clearPts), bonusPts: Math.round(S.bonusPts),
+          round: S.round, lives: S.lives, seqLen: S.seq.length, seq: S.seq.slice(),
+          inputI: S.inputI, inputT: Math.round(S.inputT * 100) / 100,
+          inputLimit: Math.round(S.limit * 100) / 100,
+          inputLeft: Math.round(Math.max(0, S.limit - S.inputT) * 100) / 100,
+          fast: S.fast, mult: S.mult,
+          combo: S.combo, bestCombo: S.bestCombo, taps: S.taps, hits: S.hits,
+          glow: S.glow.slice(), showI: S.showI,
+          showT: Math.round(S.showT * 100) / 100, showTotal: Math.round(S.showTotal * 100) / 100,
+          clearT: Math.round(S.clearT * 100) / 100,
+          coinGain: S.coinGain, coinUsed: S.coinUsed, botTarget: S.botTarget,
+          banner: S.banner, msg: S.msg
+        };
+      }
+    };
+
+    /* -------------------------------------------------------------- 키 → 패드 */
+    function padFromKey(k, e) {
+      var code = e && e.code;
+      if (code) {
+        switch (code) {
+          case 'Digit1': case 'Numpad1': return 0;
+          case 'Digit2': case 'Numpad2': return 1;
+          case 'Digit3': case 'Numpad3': return 2;
+          case 'Digit4': case 'Numpad4': return 3;
+          case 'KeyQ': return 0;
+          case 'KeyW': return 1;
+          case 'KeyA': return 2;
+          case 'KeyS': return 3;
+          case 'ArrowUp': return 0;
+          case 'ArrowRight': return 1;
+          case 'ArrowLeft': return 2;
+          case 'ArrowDown': return 3;
+        }
+      }
+      if (k === 'n1') return 0;
+      if (k === 'n2') return 1;
+      if (k === 'n3') return 2;
+      if (k === 'n4') return 3;
+      if (k === 'q') return 0;
+      if (k === 'up') return 1;
+      if (k === 'left') return 2;
+      if (k === 'down') return 3;
+      return -1;
+    }
+
+    /* -------------------------------------------------------------- 검증 훅 (QA 전용) */
+    try {
+      if (/(^|[?&])qa=/.test(String((root.location && root.location.search) || ''))) {
+        api.__qa = {
+          begin: function () { begin(); return api.state(); },
+          state: function () { return api.state(); },
+          tick: function (dt) { api.update(dt == null ? 0.016 : dt); return api.state(); },
+          ticks: function (n, dt) { for (var i = 0; i < (n | 0); i++) api.update(dt == null ? 0.016 : dt); return api.state(); },
+          press: function (i) { press(i | 0); return api.state(); },
+          padAt: function (x, y) { return padAt(Number(x), Number(y)); },
+          setTime: function (v) { S.t = Number(v) || 0; S.timeLeft = Math.max(0, TIME_LIMIT - S.t); return api.state(); },
+          setLives: function (n) { S.lives = Math.max(0, n | 0); return api.state(); },
+          showDone: function () { S.showT = S.showTotal + 0.01; api.update(0.016); return api.state(); },
+          jumpTo: function (n) {
+            S.round = Math.max(1, n | 0);
+            S.fast = (S.round % 3 === 0); S.mult = S.fast ? 1.5 : 1;
+            S.seq = [];
+            var len = seqLenFor(S.round);
+            for (var i = 0; i < len; i++) S.seq.push(pick());
+            S.combo = 0;
+            if (S.fast) banner('⚡ 고속 웨이브!', '재생이 빨라요 · 이 라운드 점수 ×1.5', '#a855f7', 1.35, 296);
+            startShow(false);
+            return api.state();
+          },
+          solve: function () {
+            for (var i = 0; i < S.seq.length + 3 && S.phase === 'input'; i++) press(S.seq[S.inputI]);
+            return api.state();
+          },
+          wrong: function () {
+            var want = S.seq[S.inputI];
+            press((want + 1) % 4);
+            return api.state();
+          },
+          timeout: function () { S.inputT = S.limit + 0.01; api.update(0.016); return api.state(); },
+          finish: function (why) { finishNow(why || 'time'); return api.state(); }
+        };
+      }
+    } catch (e) {}
+
+    /* -------------------------------------------------------------- 그리기 : 배경 */
+    function drawBg(g) {
+      g.fillStyle = '#04060e';
+      g.fillRect(0, 0, W, H);
+      var bg = g.createRadialGradient(180, 258, 30, 180, 258, 340);
+      bg.addColorStop(0, 'rgba(30,52,86,.55)');
+      bg.addColorStop(0.55, 'rgba(10,16,32,.9)');
+      bg.addColorStop(1, 'rgba(3,5,12,1)');
+      g.fillStyle = bg;
+      g.fillRect(0, HUDH, W, H - HUDH);
+
+      /* 아주 옅은 네온 격자 */
+      g.strokeStyle = 'rgba(88,140,200,.07)';
+      g.lineWidth = 1;
+      var off = (S.t * 12) % 40;
+      for (var x = -40 + off; x < W + 40; x += 40) {
+        g.beginPath(); g.moveTo(x, HUDH); g.lineTo(x, H); g.stroke();
+      }
+      for (var y = HUDH + off; y < H; y += 40) {
+        g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke();
+      }
+      /* 위쪽 네온 안개 */
+      var fog = g.createLinearGradient(0, HUDH, 0, 180);
+      fog.addColorStop(0, rgba(S.skinCol, 0.1));
+      fog.addColorStop(1, rgba(S.skinCol, 0));
+      g.fillStyle = fog;
+      g.fillRect(0, HUDH, W, 140);
+    }
+
+    function drawBoard(g) {
+      /* 고속 웨이브면 보드 테두리가 보랏빛으로 맥동한다 */
+      if (S.fast) {
+        g.save();
+        g.shadowColor = '#a855f7';
+        g.shadowBlur = 16 + 8 * Math.sin(S.t * 6);
+        g.strokeStyle = 'rgba(168,85,247,' + (0.5 + 0.3 * Math.sin(S.t * 6)) + ')';
+        g.lineWidth = 2;
+        A.rr(g, 8, 90, 344, 338, 26);
+        g.stroke();
+        g.restore();
+      }
+      for (var i = 0; i < 4; i++) drawPad(g, i);
+    }
+
+    function drawPad(g, i) {
+      var p = PADS[i];
+      var on = S.glow[i];
+      var ease = on * on;
+      var cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+
+      /* 바닥 그림자 */
+      g.fillStyle = 'rgba(0,0,0,.45)';
+      A.rr(g, p.x + 2, p.y + 6, p.w, p.h, 22);
+      g.fill();
+
+      /* 본체 */
+      g.save();
+      g.shadowColor = p.col;
+      g.shadowBlur = 6 + 30 * ease;
+      A.rr(g, p.x, p.y, p.w, p.h, 22);
+      var grd = g.createLinearGradient(p.x, p.y, p.x + p.w, p.y + p.h);
+      if (on > 0.03) {
+        grd.addColorStop(0, mixHex(p.col, '#ffffff', 0.35 + 0.35 * ease));
+        grd.addColorStop(0.55, p.col);
+        grd.addColorStop(1, mixHex(p.col, '#ffffff', 0.12 * ease));
+      } else {
+        grd.addColorStop(0, mixHex(p.dark, '#0b1220', 0.35));
+        grd.addColorStop(1, mixHex(p.dark, '#03060e', 0.55));
+      }
+      g.fillStyle = grd;
+      g.fill();
+      g.restore();
+
+      /* 테두리 */
+      A.rr(g, p.x, p.y, p.w, p.h, 22);
+      if (on > 0.03) {
+        g.strokeStyle = rgba('#ffffff', 0.5 + 0.4 * ease);
+        g.lineWidth = 2.6;
+      } else {
+        g.strokeStyle = rgba(p.col, 0.42);
+        g.lineWidth = 1.6;
+      }
+      g.stroke();
+
+      /* 안쪽 하이라이트 */
+      A.rr(g, p.x + 3, p.y + 3, p.w - 6, p.h * 0.42, 18);
+      g.fillStyle = on > 0.03 ? rgba('#ffffff', 0.16 * ease) : 'rgba(255,255,255,.045)';
+      g.fill();
+
+      /* 심볼 */
+      g.save();
+      if (on > 0.03) { g.shadowColor = '#ffffff'; g.shadowBlur = 14 * ease; }
+      else { g.shadowColor = p.col; g.shadowBlur = 8; }
+      symbolPath(g, p.sym, cx, cy - 4, 30);
+      g.fillStyle = on > 0.03 ? mixHex(p.col, '#0a1320', 0.72) : rgba(p.col, 0.9);
+      g.fill();
+      g.restore();
+
+      /* 키 안내 칩 */
+      if (!S.ready && !S.over) {
+        var kt = p.keys, kw = kt.length * 5.4 + 10;
+        A.rr(g, p.x + p.w - kw - 7, p.y + p.h - 20, kw, 14, 7);
+        g.fillStyle = on > 0.03 ? 'rgba(10,16,28,.55)' : 'rgba(255,255,255,.06)';
+        g.fill();
+        A.text(g, kt, p.x + p.w - kw / 2 - 7, p.y + p.h - 10,
+          { size: 8, color: on > 0.03 ? 'rgba(10,20,32,.8)' : 'rgba(226,240,255,.42)', align: 'center' });
+      }
+    }
+
+    function drawCore(g) {
+      var c = CORE;
+      var col = S.skinCol, tcol = S.trailCol;
+      var beat = S.beat;
+      var prog = 0, arcCol = tcol;
+      if (S.phase === 'input') {
+        prog = clamp(1 - S.inputT / Math.max(0.01, S.limit), 0, 1);
+        arcCol = prog < 0.28 ? '#f87171' : tcol;
+      } else if (S.phase === 'show') {
+        prog = clamp(S.showT / Math.max(0.01, S.showTotal), 0, 1);
+        arcCol = S.fast ? '#a855f7' : tcol;
+      } else if (S.phase === 'clear') {
+        prog = 1;
+        arcCol = '#86efac';
+      }
+
+      /* 바깥 후광 */
+      g.save();
+      var halo = g.createRadialGradient(c.x, c.y, c.r * 0.5, c.x, c.y, c.r + 26);
+      halo.addColorStop(0, rgba(col, 0.3 + 0.25 * beat));
+      halo.addColorStop(1, rgba(col, 0));
+      g.fillStyle = halo;
+      g.fillRect(c.x - c.r - 30, c.y - c.r - 30, (c.r + 30) * 2, (c.r + 30) * 2);
+      g.restore();
+
+      /* 원판 */
+      g.save();
+      g.shadowColor = col;
+      g.shadowBlur = 16 + 18 * beat;
+      g.beginPath();
+      g.arc(c.x, c.y, c.r - 4, 0, 6.2832);
+      var disc = g.createRadialGradient(c.x, c.y - 14, 6, c.x, c.y, c.r);
+      disc.addColorStop(0, '#0a1424');
+      disc.addColorStop(1, '#03060e');
+      g.fillStyle = disc;
+      g.fill();
+      g.strokeStyle = rgba(col, 0.9);
+      g.lineWidth = 2.6;
+      g.stroke();
+      g.restore();
+
+      /* 진행 아크 */
+      if (prog > 0.001) {
+        g.save();
+        g.shadowColor = arcCol;
+        g.shadowBlur = 12;
+        g.strokeStyle = arcCol;
+        g.lineWidth = 4;
+        g.lineCap = 'round';
+        g.beginPath();
+        g.arc(c.x, c.y, c.r + 6, -Math.PI / 2, -Math.PI / 2 + prog * 6.2832);
+        g.stroke();
+        g.restore();
+      }
+
+      /* 상태 표시 */
+      var st, ico, tc;
+      if (S.ready) { ico = '🧠'; st = '준비'; tc = '#c4b5fd'; }
+      else if (S.phase === 'show') {
+        if (S.fast) { ico = '⚡'; st = '고속!'; tc = '#c084fc'; }
+        else { ico = '👀'; st = '기억!'; tc = '#a5f3fc'; }
+      } else if (S.phase === 'input') { ico = '👆'; st = '입력!'; tc = S.skinCol; }
+      else if (S.phase === 'clear') { ico = '✨'; st = '클리어'; tc = '#86efac'; }
+      else { ico = '🏁'; st = '끝'; tc = '#fca5a5'; }
+
+      A.text(g, ico, c.x, c.y - 12, { size: 18, color: tc, align: 'center' });
+      A.text(g, st, c.x, c.y + 8, { size: 12.5, color: tc, align: 'center', font: '"Jua",sans-serif' });
+      var sub = 'R' + S.round;
+      if (S.phase === 'input') sub = Math.max(0, S.limit - S.inputT).toFixed(1) + 's';
+      A.text(g, sub, c.x, c.y + 26, {
+        size: 9.5, color: S.phase === 'input' ? rgba(arcCol, 0.95) : 'rgba(196,215,240,.55)', align: 'center'
+      });
+    }
+
+    function drawFx(g) {
+      var i;
+      for (i = 0; i < S.rings.length; i++) {
+        var rg = S.rings[i];
+        var a = Math.max(0, rg.life / rg.max);
+        g.strokeStyle = rgba(rg.c, a * 0.75);
+        g.lineWidth = 2.4 * a + 0.6;
+        g.beginPath();
+        g.arc(rg.x, rg.y, rg.r, 0, 6.2832);
+        g.stroke();
+      }
+      for (i = 0; i < S.sparks.length; i++) {
+        var sp = S.sparks[i];
+        var al = Math.max(0, sp.life / sp.max);
+        g.fillStyle = rgba(sp.c, al);
+        g.fillRect(sp.x - sp.s / 2, sp.y - sp.s / 2, sp.s, sp.s);
+      }
+      for (i = 0; i < S.texts.length; i++) {
+        var tx = S.texts[i];
+        g.globalAlpha = Math.max(0, 1 - tx.t / tx.dur);
+        A.text(g, tx.txt, tx.x, tx.y - tx.t * 22, { size: 12, color: tx.c, align: 'center', font: '"Jua",sans-serif' });
+      }
+      g.globalAlpha = 1;
+    }
+
+    function drawHud(g) {
+      /* 상단 44px — 점수 / 라이프 / 남은 시간 */
+      g.fillStyle = 'rgba(6,10,22,.96)';
+      g.fillRect(0, 0, W, HUDH);
+      g.fillStyle = 'rgba(150,190,255,.16)';
+      g.fillRect(0, HUDH - 1, W, 1);
+
+      A.text(g, 'SCORE', 12, 14, { size: 8, color: '#7f93b3' });
+      A.text(g, String(Math.round(S.score)), 12, 36, { size: 21, color: '#f8fafc' });
+
+      A.text(g, 'LIFE', 180, 14, { size: 8, color: '#7f93b3', align: 'center' });
+      for (var i = 0; i < LIVES0; i++) {
+        var hx = 180 + (i - (LIVES0 - 1) / 2) * 22;
+        var alive = i < S.lives;
+        if (alive) {
+          g.save();
+          g.shadowColor = '#f43f5e';
+          g.shadowBlur = 9;
+          A.text(g, '♥', hx, 36, { size: 19, color: '#f43f5e', align: 'center' });
+          g.restore();
+        } else {
+          A.text(g, '♥', hx, 36, { size: 19, color: 'rgba(255,255,255,.14)', align: 'center' });
+        }
+      }
+
+      var tl = Math.max(0, S.timeLeft);
+      var low = tl <= 10;
+      A.text(g, 'TIME', 348, 14, { size: 8, color: '#7f93b3', align: 'right' });
+      A.text(g, tl.toFixed(1), 348, 36, {
+        size: 21, color: low ? (Math.sin(S.t * 12) > 0 ? '#f87171' : '#fca5a5') : '#f8fafc', align: 'right'
+      });
+    }
+
+    function drawStrip(g) {
+      g.fillStyle = 'rgba(8,13,26,.94)';
+      g.fillRect(0, HUDH, W, 48);
+      g.fillStyle = 'rgba(150,190,255,.12)';
+      g.fillRect(0, HUDH + 47, W, 1);
+
+      A.text(g, 'ROUND', 14, HUDH + 14, { size: 7.5, color: '#7f93b3' });
+      A.text(g, String(S.round), 14, HUDH + 38, { size: 19, color: '#e2e8f0' });
+      A.text(g, '시퀀스 ' + S.seq.length + '개', 62, HUDH + 30, { size: 11.5, color: '#cbd5e1' });
+
+      /* 오른쪽 배지 — 고속 웨이브 / 다음 고속까지 */
+      var bw = 116, bx = W - 14 - bw, by = HUDH + 9, bh = 30;
+      A.rr(g, bx, by, bw, bh, 10);
+      if (S.fast) {
+        var fg = g.createLinearGradient(0, by, 0, by + bh);
+        fg.addColorStop(0, '#c084fc');
+        fg.addColorStop(1, '#7e22ce');
+        g.fillStyle = fg;
+        g.fill();
+        g.strokeStyle = 'rgba(233,213,255,.75)';
+        g.lineWidth = 1.2;
+        A.rr(g, bx, by, bw, bh, 10);
+        g.stroke();
+        A.text(g, '⚡ 고속 ×1.5', bx + bw / 2, by + 19, { size: 11.5, color: '#2b0a4a', align: 'center' });
+      } else {
+        g.fillStyle = 'rgba(255,255,255,.06)';
+        g.fill();
+        g.strokeStyle = 'rgba(160,195,240,.22)';
+        g.lineWidth = 1;
+        A.rr(g, bx, by, bw, bh, 10);
+        g.stroke();
+        var nf = (Math.floor(S.round / 3) + 1) * 3;
+        var rem = Math.max(1, nf - S.round);
+        A.text(g, '⚡ 고속까지 ' + rem + 'R', bx + bw / 2, by + 19, { size: 11, color: '#a5b4fc', align: 'center' });
+      }
+
+      /* 재생·입력 진행 게이지 — 스트립 맨 아래 3px */
+      var gp = 0, gc = S.trailCol;
+      if (S.phase === 'input') {
+        gp = clamp(1 - S.inputT / Math.max(0.01, S.limit), 0, 1);
+        gc = gp < 0.28 ? '#f87171' : S.trailCol;
+      } else if (S.phase === 'show') {
+        gp = clamp(S.showT / Math.max(0.01, S.showTotal), 0, 1);
+        gc = S.fast ? '#a855f7' : S.skinCol;
+      } else if (S.phase === 'clear') {
+        gp = 1; gc = '#86efac';
+      }
+      if (gp > 0) {
+        g.fillStyle = rgba(gc, 0.85);
+        g.fillRect(0, HUDH + 45, W * gp, 3);
+      }
+    }
+
+    function drawBottom(g) {
+      drawStrip(g);
+
+      /* 진행 점 — 지금 몇 번째까지 맞췄는지 */
+      var n = S.seq.length;
+      var cy = 482;
+      var filled = S.phase === 'show' ? Math.min(S.showI, n) : S.inputI;
+      if (n <= 18) {
+        var gap = 12;
+        var totalW = (n - 1) * gap;
+        var x0 = 180 - totalW / 2;
+        for (var i = 0; i < n; i++) {
+          var x = x0 + i * gap;
+          if (i < filled) {
+            g.fillStyle = S.trailCol;
+            g.beginPath(); g.arc(x, cy, 3.4, 0, 6.2832); g.fill();
+          } else if (i === filled && S.phase === 'input') {
+            g.strokeStyle = rgba(S.skinCol, 0.6 + 0.4 * Math.sin(S.t * 8));
+            g.lineWidth = 1.6;
+            g.beginPath(); g.arc(x, cy, 4.2, 0, 6.2832); g.stroke();
+          } else {
+            g.fillStyle = 'rgba(255,255,255,.18)';
+            g.beginPath(); g.arc(x, cy, 2.8, 0, 6.2832); g.fill();
+          }
+        }
+      } else {
+        A.bar(g, 40, cy - 3, 280, 6, n ? filled / n : 0, S.trailCol);
+      }
+
+      /* 콤보 칩 */
+      if (S.combo > 1) {
+        var ctxt = '🔥 콤보 ×' + S.combo + (S.bestCombo > S.combo ? ' · 최고 ' + S.bestCombo : '');
+        var cw = ctxt.length * 7.2 + 18;
+        A.rr(g, W / 2 - cw / 2, 492, cw, 20, 10);
+        g.fillStyle = 'rgba(253,224,71,.14)';
+        g.fill();
+        g.strokeStyle = 'rgba(253,224,71,.5)';
+        g.lineWidth = 1;
+        A.rr(g, W / 2 - cw / 2, 492, cw, 20, 10);
+        g.stroke();
+        A.text(g, ctxt, W / 2, 506, { size: 10.5, color: '#fde047', align: 'center' });
+      }
+
+      /* 안내 패널 */
+      A.panel(g, 12, 516, W - 24, 80, { r: 14, fill: 'rgba(8,14,28,.86)', stroke: 'rgba(150,190,255,.16)' });
+      A.text(g, '👆 패드를 눌러 빛난 순서를 그대로 따라 하세요', 24, 532, { size: 9.5, color: '#cbd5e1' });
+      A.text(g, '⌨️ 1 2 3 4 · Q W A S · ↑ → ← ↓', 24, 547, { size: 9, color: '#93c5fd' });
+      A.text(g, '❤ 3개 · 틀리면 라이프 -1, 같은 순서를 다시 보여 줘요', 24, 562, { size: 9, color: '#fca5a5' });
+      A.text(g, '🪙 펫 코인 +10(0~) / +20(700~) / +35(1400~) · 하루 60', 24, 576, { size: 9, color: '#93a4c4' });
+      A.text(g, '⚡ 3라운드마다 고속 재생 · 그 라운드는 점수 ×1.5', 24, 590, { size: 8.5, color: '#a5b4fc' });
+
+      /* 배너 · 메시지 — 보드(패드)를 가리지 않도록 보드 아래 띠에만 그린다 */
+      if (S.bannerT > 0 && S.banner) {
+        g.globalAlpha = Math.min(1, S.bannerT / 0.3);
+        var by = 424, bh = 46, bx = 20, bw2 = W - 40;
+        A.panel(g, bx, by, bw2, bh, { r: 14, fill: 'rgba(8,14,26,.97)', stroke: S.bannerCol });
+        g.save();
+        g.shadowColor = S.bannerCol;
+        g.shadowBlur = 14;
+        A.rr(g, bx, by, bw2, bh, 14);
+        g.strokeStyle = rgba(S.bannerCol, 0.9);
+        g.lineWidth = 2;
+        g.stroke();
+        g.restore();
+        A.text(g, S.banner, W / 2, by + 24, { size: 16, color: S.bannerCol, align: 'center', font: '"Jua",sans-serif' });
+        if (S.bannerSub) A.text(g, S.bannerSub, W / 2, by + 39, { size: 8.5, color: '#fef3c7', align: 'center' });
+        g.globalAlpha = 1;
+      } else if (S.msgT > 0 && S.msg) {
+        g.globalAlpha = Math.min(1, S.msgT * 2);
+        var mw = Math.min(334, S.msg.length * 7.2 + 26);
+        A.rr(g, W / 2 - mw / 2, 430, mw, 26, 13);
+        g.fillStyle = 'rgba(6,10,20,.94)';
+        g.fill();
+        g.strokeStyle = rgba(S.msgCol, 0.45);
+        g.lineWidth = 1;
+        A.rr(g, W / 2 - mw / 2, 430, mw, 26, 13);
+        g.stroke();
+        A.text(g, S.msg, W / 2, 447, { size: 10, color: S.msgCol, align: 'center' });
+        g.globalAlpha = 1;
+      }
+    }
+
+    function drawReady(g) {
+      g.fillStyle = 'rgba(3,5,12,.93)';
+      g.fillRect(0, HUDH, W, H - HUDH);
+      A.panel(g, 14, 56, W - 28, 528, { r: 18, fill: 'rgba(8,14,26,.98)', stroke: rgba('#a855f7', 0.55) });
+
+      A.text(g, '🧠 네온 시퀀스', W / 2, 96, { size: 25, color: '#c084fc', align: 'center', font: '"Jua",sans-serif' });
+      A.text(g, '빛나는 순서를 외워 그대로 눌러요 · 60초 타임어택', W / 2, 116, { size: 10.5, color: '#a8bdd8', align: 'center' });
+
+      /* 미리 보기 패드 4개 */
+      var mx = 106, my = 138, ms = 68, mg = 12;
+      for (var i = 0; i < 4; i++) {
+        var px = mx + (i % 2) * (ms + mg);
+        var py = my + Math.floor(i / 2) * (ms + mg);
+        var lit = (Math.floor(S.t * 2) % 4) === i;
+        A.rr(g, px, py, ms, ms, 14);
+        g.fillStyle = lit ? PADS[i].col : mixHex(PADS[i].dark, '#0b1220', 0.35);
+        g.fill();
+        g.strokeStyle = rgba(PADS[i].col, lit ? 0.95 : 0.45);
+        g.lineWidth = lit ? 2.2 : 1.2;
+        A.rr(g, px, py, ms, ms, 14);
+        g.stroke();
+        symbolPath(g, PADS[i].sym, px + ms / 2, py + ms / 2, 15);
+        g.fillStyle = lit ? mixHex(PADS[i].col, '#0a1320', 0.7) : rgba(PADS[i].col, 0.85);
+        g.fill();
+      }
+
+      A.text(g, '👀 4개 패드가 차례로 빛나면 순서를 외우세요', W / 2, 306, { size: 10, color: '#a5f3fc', align: 'center' });
+      A.text(g, '👆 그다음 똑같은 순서로 패드를 누르면 라운드 클리어', W / 2, 324, { size: 10, color: '#c4b5fd', align: 'center' });
+      A.text(g, '❤ 라이프 3개 — 틀려도 같은 순서를 한 번 더 보여 줘요', W / 2, 342, { size: 10, color: '#fca5a5', align: 'center' });
+      A.text(g, '⚡ 3라운드마다 고속 재생 웨이브 · 그 라운드 점수 ×1.5', W / 2, 360, { size: 10, color: '#a5b4fc', align: 'center' });
+      A.text(g, '🎨 장착 스킨 색이 중앙 코어, 꼬리 잔상 색이 성공 파티클에', W / 2, 378, { size: 9.5, color: '#93c5fd', align: 'center' });
+
+      A.text(g, '⌨️ 1 2 3 4 · Q W A S · ↑ → ← ↓ 로도 입력', W / 2, 404, { size: 9.5, color: '#93c5fd', align: 'center' });
+      A.text(g, '🪙 끝나면 펫 코인 +10(0~) / +20(700~) / +35(1400~) · 하루 상한 60', W / 2, 424, { size: 9, color: '#93a4c4', align: 'center' });
+      A.text(g, '🎯 오늘의 미션: 네온 시퀀스 1판(+50) · 700점(+70)', W / 2, 442, { size: 9, color: '#93a4c4', align: 'center' });
+
+      var best = null;
+      try { best = a.best(); } catch (e) { best = null; }
+      if (best != null) A.text(g, '🏅 최고 기록 ' + Math.round(best) + '점', W / 2, 470, { size: 11.5, color: '#fbbf24', align: 'center' });
+
+      g.globalAlpha = 0.6 + 0.4 * Math.sin(S.t * 4);
+      A.text(g, '▶ 패드를 탭해서 시작', W / 2, 508, { size: 19, color: '#c084fc', align: 'center', font: '"Jua",sans-serif' });
+      g.globalAlpha = 1;
+      A.text(g, '⌨️ Space · Enter · 1~4 로도 시작', W / 2, 530, { size: 9, color: '#5b6f92', align: 'center' });
+
+      var d = loadDaily();
+      var today = d.d === dayKey() ? d.c : 0;
+      A.text(g, '🪙 오늘 받은 네온 시퀀스 코인 ' + today + ' / ' + DAILY_CAP, W / 2, 556, { size: 9, color: '#46566f', align: 'center' });
+      A.text(g, '같은 시드면 시퀀스도 같습니다 · 봇 대전은 점수로 승부', W / 2, 572, { size: 9, color: '#46566f', align: 'center' });
+    }
+
+    return api;
+  }
+
+  /* ==========================================================================
+     등록 — 기존 'simon' 슬롯(v4.8 프로토타입)을 덮어쓴다 (기록·봇·방 대전 호환 유지)
+     ========================================================================== */
+  MG.def({
+    id: ID,
+    name: '네온 시퀀스',
+    emoji: '🧠',
+    tag: '기억',
+    desc: '반짝 순서 외우기 · 60초 · 3라운드마다 ⚡ 고속',
+    unit: '점',
+    record: {
+      type: 'high',
+      fmt: function (v) { return Math.round(v) + '점'; }
+    },
+    create: create
+  });
+
+  /* 목록 순서: 개방 15호 — v5.30 잠금 모듈의 reorder 가 맨 앞으로 당긴다 */
+  try {
+    if (MG.order) {
+      var rest = MG.order.filter(function (x) { return x && x !== ID; });
+      var at = rest.indexOf('dino');
+      if (at >= 0) rest.splice(at + 1, 0, ID);
+      else rest.push(ID);
+      MG.order = rest;
+    }
+  } catch (e) {}
+
+  try { console.log('[v554] 🧠 네온 시퀀스 등록 · order', (MG.order || []).length); } catch (e) {}
+
+  /* 테스트/검증용 공개 훅 */
+  root.JW554 = {
+    id: ID,
+    key: KEY,
+    cap: DAILY_CAP,
+    timeLimit: TIME_LIMIT,
+    lives: LIVES0,
+    pads: PADS.map(function (p) {
+      return { x: p.x, y: p.y, w: p.w, h: p.h, cx: p.x + p.w / 2, cy: p.y + p.h / 2, note: p.note, col: p.col, sym: p.sym };
+    }),
+    core: { x: CORE.x, y: CORE.y, r: CORE.r },
+    hitR: HIT_R,
     tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
     daily: function () { return loadDaily(); },
     state: function () {
