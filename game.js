@@ -98187,8 +98187,8 @@ if (typeof module !== 'undefined' && module.exports) {
       a.setScore(S.score);
       var note = [];
       note.push('🏃 ' + Math.round(S.dist / 10) + 'm · ⭐ ' + S.coins + '개 · 최고 연속 ' + S.bestStreak);
-      note.push('거리 ' + Math.round(S.basePts) + ' · 코인 ' + S.coinPts + ' · 보너스 ' + S.bonusPts +
-        (S.dashKills ? ' · ⚡ 파괴 ' + S.dashKills : ''));
+      note.push('거리 ' + Math.round(S.basePts) + ' + 코인 ' + S.coinPts + ' + 보너스 ' + S.bonusPts +
+        (S.dashKills ? ' · ⚡ 파괴 ' + S.dashKills : '') + ' = ' + S.score);
       if (a.bot) note.push('🤖 봇 ' + S.botTarget + '점 · ' + (S.score >= S.botTarget ? '승리!' : '패배'));
       if (g.fail) note.push('🪙 펫 코인 저장소를 찾지 못했어요');
       else if (g.gain > 0) note.push(t.name + ' · 🪙 펫 코인 +' + g.gain + ' (오늘 ' + g.used + '/' + g.cap + ')');
@@ -98432,7 +98432,9 @@ if (typeof module !== 'undefined' && module.exports) {
         drawItems(g);
         drawObstacles(g);
         drawGhosts(g);
-        if (!S.dying || S.deadT > 0.42) drawRunner(g, PX, S.y, S.ducking, S.skinCol, S.dying ? 0.55 : 1, 1);
+        if (!S.dying) drawRunner(g, PX, S.y, S.ducking, S.skinCol, 1, 1);
+        else drawRunner(g, PX, S.y + Math.sin(S.t * 30) * 1.5, S.ducking, '#fca5a5',
+          (Math.sin(S.t * 34) > 0 ? 0.95 : 0.3), 1);
         drawDust(g);
         drawFx(g);
         if (shk > 0) g.restore();
