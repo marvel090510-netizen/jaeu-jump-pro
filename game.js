@@ -97085,7 +97085,8 @@ if (typeof module !== 'undefined' && module.exports) {
       S.coinGain = g.gain; S.coinUsed = g.used;
       a.setScore(S.score);
       var note = [];
-      note.push('🌊 웨이브 ' + (S.wave - 1) + ' 클리어 · 팝 ' + S.popped + '개 · 낙하 ' + S.falls + '개');
+      note.push((S.wave > 1 ? '🌊 웨이브 ' + (S.wave - 1) + ' 클리어 · ' : '') +
+        '팝 ' + S.popped + '개 · 낙하 ' + S.falls + '개');
       note.push('팝 ' + S.popPts + ' · 낙하 ' + S.fallPts + ' · 웨이브 ' + S.wavePts + ' · 최고 콤보 x' + Math.min(5, Math.max(1, S.bestCombo)));
       if (g.fail) note.push('🪙 펫 코인 저장소를 찾지 못했어요');
       else if (g.gain > 0) note.push(t.name + ' · 🪙 펫 코인 +' + g.gain + ' (오늘 ' + g.used + '/' + g.cap + ')');
