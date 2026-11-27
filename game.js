@@ -1,5 +1,5 @@
 /* ==========================================================================
-   muse-v5-9 game.js — v5.57 정식판 (화면 표시 버전은 아래 BUILD = 'v5.57')
+   muse-v5-9 game.js — v5.58 정식판 (화면 표시 버전은 아래 BUILD = 'v5.58')
    (v5.15 테스트판 index.html 인라인 스크립트를 외부 파일로 분리, 정식 루트 v5.15-r4 방식과 동일)
    - <base href="../"> 유지: 상대 경로(audio/sfx/ 등)는 계속 루트 기준
    - VERSION = '4.8' 은 화면 버전이 아니라 '멀티 프로토콜 호환 번호'다 (표시는 BUILD).
@@ -62684,6 +62684,7 @@ if (typeof module !== 'undefined' && module.exports) {
    - v5.54: 개방 15종 — 🧠 네온 시퀀스(simon) 전면 개편. 나머지 10종은 '🔒 준비 중'.
    - v5.56: 개방 17종 — 🎯 네온 다트(dart) 전면 개편. 나머지 8종은 '🔒 준비 중'.
    - v5.57: 개방 18종 — 🥌 네온 컬링(curling) 전면 개편. 나머지 7종은 '🔒 준비 중'.
+   - v5.58: 개방 19종 — ⬡ 헥사 매치 3(hexa) 전면 개편. 나머지 6종은 '🔒 준비 중'.
    - 25종 코드·기록·구현은 그대로 보존한다 (삭제 없음). 개방 16종은 목록 맨 앞에
      ✨ NEW · PLAYABLE 강조 카드로 배치한다.
    ========================================================================== */
@@ -62711,7 +62712,8 @@ if (typeof module !== 'undefined' && module.exports) {
   var OPEN16 = 'fishing';         /* 개방 16호 (🎣 타이밍 대어 낚시 · v5.55 개편) */
   var OPEN17 = 'dart';            /* 개방 17호 (🎯 네온 다트 · v5.56 개편) */
   var OPEN18 = 'curling';         /* 개방 18호 (🥌 네온 컬링 · v5.57 개편) */
-  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1, mines: 1, tetris: 1, gomoku: 1, memory: 1, pong: 1, bubble: 1, dino: 1, simon: 1, fishing: 1, dart: 1, curling: 1 };
+  var OPEN19 = 'hexa';            /* 개방 19호 (⬡ 헥사 매치 3 · v5.58 개편) */
+  var OPENS = { rhythm: 1, meteor: 1, coin: 1, holefly: 1, blockblast: 1, snake: 1, g2048: 1, mines: 1, tetris: 1, gomoku: 1, memory: 1, pong: 1, bubble: 1, dino: 1, simon: 1, fishing: 1, dart: 1, curling: 1, hexa: 1 };
   root.JW530MGLOCK = true;
   root.JW530MG_OPEN = OPEN;
   root.JW530MG_OPEN2 = OPEN2;
@@ -62731,12 +62733,13 @@ if (typeof module !== 'undefined' && module.exports) {
   root.JW530MG_OPEN16 = OPEN16;
   root.JW530MG_OPEN17 = OPEN17;
   root.JW530MG_OPEN18 = OPEN18;
+  root.JW530MG_OPEN19 = OPEN19;
   root.JW530MG_OPENS = OPENS;
 
   var doc = document;
   var $ = function (id) { return doc.getElementById(id); };
   var LOCK_MSG = '🔒 이 미니게임은 준비 중이에요';
-  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 · 🎣 타이밍 대어 낚시 · 🎯 네온 다트 · 🥌 네온 컬링 18종이 열려 있어요';
+  var LOCK_SUB = '지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 · 🎣 타이밍 대어 낚시 · 🎯 네온 다트 · 🥌 네온 컬링 · ⬡ 헥사 매치 3 — 19종이 열려 있어요';
 
   function MG() { return root.JW48MG; }
   function isLocked(id) { return !!id && !OPENS[id]; }
@@ -62861,8 +62864,13 @@ if (typeof module !== 'undefined' && module.exports) {
       '  background:linear-gradient(180deg,#c7f2ff,#38bdf8);border-color:#0369a1;color:#03202e;',
       '  box-shadow:0 0 12px rgba(56,189,248,.6),0 2px 0 rgba(0,0,0,.4);}',
       '.v530new.v530new18{box-shadow:inset 0 0 0 2px rgba(56,189,248,.66),0 0 18px rgba(34,211,238,.46),0 3px 0 #05030a !important;}',
-      /* 열여덟 개방 카드의 줄서기: 18호 → 17호 → 16호 → … → 1호 → 잠금 7종 */
-      '#v48mgCards .v530new.v530new18{order:-18 !important;}',
+      /* 19호 개방 카드 (⬡ 헥사 매치 3 · v5.58) — 민트/에메랄드 네온 */
+      '.v530new.v530new19::after{content:"⬡ NEW · PLAYABLE";',
+      '  background:linear-gradient(180deg,#c8ffe9,#34d399);border-color:#047857;color:#03302a;',
+      '  box-shadow:0 0 12px rgba(52,211,153,.62),0 2px 0 rgba(0,0,0,.4);}',
+      '.v530new.v530new19{box-shadow:inset 0 0 0 2px rgba(52,211,153,.66),0 0 18px rgba(16,185,129,.48),0 3px 0 #05030a !important;}',
+      /* 열아홉 개방 카드의 줄서기: 19호 → 18호 → … → 1호 → 잠금 6종 */
+      '#v48mgCards .v530new.v530new19{order:-19 !important;}',
       '#v48mgCards .v530new.v530new17{order:-17 !important;}',
       '#v48mgCards .v530new.v530new16{order:-16 !important;}',
       '#v48mgCards .v530new.v530new15{order:-15 !important;}',
@@ -62920,7 +62928,7 @@ if (typeof module !== 'undefined' && module.exports) {
       if (!id) return;
       if (isLocked(id)) {
         if (!el.__v530l) { el.__v530l = 1; el.classList.add('v530lock'); el.setAttribute('aria-disabled', 'true'); }
-        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new17'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); el.classList.remove('v530new8'); el.classList.remove('v530new9'); el.classList.remove('v530new10'); el.classList.remove('v530new11'); el.classList.remove('v530new12'); el.classList.remove('v530new13'); el.classList.remove('v530new14'); el.classList.remove('v530new15'); el.classList.remove('v530new16'); el.classList.remove('v530new17'); el.classList.remove('v530new18'); }
+        if (el.__v530n) { el.__v530n = 0; el.classList.remove('v530new'); el.classList.remove('v530new1'); el.classList.remove('v530new17'); el.classList.remove('v530new2'); el.classList.remove('v530new3'); el.classList.remove('v530new4'); el.classList.remove('v530new5'); el.classList.remove('v530new6'); el.classList.remove('v530new7'); el.classList.remove('v530new8'); el.classList.remove('v530new9'); el.classList.remove('v530new10'); el.classList.remove('v530new11'); el.classList.remove('v530new12'); el.classList.remove('v530new13'); el.classList.remove('v530new14'); el.classList.remove('v530new15'); el.classList.remove('v530new16'); el.classList.remove('v530new17'); el.classList.remove('v530new18'); el.classList.remove('v530new19'); }
       } else {
         if (!el.__v530n) { el.__v530n = 1; el.classList.add('v530new'); el.removeAttribute('aria-disabled'); }
         if (id === OPEN && !el.classList.contains('v530new1')) el.classList.add('v530new1');
@@ -62959,6 +62967,8 @@ if (typeof module !== 'undefined' && module.exports) {
         else if (el.classList.contains('v530new17')) el.classList.remove('v530new17');
         if (id === OPEN18) { if (!el.classList.contains('v530new18')) el.classList.add('v530new18'); }
         else if (el.classList.contains('v530new18')) el.classList.remove('v530new18');
+        if (id === OPEN19) { if (!el.classList.contains('v530new19')) el.classList.add('v530new19'); }
+        else if (el.classList.contains('v530new19')) el.classList.remove('v530new19');
         if (el.__v530l) { el.__v530l = 0; el.classList.remove('v530lock'); }
       }
     });
@@ -62971,7 +62981,7 @@ if (typeof module !== 'undefined' && module.exports) {
     var sub = $('v48mgSub');
     var m = MG();
     if (sub && m && m.order) {
-      var want = '18종 플레이 가능 · ' + Math.max(0, m.order.length - 18) + '종 준비 중';
+      var want = '19종 플레이 가능 · ' + Math.max(0, m.order.length - 19) + '종 준비 중';
       if (sub.textContent !== want) sub.textContent = want;
     }
     /* 미니게임 목록 상단 안내 */
@@ -62979,7 +62989,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (hub && !$('v530MgNote')) {
       var n = doc.createElement('div');
       n.id = 'v530MgNote';
-      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> · <b>💣 스피드 지뢰찾기</b> · <b>🧱 대전 테트리스</b> · <b>⚫ 스피드 오목</b> · <b>🃏 메모리 짝 맞추기</b> · <b>🏓 하이퍼 네온 핑퐁</b> · <b>🫧 네온 버블 슈터</b> · <b>🦖 네온 다이노 런</b> · <b>🧠 네온 시퀀스</b> · <b>🎣 타이밍 대어 낚시</b> · <b>🎯 네온 다트</b> · <b>🥌 네온 컬링</b> 18종을 지금 플레이할 수 있어요 · 나머지 7종은 다음 업데이트에서 순서대로 열려요';
+      n.innerHTML = '✨ <b>⚡ 차징 점프</b> · <b>☄️ 메테오 스텝</b> · <b>🪙 골드 러시</b> · <b>🚀 부스터 로켓</b> · <b>🧩 블록 블라스트</b> · <b>🐍 네온 지렁이</b> · <b>🔢 2048 스피드전</b> · <b>💣 스피드 지뢰찾기</b> · <b>🧱 대전 테트리스</b> · <b>⚫ 스피드 오목</b> · <b>🃏 메모리 짝 맞추기</b> · <b>🏓 하이퍼 네온 핑퐁</b> · <b>🫧 네온 버블 슈터</b> · <b>🦖 네온 다이노 런</b> · <b>🧠 네온 시퀀스</b> · <b>🎣 타이밍 대어 낚시</b> · <b>🎯 네온 다트</b> · <b>🥌 네온 컬링</b> · <b>⬡ 헥사 매치 3</b> — 19종을 지금 플레이할 수 있어요 · 나머지 6종은 다음 업데이트에서 순서대로 열려요';
       hub.insertBefore(n, hub.firstChild);
     }
     /* 멀티 방 설정 안내 문구 (25종 → 1종 개방) */
@@ -62987,7 +62997,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (sList) {
       var hint = sList.previousElementSibling;
       if (hint && String(hint.className || '').indexOf('v48mg-hint') >= 0) {
-        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 · 🎣 타이밍 대어 낚시 · 🎯 네온 다트 · 🥌 네온 컬링 18종이 열려 있어요 · 나머지 7종은 준비 중';
+        var want2 = '✨ 지금은 ⚡ 차징 점프 · ☄️ 메테오 스텝 · 🪙 골드 러시 · 🚀 부스터 로켓 · 🧩 블록 블라스트 · 🐍 네온 지렁이 · 🔢 2048 스피드전 · 💣 스피드 지뢰찾기 · 🧱 대전 테트리스 · ⚫ 스피드 오목 · 🃏 메모리 짝 맞추기 · 🏓 하이퍼 네온 핑퐁 · 🫧 네온 버블 슈터 · 🦖 네온 다이노 런 · 🧠 네온 시퀀스 · 🎣 타이밍 대어 낚시 · 🎯 네온 다트 · 🥌 네온 컬링 · ⬡ 헥사 매치 3 — 19종이 열려 있어요 · 나머지 6종은 준비 중';
         if (hint.textContent !== want2) hint.textContent = want2;
       }
     }
@@ -63056,9 +63066,9 @@ if (typeof module !== 'undefined' && module.exports) {
   function reorder() {
     var m = MG();
     if (!m || !m.order || !m.order.length) return;
-    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7 && m.order[7] === OPEN8 && m.order[8] === OPEN9 && m.order[9] === OPEN10 && m.order[10] === OPEN11 && m.order[11] === OPEN12 && m.order[12] === OPEN13 && m.order[13] === OPEN14 && m.order[14] === OPEN15 && m.order[15] === OPEN16 && m.order[16] === OPEN17 && m.order[17] === OPEN18) return;
+    if (m.order[0] === OPEN && m.order[1] === OPEN2 && m.order[2] === OPEN3 && m.order[3] === OPEN4 && m.order[4] === OPEN5 && m.order[5] === OPEN6 && m.order[6] === OPEN7 && m.order[7] === OPEN8 && m.order[8] === OPEN9 && m.order[9] === OPEN10 && m.order[10] === OPEN11 && m.order[11] === OPEN12 && m.order[12] === OPEN13 && m.order[13] === OPEN14 && m.order[14] === OPEN15 && m.order[15] === OPEN16 && m.order[16] === OPEN17 && m.order[17] === OPEN18 && m.order[18] === OPEN19) return;
     var rest = m.order.filter(function (x) { return x && !OPENS[x]; });
-    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7, OPEN8, OPEN9, OPEN10, OPEN11, OPEN12, OPEN13, OPEN14, OPEN15, OPEN16, OPEN17, OPEN18].concat(rest);
+    m.order = [OPEN, OPEN2, OPEN3, OPEN4, OPEN5, OPEN6, OPEN7, OPEN8, OPEN9, OPEN10, OPEN11, OPEN12, OPEN13, OPEN14, OPEN15, OPEN16, OPEN17, OPEN18, OPEN19].concat(rest);
   }
 
   /* 카드가 새로 그려지는 즉시 배지를 다시 칠한다 (innerHTML 재생성 대응) */
@@ -63077,7 +63087,7 @@ if (typeof module !== 'undefined' && module.exports) {
   setTimeout(paint, 600);
   setTimeout(paint, 1600);
   setInterval(function () { try { reorder(); paint(); } catch (e) {} }, 900);
-  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7 + ', ' + OPEN8 + ', ' + OPEN9 + ', ' + OPEN10 + ', ' + OPEN11 + ', ' + OPEN12 + ', ' + OPEN13 + ', ' + OPEN14 + ', ' + OPEN15 + ', ' + OPEN16 + ', ' + OPEN17 + ', ' + OPEN18);
+  console.log('[JW530] minigame category OPEN · playable: ' + OPEN + ', ' + OPEN2 + ', ' + OPEN3 + ', ' + OPEN4 + ', ' + OPEN5 + ', ' + OPEN6 + ', ' + OPEN7 + ', ' + OPEN8 + ', ' + OPEN9 + ', ' + OPEN10 + ', ' + OPEN11 + ', ' + OPEN12 + ', ' + OPEN13 + ', ' + OPEN14 + ', ' + OPEN15 + ', ' + OPEN16 + ', ' + OPEN17 + ', ' + OPEN18 + ', ' + OPEN19);
 })(window);
 
 
@@ -69559,7 +69569,7 @@ if (typeof module !== 'undefined' && module.exports) {
    게임이 켜질 때 patch-notes.json을 캐시 없이 받아서 최신 버전과 지금 빌드를 비교한다. */
 (function (root) {
   'use strict';
-  var BUILD = 'v5.57';
+  var BUILD = 'v5.58';
   root.__JW_BUILD_VERSION = BUILD;
   function norm(v) { return String(v || '').replace(/-정식$/, '').trim(); }
   function titleVisible() { try { var t = document.getElementById('titleScreen'); return !!(t && !t.classList.contains('hidden')); } catch (e) { return false; } }
@@ -81490,7 +81500,10 @@ if (typeof module !== 'undefined' && module.exports) {
       { id: 'm_dart300', icon: '🎯', title: '네온 다트 300점', desc: '한 판에서 300점 이상', need: 1, coin: 70, unit: '점', mg: 'dart' },
       /* v5.57: 🥌 네온 컬링 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
       { id: 'm_curl1', icon: '🥌', title: '네온 컬링 1판', desc: '🥌 네온 컬링: 아이스 하우스 한 판', need: 1, coin: 50, unit: '판', mg: 'curling' },
-      { id: 'm_curl250', icon: '🎯', title: '네온 컬링 250점', desc: '한 판에서 250점 이상', need: 1, coin: 70, unit: '점', mg: 'curling' }
+      { id: 'm_curl250', icon: '🎯', title: '네온 컬링 250점', desc: '한 판에서 250점 이상', need: 1, coin: 70, unit: '점', mg: 'curling' },
+      /* v5.58: ⬡ 헥사 매치 3 연동 — 미션이 뜬 그 미니게임의 판만 센다 */
+      { id: 'm_hexa1', icon: '⬡', title: '헥사 매치 3 1판', desc: '⬡ 헥사 매치 3: 네온 콤보 한 판', need: 1, coin: 50, unit: '판', mg: 'hexa' },
+      { id: 'm_hexa800', icon: '🎯', title: '헥사 매치 3 800점', desc: '한 판에서 800점 이상', need: 1, coin: 70, unit: '점', mg: 'hexa' }
     ]
   };
   var BY_ID = {};
@@ -81692,6 +81705,9 @@ if (typeof module !== 'undefined' && module.exports) {
         /* v5.57: 🥌 네온 컬링 — 1판 / 250점 */
         if (mine('m_curl1')) changed = bump('m_curl1', 1) || changed;
         if (mine('m_curl250') && (Number(data.score) || 0) >= 250) changed = bump('m_curl250', 1) || changed;
+        /* v5.58: ⬡ 헥사 매치 3 — 1판 / 800점 */
+        if (mine('m_hexa1')) changed = bump('m_hexa1', 1) || changed;
+        if (mine('m_hexa800') && (Number(data.score) || 0) >= 800) changed = bump('m_hexa800', 1) || changed;
       }
       if (changed) {
         save();
@@ -86500,7 +86516,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (!s || !s.cleared || typeof s.cleared !== 'object') return 0;
     return Object.keys(s.cleared).length;
   }
-  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048', 'mines', 'tetris', 'gomoku', 'memory', 'pong', 'bubble', 'dino', 'simon', 'fishing', 'dart', 'curling'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46·v5.47·v5.48·v5.49·v5.50·v5.51·v5.52·v5.53·v5.54·v5.55·v5.56·v5.57 개방 18종 */
+  var OPEN_MG = ['rhythm', 'meteor', 'coin', 'holefly', 'blockblast', 'snake', 'g2048', 'mines', 'tetris', 'gomoku', 'memory', 'pong', 'bubble', 'dino', 'simon', 'fishing', 'dart', 'curling', 'hexa'];   /* v5.30·v5.35·v5.38·v5.41·v5.42·v5.45·v5.46·v5.47·v5.48·v5.49·v5.50·v5.51·v5.52·v5.53·v5.54·v5.55·v5.56·v5.57·v5.58 개방 19종 */
   function mgCount() {
     var best = ls('jw48mg_best_v1', {}) || {};
     try { if (!best || !Object.keys(best).length) { if (root.JW48MG && root.JW48MG.best) best = root.JW48MG.best; } } catch (e) {}
@@ -86542,7 +86558,7 @@ if (typeof module !== 'undefined' && module.exports) {
     { id: 'combo10',cat: '기록', ic: '🔥', name: '콤보 파이터',      desc: '최고 콤보 10 이상',           goal: 10,   coin: 40, cur: bestCombo },
     { id: 'combo25',cat: '기록', ic: '💥', name: '피버 마스터',      desc: '최고 콤보 25 이상',           goal: 25,   coin: 80, cur: bestCombo },
     { id: 'story1', cat: '기록', ic: '📖', name: '스토리 도전자',    desc: '스토리 1스테이지 클리어',      goal: 1,    coin: 50, cur: storyCount },
-    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 18종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
+    { id: 'mg2',    cat: '기록', ic: '🕹️', name: '미니게임 올라운더', desc: '개방 미니게임 19종 중 2종 기록 보유', goal: 2, coin: 50, cur: mgCount },
     { id: 'pet3',   cat: '수집', ic: '🐾', name: '펫 친구',          desc: '펫 3종 이상 보유',            goal: 3,    coin: 50, cur: petCount },
     { id: 'theme5', cat: '수집', ic: '🎨', name: '테마 컬렉터',      desc: '테마 아이템 5종 이상 보유',    goal: 5,    coin: 60, cur: themeCount },
     { id: 'check1', cat: '습관', ic: '📅', name: '개근 시작',        desc: '총 출석 1일 이상',            goal: 1,    coin: 30, cur: checkinDays }
@@ -99845,8 +99861,7 @@ if (typeof module !== 'undefined' && module.exports) {
           g.fillStyle = rgba(S.flashCol, S.flash * 0.22);
           g.fillRect(0, 0, W, H);
         }
-        if (S.ready) drawReady(g);
-        else if (S.over) {
+        if (S.over) {
           g.globalAlpha = Math.min(1, 0.16 + S.overT * 0.2);
           g.fillStyle = '#04060e';
           g.fillRect(0, 0, W, H);
@@ -101101,8 +101116,7 @@ if (typeof module !== 'undefined' && module.exports) {
           g.fillStyle = rgba(S.flashCol, S.flash * 0.22);
           g.fillRect(0, 0, W, H);
         }
-        if (S.ready) drawReady(g);
-        else if (S.over) {
+        if (S.over) {
           g.globalAlpha = Math.min(1, 0.16 + S.overT * 0.2);
           g.fillStyle = '#03060e';
           g.fillRect(0, 0, W, H);
@@ -102460,8 +102474,7 @@ if (typeof module !== 'undefined' && module.exports) {
           g.fillStyle = rgba(S.flashCol, S.flash * 0.22);
           g.fillRect(0, 0, W, H);
         }
-        if (S.ready) drawReady(g);
-        else if (S.over) {
+        if (S.over) {
           g.globalAlpha = Math.min(1, 0.16 + S.overT * 0.2);
           g.fillStyle = '#03060e';
           g.fillRect(0, 0, W, H);
@@ -103876,8 +103889,7 @@ if (typeof module !== 'undefined' && module.exports) {
           g.fillStyle = rgba(S.flashCol, S.flash * 0.22);
           g.fillRect(0, 0, W, H);
         }
-        if (S.ready) drawReady(g);
-        else if (S.over) {
+        if (S.over) {
           g.globalAlpha = Math.min(1, 0.16 + S.overT * 0.2);
           g.fillStyle = '#03060e';
           g.fillRect(0, 0, W, H);
@@ -104657,6 +104669,1379 @@ if (typeof module !== 'undefined' && module.exports) {
     v0For: v0For,
     distFor: distFor,
     ringPts: ringPts,
+    daily: function () { return loadDaily(); },
+    state: function () {
+      var c = MG.cur;
+      if (!c || c.id !== ID || !c.inst || !c.inst.state) return null;
+      return c.inst.state();
+    }
+  };
+})(window);
+
+
+/* ===== v558 inline block (new) ===== */
+
+/* ==========================================================================
+   v5.58 : ⬡ 헥사 매치 3 — 네온 콤보 — 미니게임 19호 ('hexa' 슬롯 전면 개편)
+   --------------------------------------------------------------------------
+   v4.8 프로토타입('헥사곤 발판 버티기')은 지우지 않고 그 위에 덮어쓴다.
+   같은 'hexa' 슬롯을 쓰므로 기록·봇 대전·방 대전·같은 시드가 그대로 호환된다.
+
+   · 보드 : 7열 × 7행 육각 격자(홀수 열은 반 칸 아래로 오프셋) 위 5색 네온 보석
+            (시안 ◆ · 마젠타 ● · 골드 ▲ · 라임 ★ · 바이올렛 ⬢).
+            시작할 때 초기 3매치를 조용히 지우고, 유효한 수가 없으면 자동 셔플한다.
+   · 판정 : 육각 격자의 3축(세로 · 우하향 대각 · 우상향 대각)으로 같은 색 3개 이상이
+            이어지면 즉시 팝 → 위에서 새 보석 낙하 → 연쇄 CASCADE
+            (×1.0 → ×1.5 → ×2.0 → ×2.5 … 최대 ×5.0).
+   · 라인 젬 : 4개 이상이 한 번에 이어지면 ⚡ 라인 젬이 남는다. 그 젬이 매치에 끼어
+            터지면 해당 축 1줄을 통째로 지우고 보너스를 준다(연쇄 폭발 포함).
+   · 조작 : ① 인접 두 타일 드래그 스와이프 ② 첫 타일 탭 → 인접 타일 탭
+            ③ 방향키/WASD 커서 + Space·Enter 선택 → 방향키로 인접 스왑
+            ④ 🔀 셔플 버튼(10초 쿨다운) — 60초 타임어택.
+   · 연동 : 스킨 색 = 보드 외곽 링·선택 테두리, 꼬리 잔상 색 = 연쇄 콤보 플래시·팝 파티클.
+            펫 코인 🥇+35(1500점~) / 🥈+20(750점~) / 🥉+10 (하루 상한 60, 'jw558_hexa').
+            ⬡ 오늘의 미션 '헥사 매치 3 1판(+50)' · '헥사 매치 3 800점(+70)'.
+            🏆 업적 '미니게임 올라운더'도 개방 19종 기준으로 센다.
+   ========================================================================== */
+(function (root) {
+  'use strict';
+  var MG = root.JW48MG, V = root.JW43;
+  if (!MG || !V) return;
+
+  var ID = 'hexa';
+  var W = 360, H = 600, HUDH = 44;
+  var COLS = 7, ROWS = 7;
+  var TIME = 60, DAILY_CAP = 60;
+  var KEY = 'jw558_hexa';
+
+  /* ---------------- 육각 격자 기하 ---------------- */
+  var R = 28;                              /* 육각 반지름 */
+  var DX = R * 1.5;                        /* 열 간격 */
+  var DY = Math.sqrt(3) * R;               /* 행 간격 (≈48.5) */
+  var X0 = 54, Y0 = 84;                    /* 0열 0행 중심 */
+  var BOARD_L = X0 - R, BOARD_T = Y0 - DY / 2 - R, BOARD_R = X0 + DX * (COLS - 1) + R;
+  var BOARD_B = Y0 + DY * (ROWS - 1) + DY / 2 + R;
+
+  /* ---------------- 점수·연출 상수 ---------------- */
+  var POP_T = 0.17, SWAP_T = 0.13, REVERT_T = 0.14;
+  var POP = 3, LINE_BONUS = 30, MAKE_BONUS = 10;
+  var MULT_STEP = 0.5, MULT_CAP = 4;
+  var SHUF_CD = 10, FALL_SPEED = 1500;
+  var BTN = { x: 92, y: 486, w: 176, h: 50 };
+
+  var GEMS = [
+    { id: 'cyan', glyph: '◆', col: '#22d3ee', dk: '#0891b2', lt: '#cffafe' },
+    { id: 'magenta', glyph: '●', col: '#f472b6', dk: '#be185d', lt: '#fce7f3' },
+    { id: 'gold', glyph: '▲', col: '#fbbf24', dk: '#b45309', lt: '#fef3c7' },
+    { id: 'lime', glyph: '★', col: '#a3e635', dk: '#4d7c0f', lt: '#f7fee7' },
+    { id: 'violet', glyph: '⬢', col: '#a78bfa', dk: '#7c3aed', lt: '#ede9fe' }
+  ];
+  var TIERS = [
+    { s: 1500, coin: 35, name: '🥇 GOLD', col: '#fde047' },
+    { s: 750, coin: 20, name: '🥈 SILVER', col: '#e2e8f0' },
+    { s: 0, coin: 10, name: '🥉 BRONZE', col: '#fdba74' }
+  ];
+
+  /* 스킨별 네온 색 (다트·낚시·시퀀스·컬링과 같은 표) */
+  var SKINCOL = {
+    jaeu: '#5eead4', cat: '#fb923c', frog: '#4ade80', robot: '#38bdf8', ghost: '#c4b5fd',
+    rabbit: '#f9a8d4', panda: '#e2e8f0', fox: '#fb923c', demon: '#f87171', alien: '#a3e635',
+    wizard: '#a78bfa', knight: '#fbbf24'
+  };
+
+  var CYAN = '#22d3ee', MINT = '#5eead4', PINK = '#f472b6', GOLD = '#fbbf24', LIME = '#a3e635';
+  var A = MG.arts({});
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function r2(v) { return Math.round(v * 100) / 100; }
+  function tone(f, d, v, t, f2) { try { V.beep(f, d || 0.05, v || 0.08, t || 'square', f2 || null); } catch (e) {} }
+  function seq(list, step, vol, dur, type) {
+    for (var i = 0; i < list.length; i++) (function (i) {
+      setTimeout(function () { tone(list[i], dur || 0.1, vol || 0.08, type || 'sine', null); }, i * step);
+    })(i);
+  }
+  function hex2rgb(h) {
+    h = String(h || '#22d3ee').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return [parseInt(h.slice(0, 2), 16) || 0, parseInt(h.slice(2, 4), 16) || 0, parseInt(h.slice(4, 6), 16) || 0];
+  }
+  function rgba(h, a) { var c = hex2rgb(h); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+
+  /* ---------------------------------------------------------------- 저장 */
+  function lsGet(k, d) { try { return V.lsGet(k, d); } catch (e) { return d; } }
+  function lsSet(k, v) { try { V.lsSet(k, v); } catch (e) {} }
+  function dayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function loadDaily() {
+    var s = lsGet(KEY, null);
+    if (!s || typeof s !== 'object') s = { d: '', c: 0 };
+    if (typeof s.c !== 'number' || !isFinite(s.c) || s.c < 0) s.c = 0;
+    return s;
+  }
+  function addCoins(n) {
+    n = Math.round(Number(n) || 0);
+    if (n <= 0) return true;
+    try {
+      if (root.JW529 && root.JW529.addCoins) { root.JW529.addCoins(n); return true; }
+      if (root.JW529 && root.JW529.coins && root.JW529.st) {
+        root.JW529.coins((Number(root.JW529.st().coins) || 0) + n);
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  function tierOf(score) {
+    for (var i = 0; i < TIERS.length; i++) if (score >= TIERS[i].s) return TIERS[i];
+    return TIERS[TIERS.length - 1];
+  }
+  function grantCoins(score) {
+    var want = tierOf(score).coin;
+    var d = loadDaily();
+    var used = d.d === dayKey() ? d.c : 0;
+    var left = Math.max(0, DAILY_CAP - used);
+    var gain = Math.min(want, left);
+    var ok = true;
+    if (gain > 0) {
+      if (!addCoins(gain)) { gain = 0; ok = false; }
+      else lsSet(KEY, { d: dayKey(), c: used + gain });
+    }
+    return { gain: gain, want: want, used: used + gain, cap: DAILY_CAP, fail: !ok };
+  }
+
+  /* ---------------------------------------------------------------- 격자 */
+  function inB(c, r) { return c >= 0 && c < COLS && r >= 0 && r < ROWS; }
+  function nkey(c, r) { return c * ROWS + r; }
+  function parseKey(k) { return { c: Math.floor(k / ROWS), r: k % ROWS }; }
+  function cellXY(c, r) {
+    return { x: X0 + DX * c, y: Y0 + DY * r + ((c & 1) ? DY / 2 : 0) };
+  }
+  /* 축 방향 (0 세로 · 1 우하향 대각 · 2 우상향 대각) */
+  function stepR(d, c, r) {
+    if (d === 0) return { c: c, r: r + 1 };
+    var odd = (c & 1) === 1;
+    if (d === 1) return { c: c + 1, r: r + (odd ? 1 : 0) };
+    return { c: c + 1, r: r + (odd ? 0 : -1) };
+  }
+  function stepL(d, c, r) {
+    if (d === 0) return { c: c, r: r - 1 };
+    var prevOdd = ((c - 1) & 1) === 1;
+    if (d === 1) return { c: c - 1, r: r - (prevOdd ? 1 : 0) };
+    return { c: c - 1, r: r + (prevOdd ? 0 : 1) };
+  }
+  function neighbors(c, r) {
+    var out = [];
+    var list = [stepR(0, c, r), stepL(0, c, r), stepR(1, c, r), stepL(1, c, r), stepR(2, c, r), stepL(2, c, r)];
+    for (var i = 0; i < list.length; i++) if (inB(list[i].c, list[i].r)) out.push(list[i]);
+    return out;
+  }
+  function adjacent(p1, p2) {
+    if (!p1 || !p2) return false;
+    if (p1.c === p2.c && p1.r === p2.r) return false;
+    var nb = neighbors(p1.c, p1.r);
+    for (var i = 0; i < nb.length; i++) if (nb[i].c === p2.c && nb[i].r === p2.r) return true;
+    return false;
+  }
+  /* 한 축의 1줄 전체 */
+  function lineOf(axis, c, r) {
+    var out = [{ c: c, r: r }], p = stepR(axis, c, r), g = 0;
+    while (inB(p.c, p.r) && g++ < 12) { out.push(p); p = stepR(axis, p.c, p.r); }
+    p = stepL(axis, c, r); g = 0;
+    while (inB(p.c, p.r) && g++ < 12) { out.unshift(p); p = stepL(axis, p.c, p.r); }
+    return out;
+  }
+  function hexPath(g, x, y, rad) {
+    g.beginPath();
+    for (var i = 0; i < 6; i++) {
+      var ang = Math.PI / 180 * (60 * i);
+      var px = x + Math.cos(ang) * rad, py = y + Math.sin(ang) * rad;
+      if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+    }
+    g.closePath();
+  }
+
+  /* ---------------------------------------------------------------- 게임 본체 */
+  function create(a) {
+    var RND = a.rng || Math.random;
+    var MR = Math.random;
+
+    function multOf(k) { return Math.min(MULT_CAP, 1 + MULT_STEP * (Math.max(1, k | 0) - 1)); }
+    function randType() { return Math.floor(RND() * GEMS.length) % GEMS.length; }
+
+    var S = {
+      ready: true, over: false, done: false, win: null, frozen: false,
+      t: 0, time: TIME,
+      phase: 'ready',                 /* ready | idle | swap | revert | pop | fall */
+      B: [],
+      sel: null, cur: { c: 3, r: 3 }, drag: null,
+      cascade: 0, maxCascade: 0, score: 0, moves: 0, pops: 0, gemsMade: 0, bombs: 0,
+      popT: 0, waitT: 0, popKeys: {}, pending: null,
+      fx: [], texts: [], flash: 0, flashCol: '#ffffff',
+      banner: '', bannerSub: '', bannerT: 0, bannerCol: CYAN, noMove: '',
+      shuffleCd: 0, shuffleUsed: 0,
+      coinGain: 0, coinUsed: 0, coinTier: null,
+      bot: 0, skinCol: '#5eead4', trailCol: '#5eead4',
+      lastSwap: null, lastRuns: 0, stars: [],
+      hintT: 0
+    };
+
+    /* -------------------------------------------------------------- 색 연동 */
+    function skinColor() {
+      var id = '';
+      try { var st = V.st(); id = (st && st.me && st.me.skin) || ''; } catch (e) {}
+      return SKINCOL[id] || '#5eead4';
+    }
+    function trailColor() {
+      var col = null;
+      try {
+        var st = root.JW529 && root.JW529.st ? root.JW529.st() : null;
+        var id = (st && st.trail) || '';
+        if (id && id !== 't_cloud' && id !== 'none') {
+          var list = (root.JW529.trails || []);
+          for (var i = 0; i < list.length; i++) if (list[i].id === id) col = list[i].col || null;
+        }
+      } catch (e) {}
+      return col;
+    }
+    function refreshColors() {
+      S.skinCol = skinColor();
+      S.trailCol = trailColor() || S.skinCol;
+    }
+
+    /* -------------------------------------------------------------- 연출 */
+    function burst(x, y, n, col, spd) {
+      for (var i = 0; i < n; i++) {
+        if (S.fx.length > 190) break;
+        var ang = MR() * 6.283;
+        var v = (spd || 150) * (0.3 + MR());
+        S.fx.push({
+          x: x, y: y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v - 30,
+          life: 0.28 + MR() * 0.36, max: 0.64, c: col, s: MR() < 0.4 ? 3 : 1.8
+        });
+      }
+    }
+    function addText(x, y, txt, col, size) {
+      S.texts.push({ x: x, y: y, txt: txt, c: col || GOLD, t: 0, dur: 0.85, size: size || 12 });
+    }
+    function banner(t, sub, col, dur) {
+      S.banner = t; S.bannerSub = sub || ''; S.bannerCol = col || CYAN; S.bannerT = dur || 1.0;
+    }
+    function flash(col, v) { S.flash = Math.max(S.flash, v == null ? 0.45 : v); S.flashCol = col || '#ffffff'; }
+
+    /* -------------------------------------------------------------- 셀 */
+    function newCell(t, x, y, mode) {
+      return { t: t, gem: 0, axis: 0, px: x, py: y, mode: mode || 'idle', sc: 1, ph: MR() * 6.283 };
+    }
+    function blank() {
+      var B = [];
+      for (var c = 0; c < COLS; c++) { B.push([]); for (var r = 0; r < ROWS; r++) B[c].push(null); }
+      return B;
+    }
+    function moving() {
+      for (var c = 0; c < COLS; c++) for (var r = 0; r < ROWS; r++) {
+        var cell = S.B[c] && S.B[c][r];
+        if (cell && cell.mode !== 'idle') return true;
+      }
+      return false;
+    }
+    function countCells() {
+      var n = 0;
+      for (var c = 0; c < COLS; c++) for (var r = 0; r < ROWS; r++) if (S.B[c][r]) n++;
+      return n;
+    }
+    function pickType(c, r, B) {
+      var bad = {};
+      for (var d = 0; d < 3; d++) {
+        var p1 = stepL(d, c, r); if (!inB(p1.c, p1.r)) continue;
+        var p2 = stepL(d, p1.c, p1.r); if (!inB(p2.c, p2.r)) continue;
+        var c1 = B[p1.c][p1.r], c2 = B[p2.c][p2.r];
+        if (c1 && c2 && c1.t === c2.t) bad[c1.t] = 1;
+      }
+      var opts = [];
+      for (var t = 0; t < GEMS.length; t++) if (!bad[t]) opts.push(t);
+      if (!opts.length) { for (var k = 0; k < GEMS.length; k++) opts.push(k); }
+      return opts[Math.floor(RND() * opts.length) % opts.length];
+    }
+
+    /* -------------------------------------------------------------- 매치 탐색 */
+    function findRuns() {
+      var runs = [];
+      for (var d = 0; d < 3; d++) {
+        for (var c = 0; c < COLS; c++) {
+          for (var r = 0; r < ROWS; r++) {
+            var cell = S.B[c] && S.B[c][r];
+            if (!cell || cell.t < 0) continue;
+            var pv = stepL(d, c, r);
+            if (inB(pv.c, pv.r)) {
+              var pc = S.B[pv.c][pv.r];
+              if (pc && pc.t === cell.t) continue;      /* 런 시작이 아님 */
+            }
+            var line = [{ c: c, r: r }], cur = { c: c, r: r }, guard = 0;
+            while (guard++ < 14) {
+              var nx = stepR(d, cur.c, cur.r);
+              if (!inB(nx.c, nx.r)) break;
+              var nc = S.B[nx.c][nx.r];
+              if (!nc || nc.t !== cell.t) break;
+              line.push({ c: nx.c, r: nx.r });
+              cur = nx;
+            }
+            if (line.length >= 3) runs.push({ axis: d, cells: line, t: cell.t });
+          }
+        }
+      }
+      return runs;
+    }
+    function hasMatchAt(c, r) {
+      var cell = S.B[c] && S.B[c][r];
+      if (!cell || cell.t < 0) return false;
+      for (var d = 0; d < 3; d++) {
+        var n = 1, p = stepR(d, c, r), g1 = 0;
+        while (inB(p.c, p.r) && g1++ < 12) {
+          var q = S.B[p.c][p.r];
+          if (!q || q.t !== cell.t) break;
+          n++; p = stepR(d, p.c, p.r);
+        }
+        p = stepL(d, c, r);
+        var g2 = 0;
+        while (inB(p.c, p.r) && g2++ < 12) {
+          var q2 = S.B[p.c][p.r];
+          if (!q2 || q2.t !== cell.t) break;
+          n++; p = stepL(d, p.c, p.r);
+        }
+        if (n >= 3) return true;
+      }
+      return false;
+    }
+    function firstMove() {
+      for (var c = 0; c < COLS; c++) {
+        for (var r = 0; r < ROWS; r++) {
+          var nb = neighbors(c, r);
+          for (var i = 0; i < nb.length; i++) {
+            var c2 = nb[i].c, r2v = nb[i].r;
+            var A1 = S.B[c] && S.B[c][r], B1 = S.B[c2] && S.B[c2][r2v];
+            if (!A1 || !B1) continue;
+            if (A1.t === B1.t) continue;
+            var t1 = A1.t, t2 = B1.t;
+            A1.t = t2; B1.t = t1;
+            var ok = hasMatchAt(c, r) || hasMatchAt(c2, r2v);
+            A1.t = t1; B1.t = t2;
+            if (ok) return { a: { c: c, r: r }, b: { c: c2, r: r2v } };
+          }
+        }
+      }
+      return null;
+    }
+
+    /* -------------------------------------------------------------- 보드 생성 */
+    function fillBoard() {
+      S.B = blank();
+      for (var c = 0; c < COLS; c++) {
+        for (var r = 0; r < ROWS; r++) {
+          var xy = cellXY(c, r);
+          S.B[c][r] = newCell(pickType(c, r, S.B), xy.x, xy.y, 'idle');
+        }
+      }
+      silentResolve();
+    }
+    function gravitySilent() {
+      for (var c = 0; c < COLS; c++) {
+        var write = ROWS - 1;
+        for (var r = ROWS - 1; r >= 0; r--) {
+          var cell = S.B[c][r];
+          if (!cell) continue;
+          if (write !== r) {
+            S.B[c][write] = cell; S.B[c][r] = null;
+            var xy0 = cellXY(c, write);
+            cell.px = xy0.x; cell.py = xy0.y; cell.mode = 'idle';
+          }
+          write--;
+        }
+        for (var r2 = write; r2 >= 0; r2--) {
+          var xy = cellXY(c, r2);
+          S.B[c][r2] = newCell(randType(), xy.x, xy.y, 'idle');
+        }
+      }
+    }
+    function silentResolve() {
+      var guard = 0;
+      while (guard++ < 40) {
+        var runs = findRuns();
+        if (!runs.length) break;
+        var rm = {};
+        runs.forEach(function (run) {
+          run.cells.forEach(function (p) { rm[nkey(p.c, p.r)] = 1; });
+        });
+        Object.keys(rm).forEach(function (k) {
+          var p = parseKey(k);
+          if (S.B[p.c]) S.B[p.c][p.r] = null;
+        });
+        gravitySilent();
+      }
+      if (!firstMove()) doShuffle('🔀 유효한 수가 없어 자동 셔플!');
+    }
+
+    /* -------------------------------------------------------------- 셔플 */
+    function doShuffle(notice) {
+      var types = [], c, r;
+      for (c = 0; c < COLS; c++) for (r = 0; r < ROWS; r++) {
+        var cell = S.B[c][r];
+        if (cell) types.push(cell.t);
+      }
+      var ok = false, tries = 0;
+      while (!ok && tries++ < 90) {
+        for (var i = types.length - 1; i > 0; i--) {
+          var j = Math.floor(MR() * (i + 1));
+          var tmp = types[i]; types[i] = types[j]; types[j] = tmp;
+        }
+        var k = 0;
+        for (c = 0; c < COLS; c++) for (r = 0; r < ROWS; r++) {
+          var cl = S.B[c][r];
+          if (cl) cl.t = types[k++ % types.length];
+        }
+        if (!findRuns().length && firstMove()) ok = true;
+      }
+      S.sel = null;
+      S.banner = notice || '🔀 셔플!';
+      S.bannerSub = notice ? '새로 이어 보세요' : '보드를 다시 섞었어요';
+      S.bannerT = 1.15; S.bannerCol = S.skinCol;
+      S.flash = 0.4; S.flashCol = S.skinCol;
+      S.noMove = S.banner;
+      tone(520, 0.09, 0.08, 'triangle', 800);
+    }
+
+    /* -------------------------------------------------------------- 리셋 */
+    function reset() {
+      S.ready = true; S.over = false; S.done = false; S.win = null;
+      S.t = 0; S.time = TIME; S.phase = 'ready';
+      S.sel = null; S.cur = { c: 3, r: 3 }; S.drag = null;
+      S.cascade = 0; S.maxCascade = 0; S.score = 0; S.moves = 0;
+      S.pops = 0; S.gemsMade = 0; S.bombs = 0;
+      S.popT = 0; S.waitT = 0; S.popKeys = {}; S.pending = null;
+      S.fx = []; S.texts = []; S.flash = 0;
+      S.banner = ''; S.bannerSub = ''; S.bannerT = 0; S.noMove = '';
+      S.shuffleCd = 0; S.shuffleUsed = 0;
+      S.coinGain = 0; S.coinUsed = 0; S.coinTier = null;
+      S.lastSwap = null; S.lastRuns = 0;
+      S.bot = a.bot ? 700 + Math.floor(RND() * 600) : 0;
+      refreshColors();
+      S.stars = [];
+      for (var i = 0; i < 26; i++) {
+        S.stars.push({ x: RND() * W, y: 48 + RND() * (H - 48), r: 0.5 + RND() * 1.2, ph: RND() * 6.283, spd: 0.3 + RND() * 0.8 });
+      }
+      fillBoard();
+      a.setScore(0); a.setStatus(''); a.setTime(null);
+      a.vsLine(a.bot ? '🤖 봇 목표 ' + S.bot + '점' : '');
+    }
+    function begin() {
+      if (!S.ready) return;
+      S.ready = false; S.phase = 'idle'; S.t = 0;
+      a.setStatus('탭·드래그로 인접 스왑');
+      seq([440, 554, 659], 60, 0.08, 0.1, 'triangle');
+    }
+
+    /* -------------------------------------------------------------- 점수 */
+    function mult() { return multOf(S.cascade); }
+    function addScore(n) { S.score += Math.max(0, Math.round(n)); a.setScore(S.score); }
+
+    function pickPivot(run) {
+      var cells = run.cells, i;
+      if (S.lastSwap) {
+        var tg = [S.lastSwap.a, S.lastSwap.b];
+        for (i = 0; i < cells.length; i++) {
+          for (var j = 0; j < 2; j++) {
+            var cl = S.B[cells[i].c][cells[i].r];
+            if (tg[j] && tg[j].c === cells[i].c && tg[j].r === cells[i].r && cl && !cl.gem) return { c: cells[i].c, r: cells[i].r };
+          }
+        }
+      }
+      var mid = cells[Math.floor(cells.length / 2)];
+      var mcell = S.B[mid.c] && S.B[mid.c][mid.r];
+      if (mcell && !mcell.gem) return { c: mid.c, r: mid.r };
+      for (i = 0; i < cells.length; i++) {
+        var cc = S.B[cells[i].c] && S.B[cells[i].c][cells[i].r];
+        if (cc && !cc.gem) return { c: cells[i].c, r: cells[i].r };
+      }
+      return null;
+    }
+
+    function applyPop(runs) {
+      S.cascade++;
+      if (S.cascade > S.maxCascade) S.maxCascade = S.cascade;
+      var m = mult();
+      var rm = {}, made = {}, madeN = 0, i;
+
+      runs.forEach(function (run) {
+        if (run.cells.length >= 4) {
+          var pv = pickPivot(run);
+          if (pv) { made[nkey(pv.c, pv.r)] = run.axis; madeN++; }
+        }
+        run.cells.forEach(function (p) { rm[nkey(p.c, p.r)] = 1; });
+      });
+
+      /* ⚡ 라인 젬 연쇄 폭발 */
+      var exploded = {}, bombs = 0, guard = 0, changed = true;
+      while (changed && guard++ < 24) {
+        changed = false;
+        var keys = Object.keys(rm);
+        for (i = 0; i < keys.length; i++) {
+          var k = keys[i];
+          if (exploded[k]) continue;
+          var p = parseKey(k);
+          var cell = S.B[p.c] && S.B[p.c][p.r];
+          if (!cell || !cell.gem) continue;
+          exploded[k] = 1; bombs++; changed = true;
+          var ln = lineOf(cell.axis, p.c, p.r);
+          for (var q = 0; q < ln.length; q++) rm[nkey(ln[q].c, ln[q].r)] = 1;
+        }
+      }
+      /* 새로 생기는 라인 젬은 살아남는다 */
+      Object.keys(made).forEach(function (k) { delete rm[k]; });
+
+      var keys2 = Object.keys(rm), n = keys2.length, cx = 0, cy = 0;
+      S.popKeys = rm;
+      for (i = 0; i < keys2.length; i++) {
+        var p2 = parseKey(keys2[i]);
+        var cl2 = S.B[p2.c] && S.B[p2.c][p2.r];
+        if (!cl2) continue;
+        cx += cl2.px; cy += cl2.py;
+      }
+      if (n) { cx /= n; cy /= n; }
+
+      var pts = (n * POP + bombs * LINE_BONUS + madeN * MAKE_BONUS) * m;
+      addScore(pts);
+      S.pops += n; S.gemsMade += madeN; S.bombs += bombs;
+      S.lastRuns = runs.length;
+
+      /* 파티클 · 점수 팝업 */
+      for (i = 0; i < keys2.length; i++) {
+        var p3 = parseKey(keys2[i]);
+        var cl3 = S.B[p3.c] && S.B[p3.c][p3.r];
+        if (!cl3) continue;
+        var G = GEMS[cl3.t] || GEMS[0];
+        burst(cl3.px, cl3.py, 4, i % 3 === 0 ? S.trailCol : G.col, 150);
+      }
+      addText(clamp(cx, 40, 320), clamp(cy, 80, 400), '+' + Math.round(pts), S.cascade >= 3 ? GOLD : '#e2e8f0', S.cascade >= 3 ? 15 : 12);
+
+      if (bombs) {
+        banner('⚡ 라인 젬 폭발! ×' + bombs, '+' + Math.round(bombs * LINE_BONUS * m) + ' 보너스', LIME, 0.95);
+        flash(LIME, 0.5); seq([680, 900, 1180], 45, 0.09, 0.1, 'square');
+      } else if (S.cascade >= 2) {
+        banner('CASCADE ×' + m.toFixed(1), '연쇄 ' + S.cascade + '단계!', S.trailCol, 0.85);
+        flash(S.trailCol, 0.34);
+        tone(600 + S.cascade * 90, 0.07, 0.09, 'square', 900 + S.cascade * 90);
+      } else if (madeN) {
+        banner('⚡ 라인 젬 생성!', '4개 이상 매치 · 터지면 그 축 1줄 제거', LIME, 0.95);
+        tone(760, 0.1, 0.09, 'triangle', 1040);
+      } else {
+        tone(680, 0.06, 0.08, 'square', 880);
+      }
+
+      S.phase = 'pop';
+      S.popT = POP_T;
+      S.pending = { rm: rm, made: made };
+      S.lastSwap = null;
+    }
+
+    function commitRemove() {
+      var pend = S.pending || { rm: {}, made: {} };
+      var rm = pend.rm, made = pend.made;
+      Object.keys(rm).forEach(function (k) {
+        var p = parseKey(k);
+        if (S.B[p.c]) S.B[p.c][p.r] = null;
+      });
+      Object.keys(made).forEach(function (k) {
+        var p = parseKey(k);
+        var cell = S.B[p.c] && S.B[p.c][p.r];
+        if (cell) { cell.gem = 1; cell.axis = made[k]; cell.sc = 1; burst(cell.px, cell.py, 8, LIME, 130); }
+      });
+      S.popKeys = {};
+      S.pending = null;
+      gravity();
+    }
+
+    function gravity() {
+      var c, r;
+      for (c = 0; c < COLS; c++) {
+        var write = ROWS - 1;
+        for (r = ROWS - 1; r >= 0; r--) {
+          var cell = S.B[c][r];
+          if (!cell) continue;
+          if (write !== r) {
+            S.B[c][write] = cell; S.B[c][r] = null;
+            cell.mode = 'fall';
+          }
+          write--;
+        }
+        var xyTop = Y0 - DY * 1.8;
+        for (r = write; r >= 0; r--) {
+          var xy = cellXY(c, r);
+          var nc = newCell(randType(), xy.x, xyTop - (write - r) * DY, 'fall');
+          S.B[c][r] = nc;
+        }
+      }
+    }
+
+    function resolve() {
+      var runs = findRuns();
+      if (runs.length) { applyPop(runs); return; }
+      S.phase = 'idle';
+      S.cascade = 0;
+      S.popKeys = {};
+      S.lastSwap = null;
+      if (!firstMove()) doShuffle('🔀 움직일 수 있는 수가 없어 자동 셔플!');
+    }
+
+    /* -------------------------------------------------------------- 스왑 */
+    function swapData(p1, p2) {
+      var t1 = S.B[p1.c][p1.r], t2 = S.B[p2.c][p2.r];
+      S.B[p1.c][p1.r] = t2; S.B[p2.c][p2.r] = t1;
+      if (t1) t1.mode = 'swap';
+      if (t2) t2.mode = 'swap';
+    }
+    function trySwap(p1, p2) {
+      if (S.over || S.ready) return false;
+      if (S.phase !== 'idle' || moving()) return false;
+      if (!adjacent(p1, p2)) return false;
+      var A1 = S.B[p1.c][p1.r], B1 = S.B[p2.c][p2.r];
+      if (!A1 || !B1) return false;
+      S.sel = null;
+      S.lastSwap = { a: { c: p1.c, r: p1.r }, b: { c: p2.c, r: p2.r } };
+      swapData(p1, p2);
+      S.moves++;
+      S.phase = 'swap';
+      S.waitT = SWAP_T;
+      tone(560, 0.05, 0.07, 'triangle', 720);
+      return true;
+    }
+    function revertSwap() {
+      var sw = S.lastSwap;
+      if (sw) swapData(sw.a, sw.b);
+      S.moves = Math.max(0, S.moves - 1);   /* 매치가 안 난 스왑은 수로 세지 않는다 */
+      S.phase = 'revert';
+      S.waitT = REVERT_T;
+      S.lastSwap = null;
+      tone(240, 0.1, 0.07, 'sawtooth', 180);
+    }
+
+    /* -------------------------------------------------------------- 종료 */
+    function finishGame(why) {
+      if (S.over) return;
+      S.over = true; S.done = true; S.phase = 'over';
+      S.sel = null;
+      var d = grantCoins(S.score);
+      S.coinGain = d.gain; S.coinUsed = d.used;
+      S.coinTier = tierOf(S.score);
+      var win = a.bot ? S.score >= S.bot : null;
+      S.win = win;
+      var note = why + ' · 콤보 최대 ×' + multOf(S.maxCascade).toFixed(1) +
+        ' · ⚡ 라인 젬 ' + S.gemsMade + '개\n' +
+        '보석 ' + S.pops + '개 팝 · ' + S.moves + '수';
+      if (S.coinGain > 0) note += ' · 🪙 +' + S.coinGain + ' (' + (S.coinTier ? S.coinTier.name : '') + ')';
+      else if (S.coinUsed >= DAILY_CAP) note += ' · 🪙 오늘 상한 60 도달';
+      a.setScore(S.score);
+      a.over(win, note);
+      S.fx = [];
+      if (why === '시간 종료') seq([880, 660, 440], 90, 0.1, 0.14, 'triangle');
+    }
+
+    /* -------------------------------------------------------------- 이동 */
+    function moveCells(dt) {
+      var k = 1 - Math.exp(-dt * 30);
+      for (var c = 0; c < COLS; c++) {
+        for (var r = 0; r < ROWS; r++) {
+          var cell = S.B[c] && S.B[c][r];
+          if (!cell) continue;
+          var xy = cellXY(c, r);
+          if (cell.mode === 'fall') {
+            if (cell.py < xy.y - 0.4) {
+              cell.py = Math.min(xy.y, cell.py + FALL_SPEED * dt);
+              cell.px += (xy.x - cell.px) * Math.min(1, dt * 24);
+              if (cell.py >= xy.y - 0.4) { cell.py = xy.y; cell.mode = 'idle'; }
+            } else if (Math.abs(cell.px - xy.x) > 0.6) {
+              cell.px += (xy.x - cell.px) * Math.min(1, dt * 24);
+            } else { cell.px = xy.x; cell.py = xy.y; cell.mode = 'idle'; }
+          } else if (cell.mode === 'swap') {
+            cell.px += (xy.x - cell.px) * k;
+            cell.py += (xy.y - cell.py) * k;
+            if (Math.abs(cell.px - xy.x) < 0.6 && Math.abs(cell.py - xy.y) < 0.6) {
+              cell.px = xy.x; cell.py = xy.y; cell.mode = 'idle';
+            }
+          } else {
+            cell.px = xy.x; cell.py = xy.y;
+          }
+          cell.sc += (1 - cell.sc) * Math.min(1, dt * 12);
+        }
+      }
+    }
+
+    /* -------------------------------------------------------------- 업데이트 */
+    function update(dt) {
+      dt = Math.max(0, Math.min(0.06, Number(dt) || 0));
+      S.t += dt;
+      /* 연출 타이머 */
+      if (S.bannerT > 0) S.bannerT -= dt;
+      if (S.flash > 0) S.flash = Math.max(0, S.flash - dt * 2.4);
+      if (S.hintT > 0) S.hintT -= dt;
+      if (S.shuffleCd > 0) S.shuffleCd = Math.max(0, S.shuffleCd - dt);
+      for (var i = S.fx.length - 1; i >= 0; i--) {
+        var f = S.fx[i];
+        f.life -= dt;
+        f.x += f.vx * dt; f.y += f.vy * dt; f.vy += 240 * dt;
+        if (f.life <= 0) S.fx.splice(i, 1);
+      }
+      for (var j = S.texts.length - 1; j >= 0; j--) {
+        var tx = S.texts[j];
+        tx.t += dt; tx.y -= 26 * dt;
+        if (tx.t >= tx.dur) S.texts.splice(j, 1);
+      }
+      if (S.ready || S.over) { moveCells(dt); return; }
+
+      if (!S.frozen) {
+        S.time -= dt;
+        if (S.time <= 0) { S.time = 0; finishGame('시간 종료'); return; }
+      }
+      moveCells(dt);
+
+      if (S.phase === 'swap') {
+        S.waitT -= dt;
+        if (S.waitT <= 0) {
+          var runs = findRuns();
+          if (runs.length) { S.cascade = 0; applyPop(runs); }
+          else revertSwap();
+        }
+      } else if (S.phase === 'revert') {
+        S.waitT -= dt;
+        if (S.waitT <= 0) S.phase = 'idle';
+      } else if (S.phase === 'pop') {
+        S.popT -= dt;
+        if (S.popT <= 0) { commitRemove(); S.phase = 'fall'; }
+      } else if (S.phase === 'fall') {
+        if (!moving()) resolve();
+      }
+      a.setScore(S.score);
+    }
+
+    /* -------------------------------------------------------------- 입력 */
+    function cellAt(x, y) {
+      var best = null, bd = 1e9;
+      for (var c = 0; c < COLS; c++) {
+        for (var r = 0; r < ROWS; r++) {
+          var xy = cellXY(c, r);
+          var d = Math.sqrt((xy.x - x) * (xy.x - x) + (xy.y - y) * (xy.y - y));
+          if (d < bd) { bd = d; best = { c: c, r: r }; }
+        }
+      }
+      if (bd > R * 1.05) return null;
+      return best;
+    }
+    function tapTile(t) {
+      if (!t) return;
+      if (S.sel && S.sel.c === t.c && S.sel.r === t.r) { S.sel = null; tone(320, 0.04, 0.05, 'square'); return; }
+      if (S.sel && adjacent(S.sel, t)) {
+        if (trySwap(S.sel, t)) return;
+        S.sel = t; tone(620, 0.05, 0.07, 'square', 760);
+        return;
+      }
+      S.sel = { c: t.c, r: t.r };
+      S.cur = { c: t.c, r: t.r };
+      tone(620, 0.05, 0.07, 'square', 760);
+    }
+    function dragTo(p1, dx, dy) {
+      if (!p1 || S.phase !== 'idle') return false;
+      var best = null, bd = -1;
+      var nb = neighbors(p1.c, p1.r);
+      var len = Math.sqrt(dx * dx + dy * dy) || 1;
+      for (var i = 0; i < nb.length; i++) {
+        var xy = cellXY(nb[i].c, nb[i].r), p0 = cellXY(p1.c, p1.r);
+        var vx = xy.x - p0.x, vy = xy.y - p0.y;
+        var vl = Math.sqrt(vx * vx + vy * vy) || 1;
+        var dot = (vx / vl) * (dx / len) + (vy / vl) * (dy / len);
+        if (dot > bd) { bd = dot; best = nb[i]; }
+      }
+      if (best && bd > 0.42) return trySwap(p1, best);
+      return false;
+    }
+    function cursorMove(k) {
+      var dir = k === 'left' ? { x: -1, y: 0 } : k === 'right' ? { x: 1, y: 0 } : k === 'up' ? { x: 0, y: -1 } : { x: 0, y: 1 };
+      var p0 = cellXY(S.cur.c, S.cur.r);
+      var nb = neighbors(S.cur.c, S.cur.r), best = null, bd = -1;
+      for (var i = 0; i < nb.length; i++) {
+        var xy = cellXY(nb[i].c, nb[i].r);
+        var vx = xy.x - p0.x, vy = xy.y - p0.y;
+        var vl = Math.sqrt(vx * vx + vy * vy) || 1;
+        var dot = (vx / vl) * dir.x + (vy / vl) * dir.y;
+        if (dot > bd) { bd = dot; best = nb[i]; }
+      }
+      if (best && bd > 0.32) { S.cur = { c: best.c, r: best.r }; tone(480, 0.03, 0.04, 'square'); }
+    }
+
+    var api = {
+      start: reset,
+      stop: function () { S.done = true; S.over = true; },
+      begin: begin,
+      update: update,
+
+      pointer: function (e) {
+        if (!e) return;
+        if (S.ready) { if (e.type === 'up') begin(); return; }
+        if (S.over) return;
+        if (e.type === 'down') {
+          S.drag = { t: cellAt(e.x, e.y), x: e.x, y: e.y, moved: false };
+          if (S.drag.t) S.cur = { c: S.drag.t.c, r: S.drag.t.r };
+          return;
+        }
+        if (e.type === 'move') {
+          if (!S.drag || !S.drag.t || S.drag.moved) return;
+          var dx = e.x - S.drag.x, dy = e.y - S.drag.y;
+          if (Math.sqrt(dx * dx + dy * dy) > 15) {
+            S.drag.moved = true;
+            if (dragTo(S.drag.t, dx, dy)) { S.sel = null; }
+          }
+          return;
+        }
+        if (e.type === 'up') {
+          if (S.drag && !S.drag.moved && S.drag.t) tapTile(S.drag.t);
+          S.drag = null;
+          return;
+        }
+        if (e.type === 'cancel') { S.drag = null; }
+      },
+
+      key: function (k, down, ev) {
+        if (ev && window.__jwTypingTarget && window.__jwTypingTarget(ev)) return;
+        if (!down) return;
+        if (ev && ev.repeat) return;
+        if (S.ready) {
+          if (k === 'space' || k === 'enter') begin();
+          return;
+        }
+        if (S.over) return;
+        if (k === 'left' || k === 'right' || k === 'up' || k === 'down') {
+          if (S.sel) {
+            var p0 = cellXY(S.sel.c, S.sel.r);
+            var dir = k === 'left' ? { x: -1, y: 0 } : k === 'right' ? { x: 1, y: 0 } : k === 'up' ? { x: 0, y: -1 } : { x: 0, y: 1 };
+            var nb = neighbors(S.sel.c, S.sel.r), best = null, bd = -1;
+            for (var i = 0; i < nb.length; i++) {
+              var xy = cellXY(nb[i].c, nb[i].r);
+              var vx = xy.x - p0.x, vy = xy.y - p0.y;
+              var vl = Math.sqrt(vx * vx + vy * vy) || 1;
+              var dot = (vx / vl) * dir.x + (vy / vl) * dir.y;
+              if (dot > bd) { bd = dot; best = nb[i]; }
+            }
+            if (best && bd > 0.32) { trySwap(S.sel, best); return; }
+            cursorMove(k);
+            return;
+          }
+          cursorMove(k);
+          return;
+        }
+        if (k === 'space' || k === 'enter') {
+          if (S.phase !== 'idle' || moving()) return;
+          if (S.sel && S.sel.c === S.cur.c && S.sel.r === S.cur.r) { S.sel = null; tone(320, 0.05, 0.05, 'square'); return; }
+          S.sel = { c: S.cur.c, r: S.cur.r };
+          tone(680, 0.05, 0.07, 'square', 880);
+        }
+      },
+
+      /* ---------------------------------------------------------- 그리기 */
+      draw: function (g) {
+        drawBg(g);
+        if (S.ready) { drawHud(g); drawReady(g); return; }
+        drawBoardBack(g);
+        g.save();
+        g.beginPath();
+        g.rect(0, HUDH + 2, W, BOARD_B - HUDH);
+        g.clip();
+        drawCells(g);
+        g.restore();
+        drawFx(g);
+        drawHud(g);
+        drawBottom(g);
+        if (S.flash > 0) {
+          g.fillStyle = rgba(S.flashCol, S.flash * 0.2);
+          g.fillRect(0, 0, W, H);
+        }
+        drawBanner(g);
+        if (S.over) {
+          g.fillStyle = 'rgba(3,6,14,.55)';
+          g.fillRect(0, 0, W, H);
+        }
+      },
+
+      state: function () {
+        var grid = [], gems = [];
+        for (var c = 0; c < COLS; c++) {
+          var row = '';
+          for (var r = 0; r < ROWS; r++) {
+            var cell = S.B[c] && S.B[c][r];
+            row += cell ? String(cell.t) : '.';
+            if (cell && cell.gem) gems.push({ c: c, r: r, axis: cell.axis });
+          }
+          grid.push(row);
+        }
+        return {
+          ready: S.ready, over: S.over, done: S.done, win: S.win, phase: S.phase,
+          t: r2(S.t), time: r2(S.time), score: S.score, moves: S.moves,
+          cascade: S.cascade, maxCascade: S.maxCascade, mult: r2(multOf(S.maxCascade || 1)),
+          pops: S.pops, gemsMade: S.gemsMade, bombs: S.bombs, cells: countCells(),
+          grid: grid, gems: gems, sel: S.sel, cur: S.cur, moving: moving(),
+          hasMove: !!firstMove(), shuffleCd: r2(S.shuffleCd), shuffleUsed: S.shuffleUsed,
+          coinGain: S.coinGain, coinUsed: S.coinUsed, coinTier: S.coinTier ? S.coinTier.name : null,
+          banner: S.banner, noMove: S.noMove, bot: S.bot,
+          skinCol: S.skinCol, trailCol: S.trailCol,
+          cursorTile: S.cur.c * ROWS + S.cur.r
+        };
+      }
+    };
+
+    /* -------------------------------------------------------------- 검증 훅 (QA 전용) */
+    try {
+      if (/(^|[?&])qa=/.test(String((root.location && root.location.search) || ''))) {
+        api.__qa = {
+          begin: function () { begin(); return api.state(); },
+          state: function () { return api.state(); },
+          tick: function (dt) { update(dt == null ? 1 / 60 : dt); return api.state(); },
+          ticks: function (n, dt) { for (var i = 0; i < (n | 0); i++) update(dt == null ? 1 / 60 : dt); return api.state(); },
+          freeze: function (on) { S.frozen = on !== false; return api.state(); },
+          setTime: function (v) { S.time = Number(v) || 0; return api.state(); },
+          setIdle: function () { S.ready = false; S.phase = 'idle'; S.frozen = true; return api.state(); },
+          idle: function (maxSec) {
+            var lim = Math.round((maxSec || 6) * 60);
+            for (var i = 0; i < lim; i++) {
+              update(1 / 60);
+              if (S.over) break;
+              if (S.phase === 'idle' && !moving()) break;
+            }
+            return api.state();
+          },
+          setGrid: function (rows, gems) {
+            S.B = blank();
+            for (var c = 0; c < COLS; c++) {
+              var s = String(rows[c] || '');
+              for (var r = 0; r < ROWS; r++) {
+                var ch = s.charAt(r);
+                if (!ch || ch === '.') { S.B[c][r] = null; continue; }
+                var xy = cellXY(c, r);
+                var cell = newCell(parseInt(ch, 10) || 0, xy.x, xy.y, 'idle');
+                S.B[c][r] = cell;
+              }
+            }
+            (gems || []).forEach(function (q) {
+              var cl = S.B[q.c] && S.B[q.c][q.r];
+              if (cl) { cl.gem = 1; cl.axis = q.axis || 0; }
+            });
+            S.phase = 'idle';
+            return api.state();
+          },
+          setCell: function (c, r, t, gem, axis) {
+            var xy = cellXY(c, r);
+            var cell = S.B[c][r] || newCell(0, xy.x, xy.y, 'idle');
+            cell.t = Number(t) || 0; cell.px = xy.x; cell.py = xy.y; cell.mode = 'idle';
+            if (gem != null) { cell.gem = gem ? 1 : 0; cell.axis = axis || 0; }
+            S.B[c][r] = cell;
+            return api.state();
+          },
+          swap: function (c1, r1, c2, r2) {
+            trySwap({ c: c1, r: r1 }, { c: c2, r: r2 });
+            return api.state();
+          },
+          move: function () { return firstMove(); },
+          runs: function () { return findRuns(); },
+          popNow: function () { var r = findRuns(); if (r.length) { S.cascade = 0; applyPop(r); } return api.state(); },
+          settle: function () { resolve(); return api.state(); },
+          setPoints: function (p, l, m, step, cap) {
+            if (p != null) POP = Number(p) || 0;
+            if (l != null) LINE_BONUS = Number(l) || 0;
+            if (m != null) MAKE_BONUS = Number(m) || 0;
+            if (step != null) MULT_STEP = Number(step) || 0;
+            if (cap != null) MULT_CAP = Number(cap) || 1;
+            return { pop: POP, line: LINE_BONUS, make: MAKE_BONUS, step: MULT_STEP, cap: MULT_CAP };
+          },
+          countRuns: function () { var r = findRuns(), n = 0; for (var i = 0; i < r.length; i++) n += r[i].cells.length; return { runs: r.length, cells: n, axes: r.map(function (x) { return x.axis; }) }; },
+          shuffle: function () { doShuffle(); return api.state(); },
+          setScore: function (v) { S.score = Math.max(0, Math.round(Number(v) || 0)); a.setScore(S.score); return api.state(); },
+          setCursor: function (c, r) { if (inB(c, r)) { S.cur = { c: c, r: r }; S.sel = null; } return api.state(); },
+          finish: function (why) { finishGame(why || '테스트 종료'); return api.state(); },
+          autoPlay: function (n, maxSec) {
+            var played = 0, guard = 0;
+            while (played < (n | 0) && guard++ < 600 && !S.over) {
+              if (S.ready) begin();
+              if (S.phase !== 'idle' || moving()) { api.__qa.idle(maxSec || 4); continue; }
+              var mv = firstMove();
+              if (!mv) { doShuffle(); continue; }
+              trySwap(mv.a, mv.b);
+              api.__qa.idle(maxSec || 4);
+              played++;
+            }
+            return api.state();
+          },
+          tap: function (c, r) { tapTile({ c: c, r: r }); return api.state(); },
+          dragSwap: function (c, r, k) {
+            var dir = k === 'left' ? { x: -1, y: 0 } : k === 'right' ? { x: 1, y: 0 } : k === 'up' ? { x: 0, y: -1 } : { x: 0, y: 1 };
+            return dragTo({ c: c, r: r }, dir.x * 40, dir.y * 40);
+          },
+          cursor: function () { return { cur: S.cur, sel: S.sel }; },
+          geom: function () { return { R: R, DX: DX, DY: DY, X0: X0, Y0: Y0, l: BOARD_L, t: BOARD_T, r: BOARD_R, b: BOARD_B }; }
+        };
+      }
+    } catch (e) {}
+
+    /* ============================================================== 그리기 구현 */
+    function drawBg(g) {
+      var sky = g.createLinearGradient ? g.createLinearGradient(0, 0, 0, H) : null;
+      if (sky) { sky.addColorStop(0, '#080f1e'); sky.addColorStop(0.55, '#0b1426'); sky.addColorStop(1, '#060a14'); g.fillStyle = sky; }
+      else g.fillStyle = '#08101f';
+      g.fillRect(0, 0, W, H);
+      for (var i = 0; i < S.stars.length; i++) {
+        var s = S.stars[i];
+        var tw = 0.5 + 0.5 * Math.sin(S.t * s.spd + s.ph);
+        g.fillStyle = 'rgba(150,200,255,' + (0.05 + tw * 0.14) + ')';
+        g.fillRect(s.x, s.y, s.r, s.r);
+      }
+    }
+    function drawBoardBack(g) {
+      /* 보드 외곽 링 — 장착 스킨 색 */
+      var x = BOARD_L - 7, y = BOARD_T - 7, w = (BOARD_R - BOARD_L) + 14, h = (BOARD_B - BOARD_T) + 14;
+      var pulse = 0.5 + 0.5 * Math.sin(S.t * 2.2);
+      g.save();
+      A.rr(g, x, y, w, h, 18);
+      g.fillStyle = 'rgba(9,15,28,.86)';
+      g.fill();
+      A.rr(g, x, y, w, h, 18);
+      g.strokeStyle = rgba(S.skinCol, 0.20 + pulse * 0.16);
+      g.lineWidth = 7; g.stroke();
+      A.rr(g, x, y, w, h, 18);
+      g.strokeStyle = rgba(S.skinCol, 0.55 + pulse * 0.3);
+      g.lineWidth = 1.6; g.stroke();
+      g.restore();
+      /* 보드 안쪽 미세 격자 점 */
+      for (var c = 0; c < COLS; c++) {
+        for (var r = 0; r < ROWS; r++) {
+          var xy = cellXY(c, r);
+          g.fillStyle = 'rgba(120,160,210,.06)';
+          g.fillRect(xy.x - 1, xy.y - 1, 2, 2);
+        }
+      }
+    }
+
+    function innerShape(g, t, rad) {
+      if (t === 0) {                     /* ◆ 다이아몬드 */
+        g.beginPath();
+        g.moveTo(0, -rad); g.lineTo(rad * 0.74, 0); g.lineTo(0, rad); g.lineTo(-rad * 0.74, 0);
+        g.closePath(); g.fill();
+      } else if (t === 1) {              /* ● 원 */
+        g.beginPath(); g.arc(0, 0, rad * 0.82, 0, 6.2832); g.fill();
+      } else if (t === 2) {              /* ▲ 삼각 */
+        g.beginPath();
+        g.moveTo(0, -rad); g.lineTo(rad * 0.92, rad * 0.66); g.lineTo(-rad * 0.92, rad * 0.66);
+        g.closePath(); g.fill();
+      } else if (t === 3) {              /* ★ 별 */
+        g.beginPath();
+        for (var i = 0; i < 10; i++) {
+          var rr = i % 2 ? rad * 0.42 : rad;
+          var ang = -Math.PI / 2 + i * Math.PI / 5;
+          var px = Math.cos(ang) * rr, py = Math.sin(ang) * rr;
+          if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+        }
+        g.closePath(); g.fill();
+      } else {                           /* ⬢ 작은 육각 */
+        g.beginPath();
+        for (var k = 0; k < 6; k++) {
+          var a2 = Math.PI / 180 * (60 * k + 30);
+          var qx = Math.cos(a2) * rad, qy = Math.sin(a2) * rad;
+          if (k === 0) g.moveTo(qx, qy); else g.lineTo(qx, qy);
+        }
+        g.closePath(); g.fill();
+      }
+    }
+
+    function drawCell(g, cell, x, y, scale, popping) {
+      var G = GEMS[cell.t] || GEMS[0];
+      var rad = (R - 1.8) * scale;
+      if (rad <= 0.4) return;
+      /* 네온 후광 */
+      hexPath(g, x, y, rad + 2.6);
+      g.fillStyle = rgba(G.col, 0.13 + 0.05 * Math.sin(S.t * 3 + cell.ph));
+      g.fill();
+      /* 본체 */
+      hexPath(g, x, y, rad);
+      var grd = g.createLinearGradient ? g.createLinearGradient(x, y - rad, x, y + rad) : null;
+      if (grd) { grd.addColorStop(0, rgba(G.col, 0.34)); grd.addColorStop(1, 'rgba(6,11,22,.92)'); g.fillStyle = grd; }
+      else g.fillStyle = rgba(G.col, 0.3);
+      g.fill();
+      g.strokeStyle = popping ? '#ffffff' : rgba(G.col, 0.95);
+      g.lineWidth = 2;
+      g.stroke();
+      /* 안쪽 모양 */
+      g.save();
+      g.translate(x, y);
+      g.fillStyle = rgba(G.lt, popping ? 1 : 0.94);
+      innerShape(g, cell.t, rad * 0.52);
+      g.restore();
+      /* ⚡ 라인 젬 */
+      if (cell.gem) {
+        var ang = cell.axis === 0 ? Math.PI / 2 : cell.axis === 1 ? Math.PI / 6 : -Math.PI / 6;
+        var ex = Math.cos(ang) * (rad - 3), ey = Math.sin(ang) * (rad - 3);
+        g.beginPath();
+        g.moveTo(x - ex, y - ey); g.lineTo(x + ex, y + ey);
+        g.strokeStyle = 'rgba(255,255,255,.92)';
+        g.lineWidth = 4; g.lineCap = 'round'; g.stroke();
+        g.beginPath();
+        g.moveTo(x - ex, y - ey); g.lineTo(x + ex, y + ey);
+        g.strokeStyle = rgba(LIME, 0.95);
+        g.lineWidth = 2; g.stroke();
+        g.lineCap = 'butt';
+        g.strokeStyle = 'rgba(255,255,255,.85)';
+        g.lineWidth = 1.6;
+        g.beginPath(); g.arc(x, y, rad - 1.2, 0, 6.2832); g.stroke();
+      }
+    }
+
+    function drawCells(g) {
+      var readyOffset = S.ready ? 6 : 0;
+      for (var c = 0; c < COLS; c++) {
+        for (var r = 0; r < ROWS; r++) {
+          var cell = S.B[c] && S.B[c][r];
+          if (!cell) continue;
+          var k = nkey(c, r);
+          var sc = 1;
+          if (S.phase === 'pop' && S.popKeys[k]) sc = Math.max(0.12, S.popT / POP_T);
+          drawCell(g, cell, cell.px, cell.py + readyOffset, sc * cell.sc, S.phase === 'pop' && !!S.popKeys[k]);
+        }
+      }
+      /* 선택 테두리 · 커서 */
+      if (S.sel && S.B[S.sel.c] && S.B[S.sel.c][S.sel.r]) {
+        var cl = S.B[S.sel.c][S.sel.r];
+        var pl = 0.5 + 0.5 * Math.sin(S.t * 8);
+        hexPath(g, cl.px, cl.py, R + 1.5);
+        g.strokeStyle = rgba(S.skinCol, 0.55 + pl * 0.45);
+        g.lineWidth = 3; g.stroke();
+      }
+      if (!S.ready && !S.over && S.phase === 'idle') {
+        var cp = cellXY(S.cur.c, S.cur.r);
+        var cc = S.B[S.cur.c] && S.B[S.cur.c][S.cur.r];
+        var cxp = cc ? cc.px : cp.x, cyp = cc ? cc.py : cp.y;
+        hexPath(g, cxp, cyp, R - 1);
+        g.strokeStyle = 'rgba(226,232,240,.5)';
+        g.lineWidth = 1.4; g.stroke();
+      }
+    }
+
+    function drawFx(g) {
+      for (var i = 0; i < S.fx.length; i++) {
+        var f = S.fx[i];
+        var a = Math.max(0, f.life / f.max);
+        g.globalAlpha = a;
+        g.fillStyle = f.c;
+        g.fillRect(f.x - f.s / 2, f.y - f.s / 2, f.s, f.s);
+      }
+      g.globalAlpha = 1;
+      for (var j = 0; j < S.texts.length; j++) {
+        var t = S.texts[j];
+        var a2 = Math.max(0, 1 - t.t / t.dur);
+        g.globalAlpha = a2;
+        A.text(g, t.txt, t.x, t.y, { size: t.size, color: t.c, align: 'center' });
+        g.globalAlpha = 1;
+      }
+    }
+
+    function drawHud(g) {
+      var left = Math.max(0, Math.ceil(S.time));
+      var m = multOf(S.cascade || 1);
+      MG.hud(g, a, {
+        label: 'SCORE', score: S.score,
+        mid: S.ready ? '⬡ 7×7 · 5색' : '⏱ ' + left + '초',
+        right: S.ready ? '' : (S.cascade > 1 ? 'CASCADE ×' + m.toFixed(1) : '⬡ ' + S.moves + '수')
+      });
+      /* 남은 시간 게이지 */
+      if (S.ready) return;
+      var pct = clamp(S.time / TIME, 0, 1);
+      g.fillStyle = 'rgba(8,12,22,.9)';
+      g.fillRect(0, 44, W, 4);
+      g.fillStyle = pct > 0.4 ? rgba(CYAN, 0.55) : pct > 0.18 ? rgba(GOLD, 0.75) : rgba('#f87171', 0.9);
+      g.fillRect(0, 44, W * pct, 3);
+    }
+
+    function drawBanner(g) {
+      if (S.bannerT <= 0) return;
+      var p = Math.min(1, S.bannerT / 0.25);
+      var yy = 232;
+      g.globalAlpha = p;
+      var bw = 268, bh = S.bannerSub ? 54 : 36;
+      A.rr(g, W / 2 - bw / 2, yy - 24, bw, bh, 14);
+      g.fillStyle = 'rgba(5,9,18,.9)';
+      g.fill();
+      A.rr(g, W / 2 - bw / 2, yy - 24, bw, bh, 14);
+      g.strokeStyle = rgba(S.bannerCol, 0.75);
+      g.lineWidth = 1.6; g.stroke();
+      A.text(g, S.banner, W / 2, yy, { size: 20, color: S.bannerCol, align: 'center' });
+      if (S.bannerSub) A.text(g, S.bannerSub, W / 2, yy + 19, { size: 9.6, color: '#cbd5e1', align: 'center' });
+      g.globalAlpha = 1;
+    }
+
+    function drawBottom(g) {
+      if (S.ready || S.over) return;
+      /* 보석 범례 */
+      var gx = W / 2 - (GEMS.length - 1) * 15;
+      for (var i = 0; i < GEMS.length; i++) {
+        var G = GEMS[i];
+        var x = gx + i * 30, y = 444;
+        hexPath(g, x, y, 9);
+        g.fillStyle = rgba(G.col, 0.24);
+        g.fill();
+        g.strokeStyle = rgba(G.col, 0.9);
+        g.lineWidth = 1.2; g.stroke();
+        g.save(); g.translate(x, y);
+        g.fillStyle = G.lt;
+        innerShape(g, i, 4.6);
+        g.restore();
+      }
+      var best = null;
+      try { best = a.best(); } catch (e) { best = null; }
+      A.text(g, '⬡ 7×7 육각 · 3방향 매치 · ⚡ 라인 젬 ' + S.gemsMade + '개' +
+        (best != null ? ' · 🏅 ' + Math.round(best) : ''), W / 2, 468,
+        { size: 8.4, color: '#7f93b3', align: 'center' });
+
+      /* 🔀 셔플 버튼 */
+      if (!S.over) {
+        var cd = S.shuffleCd > 0;
+        A.btn('sh', BTN.x, BTN.y, BTN.w, BTN.h, cd ? '🔀 셔플 ' + Math.ceil(S.shuffleCd) + 's' : '🔀 셔플',
+          { color: cd ? null : 'blue', size: 14, fn: function () { onShuffle(); } });
+        if (cd) {
+          A.bar(g, BTN.x + 6, BTN.y + BTN.h - 8, BTN.w - 12, 4, 1 - S.shuffleCd / SHUF_CD, '#475569');
+        }
+      }
+      A.text(g, '👆 드래그 스와이프 · 첫 타일 탭 → 인접 탭', W / 2, 558, { size: 8.6, color: '#64748b', align: 'center' });
+      A.text(g, '⌨️ 방향키/WASD 커서 · Space·Enter 선택 → 방향키 스왑', W / 2, 574, { size: 8.6, color: '#64748b', align: 'center' });
+      var d = loadDaily();
+      var today = d.d === dayKey() ? d.c : 0;
+      A.text(g, '🪙 오늘 받은 헥사 코인 ' + today + ' / ' + DAILY_CAP, W / 2, 590, { size: 8, color: '#46566f', align: 'center' });
+    }
+
+    function onShuffle() {
+      if (S.ready) { begin(); return; }
+      if (S.over) return;
+      if (S.phase !== 'idle' || moving()) { tone(220, 0.06, 0.05, 'square'); return; }
+      if (S.shuffleCd > 0) { tone(200, 0.09, 0.06, 'square'); S.banner = '⏳ 셔플은 잠시 후'; S.bannerSub = Math.ceil(S.shuffleCd) + '초 남았어요'; S.bannerT = 0.9; S.bannerCol = GOLD; return; }
+      S.shuffleUsed++;
+      S.shuffleCd = SHUF_CD;
+      doShuffle('🔀 셔플!');
+      a.setStatus('셔플 ' + S.shuffleUsed + '회');
+    }
+
+    function drawReady(g) {
+      var pl = 0.5 + 0.5 * Math.sin(S.t * 2);
+      A.rr(g, 10, 50, 340, 468, 18);
+      g.fillStyle = '#070d19';
+      g.fill();
+      var gl = g.createLinearGradient ? g.createLinearGradient(0, 50, 0, 518) : null;
+      if (gl) {
+        gl.addColorStop(0, rgba(S.skinCol, 0.10));
+        gl.addColorStop(0.55, 'rgba(7,13,25,0)');
+        gl.addColorStop(1, rgba(S.skinCol, 0.06));
+        A.rr(g, 10, 50, 340, 468, 18);
+        g.fillStyle = gl; g.fill();
+      }
+      A.rr(g, 10, 50, 340, 468, 18);
+      g.strokeStyle = rgba(S.skinCol, 0.45);
+      g.lineWidth = 1.6; g.stroke();
+
+      A.text(g, '⬡ 헥사 매치 3', W / 2, 88, { size: 26, color: '#a5f3fc', align: 'center', font: '"Jua",sans-serif' });
+      A.text(g, 'NEON COMBO · 60초 타임어택 · 미니게임 19호', W / 2, 108, { size: 9.6, color: '#7dd3fc', align: 'center' });
+
+      /* 7×7 육각 미리보기 */
+      var cx0 = 180, cy0 = 158, rr = 8.2;
+      for (var c = 0; c < COLS; c++) {
+        for (var r = 0; r < ROWS; r++) {
+          var x = cx0 + (c - 3) * rr * 1.5;
+          var y = cy0 + (r - 3) * rr * 1.732 + ((c & 1) ? rr * 0.866 : 0);
+          var t = (c * 3 + r * 2 + ((S.t * 1.2) | 0)) % GEMS.length;
+          var G = GEMS[t];
+          hexPath(g, x, y, rr - 0.8);
+          g.fillStyle = rgba(G.col, 0.24);
+          g.fill();
+          g.strokeStyle = rgba(G.col, 0.8);
+          g.lineWidth = 0.9; g.stroke();
+        }
+      }
+
+      var lines = [
+        ['7열 × 7행 육각 격자 · 5색 네온 보석', '#cbd5e1', 9.4],
+        ['세로 · 우하향 · 우상향 3방향으로 3개 이상 이으면 팝!', '#cbd5e1', 9.4],
+        ['연쇄 CASCADE ×1.0 → ×1.5 → ×2.0 → ×2.5 (최대 ×5.0)', GOLD, 9.4],
+        ['4개 이상 매치 = ⚡ 라인 젬 · 터지면 그 축 1줄 통째 + 보너스', LIME, 9.4],
+        ['👆 드래그 스와이프 / 첫 타일 탭 → 인접 타일 탭', '#93c5fd', 9.2],
+        ['⌨️ 방향키·WASD 커서 · Space/Enter 선택 → 방향키 스왑', '#93c5fd', 9.2],
+        ['🔀 셔플 10초 쿨다운 · 움직일 수 없으면 자동 셔플', '#93a4c4', 9.2],
+        ['🎨 스킨 색 = 보드 링·선택 테두리 · 잔상 색 = 콤보 플래시·팝', '#93a4c4', 9.2],
+        ['🪙 +10(0~) / +20(750~) / +35(1500~) · 하루 상한 60', '#fcd34d', 9.2],
+        ['⬡ 오늘의 미션: 헥사 매치 3 1판(+50) · 800점(+70)', '#fcd34d', 9.2]
+      ];
+      var ly = 226;
+      for (var i = 0; i < lines.length; i++) {
+        A.text(g, lines[i][0], W / 2, ly, { size: lines[i][2], color: lines[i][1], align: 'center' });
+        ly += 17;
+      }
+
+      var best = null;
+      try { best = a.best(); } catch (e) { best = null; }
+      if (best != null) A.text(g, '🏅 최고 기록 ' + Math.round(best) + '점', W / 2, ly + 6, { size: 11.5, color: GOLD, align: 'center' });
+
+      g.globalAlpha = 0.62 + 0.38 * pl;
+      A.text(g, '▶ 탭해서 시작', W / 2, ly + 36, { size: 21, color: '#67e8f9', align: 'center', font: '"Jua",sans-serif' });
+      g.globalAlpha = 1;
+      A.text(g, '⌨️ Space · Enter 로도 시작', W / 2, ly + 54, { size: 8.6, color: '#5b6f92', align: 'center' });
+      A.text(g, '같은 시드면 보드도 같습니다 · 봇·친구 대전은 점수로 승부', W / 2, ly + 70, { size: 8.4, color: '#46566f', align: 'center' });
+      var d = loadDaily();
+      var today = d.d === dayKey() ? d.c : 0;
+      A.text(g, '🪙 오늘 받은 헥사 코인 ' + today + ' / ' + DAILY_CAP, W / 2, ly + 86, { size: 8.4, color: '#46566f', align: 'center' });
+    }
+
+    return api;
+  }
+
+  /* ==========================================================================
+     등록 — 기존 'hexa' 슬롯(v4.8 프로토타입)을 덮어쓴다 (기록·봇·방 대전 호환 유지)
+     ========================================================================== */
+  MG.def({
+    id: ID,
+    name: '헥사 매치 3',
+    emoji: '⬡',
+    tag: '퍼즐',
+    desc: '네온 콤보 · 7×7 육각 보드 · 3방향 매치 · ⚡ 라인 젬',
+    unit: '점',
+    record: {
+      type: 'high',
+      fmt: function (v) { return Math.round(v) + '점'; }
+    },
+    create: create
+  });
+
+  /* 목록 순서: 개방 19호 — v5.30 잠금 모듈의 reorder 가 맨 앞으로 당긴다 */
+  try {
+    if (MG.order) {
+      var rest = MG.order.filter(function (x) { return x && x !== ID; });
+      var at = rest.indexOf('curling');
+      if (at >= 0) rest.splice(at + 1, 0, ID);
+      else rest.push(ID);
+      MG.order = rest;
+    }
+  } catch (e) {}
+
+  try { console.log('[v558] ⬡ 헥사 매치 3 등록 · order', (MG.order || []).length); } catch (e) {}
+
+  /* 테스트/검증용 공개 훅 */
+  root.JW558 = {
+    id: ID,
+    key: KEY,
+    cap: DAILY_CAP,
+    cols: COLS, rows: ROWS, time: TIME,
+    geom: { R: R, DX: DX, DY: DY, X0: X0, Y0: Y0, l: BOARD_L, t: BOARD_T, r: BOARD_R, b: BOARD_B },
+    btn: { x: BTN.x, y: BTN.y, w: BTN.w, h: BTN.h },
+    gems: GEMS.map(function (g) { return { id: g.id, glyph: g.glyph, col: g.col }; }),
+    tiers: TIERS.map(function (t) { return { s: t.s, coin: t.coin, name: t.name }; }),
+    points: { pop: POP, line: LINE_BONUS, make: MAKE_BONUS, multStep: MULT_STEP, multCap: MULT_CAP },
     daily: function () { return loadDaily(); },
     state: function () {
       var c = MG.cur;
