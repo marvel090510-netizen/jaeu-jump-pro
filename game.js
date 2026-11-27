@@ -97586,10 +97586,10 @@ if (typeof module !== 'undefined' && module.exports) {
       var tcol = sec <= 10 ? (Math.sin(S.t * 9) > 0 ? '#fca5a5' : '#f87171') : '#a5f3fc';
       A.text(g, 'TIME', 180, 12, { size: 7.5, color: '#7f93b3', align: 'center' });
       A.text(g, fmtTime(S.left), 180, 31, { size: 19, color: tcol, align: 'center', font: '"Jua",sans-serif' });
-      A.text(g, '🌊 ' + S.wave, 349, 14, { size: 10.5, color: '#a5f3fc', align: 'right' });
+      A.text(g, '웨이브 ' + S.wave, 349, 15, { size: 9.5, color: '#a5f3fc', align: 'right' });
       var mult = Math.min(5, Math.max(1, S.combo));
-      A.text(g, S.combo >= 2 ? '🔥 x' + mult : '콤보 —', 349, 31,
-        { size: 11, color: S.combo >= 2 ? '#fde047' : '#55657f', align: 'right' });
+      A.text(g, S.combo >= 2 ? '🔥 COMBO x' + mult : '콤보 —', 349, 32,
+        { size: 10.5, color: S.combo >= 2 ? '#fde047' : '#55657f', align: 'right' });
     }
 
     function drawTexts(g) {
